@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
     // as it is used to locate QSettings)
     app.setOrganizationName("BlackCoin");
     //XXX app.setOrganizationDomain("");
-    if(GetBoolArg("-testnet")) // Separate UI settings for testnet
+    if(true) // Separate UI settings for testnet
         app.setApplicationName("BlackCoin-Qt-testnet");
     else
         app.setApplicationName("BlackCoin-Qt");
