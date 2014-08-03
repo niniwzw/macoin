@@ -1,7 +1,7 @@
 
-BlackCoin development tree
+MaCoin development tree
 
-BlackCoin is a PoS-based cryptocurrency.
+MaCoin is a PoS-based cryptocurrency.
 
 Development process
 ===========================
