@@ -14,7 +14,9 @@ src/build.h
 #compilation and Qt preprocessor part
 *.qm
 Makefile
-blackcoin-qt
+Makefile.Debug
+Makefile.Release
+macoin-qt
 #resources cpp
 qrc_*.cpp
 #qt creator
@@ -22,5 +24,7 @@ qrc_*.cpp
 #mac specific
 .DS_Store
 build
+release
+object_script.*
 
 !src/leveldb/Makefile

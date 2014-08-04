@@ -1,8 +1,8 @@
 TEMPLATE = app
-TARGET = blackcoin-qt
+TARGET = macoin-qt
 VERSION = 1.1.0.1
 INCLUDEPATH += src src/json src/qt
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE WIN32_LEAN_AND_MEAN
 CONFIG += no_include_pwd
 CONFIG += thread
 
@@ -16,11 +16,18 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 # for boost thread win32 with _win32 sufix
 # use: BOOST_THREAD_LIB_SUFFIX=_win32-...
 # or when linking against a specific BerkelyDB version: BDB_LIB_SUFFIX=-4.8
-
 # Dependency library locations can be customized with:
 #    BOOST_INCLUDE_PATH, BOOST_LIB_PATH, BDB_INCLUDE_PATH,
 #    BDB_LIB_PATH, OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
-
+BOOST_LIB_SUFFIX=-mgw48-mt-s-1_54
+BOOST_INCLUDE_PATH=D:/litecoin/libs/boost
+BOOST_LIB_PATH=D:/litecoin/libs/boost/stage/lib
+BDB_INCLUDE_PATH=D:/litecoin/libs/db/build_unix
+BDB_LIB_PATH=D:/litecoin/libs/db/build_unix
+OPENSSL_INCLUDE_PATH=D:/litecoin/libs/openssl/include
+OPENSSL_LIB_PATH=D:/litecoin/libs/openssl
+MINIUPNPC_INCLUDE_PATH=D:/litecoin/libs/miniupnpc
+MINIUPNPC_LIB_PATH=D:/litecoin/libs/miniupnpc
 OBJECTS_DIR = build
 MOC_DIR = build
 UI_DIR = build
@@ -361,8 +368,7 @@ isEmpty(BOOST_LIB_SUFFIX) {
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
-    win32:BOOST_THREAD_LIB_SUFFIX = _win32$$BOOST_LIB_SUFFIX
-    else:BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
+    BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
 }
 
 isEmpty(BDB_LIB_PATH) {
