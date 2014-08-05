@@ -1,5 +1,4 @@
 #!/bin/sh
-
 if [ $# -gt 0 ]; then
     FILE="$1"
     shift
