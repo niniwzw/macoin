@@ -1391,6 +1391,7 @@ Object CallHTTP(const string& host, const string& url, const string& method, con
     // Receive HTTP reply status
     int nProto = 0;
     int nStatus = ReadHTTPStatus(stream, nProto);
+<<<<<<< HEAD
 
     // Receive HTTP reply message headers and body
     map<string, string> mapHeaders;
@@ -1512,6 +1513,129 @@ string OAuth2::getClientId() {
     return strClientId;
 }
 
+=======
+
+    // Receive HTTP reply message headers and body
+    map<string, string> mapHeaders;
+    string strReply;
+    ReadHTTPMessage(stream, mapHeaders, strReply, nProto);
+    if (oauth2debug) {
+        cout << "reply: " << strReply << endl;
+    }
+    if (nStatus == HTTP_UNAUTHORIZED)
+        throw runtime_error("incorrect httpuser or httppassword (authorization failed)");
+    else if (nStatus >= 400 && nStatus != HTTP_BAD_REQUEST && nStatus != HTTP_NOT_FOUND && nStatus != HTTP_INTERNAL_SERVER_ERROR)
+        throw runtime_error(strprintf("server returned HTTP error %d", nStatus));
+    else if (strReply.empty())
+        throw runtime_error("no response from server");
+
+    // Parse reply
+    Value valReply;
+    if (!read_string(strReply, valReply))
+        throw runtime_error("couldn't parse reply from server");
+    const Object& reply = valReply.get_obj();
+    if (reply.empty())
+        throw runtime_error("expected reply to have result, error and id properties");
+    return reply;
+}
+
+static std::string strClientId   = "demoapp";
+static std::string strClientPass = "demopass";
+static std::string strAccessTokenURL = "/oauth/token";
+static std::string strHost = "zc.macoin.org";
+static std::string strAccessToken = "";
+static std::string strRefreshToken = "";
+static bool bIsSSL = true;
+static int nExpireIn = 0;
+void OAuth2::init(const std::string& clientId, const std::string& clientPass) {
+     strClientId = clientId;
+     strClientPass = clientPass;
+}
+
+Object OAuth2::login(const string& username, const string& password)
+{
+    map<string, string> header;
+    map<string, string> params;
+    params["client_id"] = strClientId;
+    params["client_secret"] = strClientPass;
+    params["grant_type"] = "password";
+    params["username"] = username;
+    params["password"] = password;
+    const Object& r = CallHTTP(strHost, strAccessTokenURL, "POST", params, header, bIsSSL);
+    if (oauth2debug) {
+        cout << "call token url end" << endl;
+    }
+    const Value& access_token  = find_value(r, "access_token");
+    if (access_token.type() != null_type) {
+       strAccessToken  = access_token.get_str();
+       strRefreshToken = find_value(r, "refresh_token").get_str();
+       nExpireIn        = find_value(r, "expires_in").get_int();
+       if (oauth2debug) {
+            cout << "call access token = " << access_token.get_str() << endl;
+       }
+       return r;
+    }
+    if (oauth2debug) {
+        cout << "call access token error" << endl;
+    }
+    return r;
+}
+
+/**
+ * 刷新授权信息
+ * 此处以SESSION形式存储做演示，实际使用场景请做相应的修改
+ */
+Object OAuth2::refreshToken()
+{
+    map<string, string> header;
+    map<string, string> params;
+    params["client_id"] = strClientId;
+    params["client_secret"] = strClientPass;
+    params["grant_type"] = "refresh_token";
+    params["refresh_token"] = strRefreshToken;
+    const Object& r = CallHTTP(strHost, strAccessTokenURL, "POST", params, header, bIsSSL);
+    if (oauth2debug) {
+        cout << "refresh token url end" << endl;
+    }
+    const Value& access_token  = find_value(r, "access_token");
+    if (access_token.type() != null_type)  {
+        strAccessToken = access_token.get_str();
+        nExpireIn      = find_value(r, "expires_in").get_int();
+        if (oauth2debug) {
+            cout << "refresh access token = " << access_token.get_str() << endl;
+        }
+        return r;
+    }
+    if (oauth2debug) {
+        cout << "refresh access token error" << endl;
+    }
+    return r;
+}
+
+/**
+ * 验证授权是否有效
+ */
+bool OAuth2::checkOAuthValid()
+{
+    map<string,string> params;
+    const Object& r = Macoin::api("user/hello", params);
+    const Value& hello  = find_value(r, "hello");
+    if (hello.type() != null_type && hello.get_str() == "word") {
+        return true;
+    }
+    OAuth2::clear();
+    return false;
+}
+ 
+string OAuth2::getAccessToken() {
+    return strAccessToken;
+}
+
+string OAuth2::getClientId() {
+    return strClientId;
+}
+
+>>>>>>> e80ce0f88a5dac91f23cfd272d19bb3369b25201
 void OAuth2::clear() {
      strAccessToken = "";
      strRefreshToken = "";
