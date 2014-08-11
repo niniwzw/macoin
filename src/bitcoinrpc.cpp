@@ -398,6 +398,75 @@ static string HTTPReply(int nStatus, const string& strMsg, bool keepalive)
         strMsg.c_str());
 }
 
+
+std::string encimpl(std::string::value_type v) {
+	if (isalnum(v))
+	return std::string()+v;
+
+	std::ostringstream enc;
+	enc << '%' << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << int(static_cast<unsigned char>(v));
+	return enc.str();
+}
+
+std::string urlencode(const std::string& url) {
+  // Find the start of the query string
+  const std::string::const_iterator start = std::find(url.begin(), url.end(), '?');
+
+  // If there isn't one there's nothing to do!
+  if (start == url.end())
+    return url;
+
+  // store the modified query string
+  std::string qstr;
+
+  std::transform(start+1, url.end(),
+                 // Append the transform result to qstr
+                 boost::make_function_output_iterator(boost::bind(static_cast<std::string& (std::string::*)(const std::string&)>(&std::string::append),&qstr,_1)),
+                 encimpl);
+  return std::string(url.begin(), start+1) + qstr;
+}
+
+
+string HTTPPostUrl(const string& host, const string& url, const map<string,string>& params, const map<string,string>& mapRequestHeaders)
+{
+    ostringstream sp;
+    BOOST_FOREACH(const PAIRTYPE(string, string)& item, params)
+        sp << item.first << "=" << urlencode(item.second) << "&";
+    sp << "__from=bitcoin-http-request";
+    ostringstream s;
+    s << "POST " << url << " HTTP/1.1\r\n"
+      << "User-Agent: bitcoin-http-client/" << FormatFullVersion() << "\r\n"
+      << "Host: " << host << "\r\n"
+      << "Content-Type: application/x-www-form-urlencoded\r\n"
+      << "Content-Length: " << sp.str().size() << "\r\n"
+      << "Connection: close\r\n"
+      << "Accept: application/json\r\n";
+    BOOST_FOREACH(const PAIRTYPE(string, string)& item, mapRequestHeaders)
+        s << item.first << ": " << item.second << "\r\n";
+    s << "\r\n" << sp.str();
+
+    return s.str();
+}
+
+string HTTPGetUrl(const string& host, const string& url, const map<string,string>& params, const map<string,string>& mapRequestHeaders)
+{
+    ostringstream sp;
+    sp << url << "?";
+    BOOST_FOREACH(const PAIRTYPE(string, string)& item, params)
+        sp << item.first << "=" << urlencode(item.second) << "&";
+    sp << "__from=bitcoin-http-request";
+    ostringstream s;
+    s << "GET " << url << " HTTP/1.1\r\n"
+      << "User-Agent: bitcoin-http-client/" << FormatFullVersion() << "\r\n"
+      << "Host: " << host << "\r\n"
+      << "Connection: close\r\n"
+      << "Accept: application/json\r\n";
+    BOOST_FOREACH(const PAIRTYPE(string, string)& item, mapRequestHeaders)
+        s << item.first << ": " << item.second << "\r\n";
+    s << "\r\n";
+    return s.str();
+}
+
 int ReadHTTPStatus(std::basic_istream<char>& stream, int &proto)
 {
     string str;
@@ -1291,7 +1360,261 @@ int CommandLineRPC(int argc, char *argv[])
 }
 
 
+static bool oauth2debug = false;
+Object CallHTTP(const string& host, const string& url, const string& method, const map<string,string>& params, const map<string,string>& header, bool fUseSSL)
+{
+    // Connect to localhost
+    asio::io_service io_service;
+    ssl::context context(io_service, ssl::context::sslv23);
+    context.set_options(ssl::context::no_sslv2);
+    asio::ssl::stream<asio::ip::tcp::socket> sslStream(io_service, context);
+    SSLIOStreamDevice<asio::ip::tcp> d(sslStream, fUseSSL);
+    iostreams::stream< SSLIOStreamDevice<asio::ip::tcp> > stream(d);
+    string port = fUseSSL ? "443" : "80";
+    bool fConnected = d.connect(host, port);
+    if (!fConnected) {
+        throw runtime_error("couldn't connect to http server");
+    }
 
+    // Send request
+    string strRequest;
+    if (method == "GET") {
+         strRequest = HTTPGetUrl(host, url, params, header);
+    } else {
+        strRequest = HTTPPostUrl(host, url, params, header);
+    }
+    if (oauth2debug) {
+         cout << "req: " << strRequest << endl;
+    }
+    stream << strRequest << std::flush;
+
+    // Receive HTTP reply status
+    int nProto = 0;
+    int nStatus = ReadHTTPStatus(stream, nProto);
+    // Receive HTTP reply message headers and body
+    map<string, string> mapHeaders;
+    string strReply;
+    ReadHTTP(stream, mapHeaders, strReply);
+    if (oauth2debug) {
+        cout << "reply: " << strReply << endl;
+    }
+    if (nStatus == HTTP_UNAUTHORIZED)
+        throw runtime_error("incorrect httpuser or httppassword (authorization failed)");
+    else if (nStatus >= 400 && nStatus != HTTP_BAD_REQUEST && nStatus != HTTP_NOT_FOUND && nStatus != HTTP_INTERNAL_SERVER_ERROR)
+        throw runtime_error(strprintf("server returned HTTP error %d", nStatus));
+    else if (strReply.empty())
+        throw runtime_error("no response from server");
+
+    // Parse reply
+    Value valReply;
+    if (!read_string(strReply, valReply))
+        throw runtime_error("couldn't parse reply from server");
+    const Object& reply = valReply.get_obj();
+    if (reply.empty())
+        throw runtime_error("expected reply to have result, error and id properties");
+    return reply;
+}
+
+static std::string strClientId   = "demoapp";
+static std::string strClientPass = "demopass";
+static std::string strAccessTokenURL = "/oauth/token";
+static std::string strHost = "zc.macoin.org";
+static std::string strAccessToken = "";
+static std::string strRefreshToken = "";
+static bool bIsSSL = true;
+static int nExpireIn = 0;
+void OAuth2::init(const std::string& clientId, const std::string& clientPass) {
+     strClientId = clientId;
+     strClientPass = clientPass;
+}
+
+Object OAuth2::login(const string& username, const string& password)
+{
+    map<string, string> header;
+    map<string, string> params;
+    params["client_id"] = strClientId;
+    params["client_secret"] = strClientPass;
+    params["grant_type"] = "password";
+    params["username"] = username;
+    params["password"] = password;
+    const Object& r = CallHTTP(strHost, strAccessTokenURL, "POST", params, header, bIsSSL);
+    if (oauth2debug) {
+        cout << "call token url end" << endl;
+    }
+    const Value& access_token  = find_value(r, "access_token");
+    if (access_token.type() != null_type) {
+       strAccessToken  = access_token.get_str();
+       strRefreshToken = find_value(r, "refresh_token").get_str();
+       nExpireIn        = find_value(r, "expires_in").get_int();
+       if (oauth2debug) {
+            cout << "call access token = " << access_token.get_str() << endl;
+       }
+       return r;
+    }
+    if (oauth2debug) {
+        cout << "call access token error" << endl;
+    }
+    return r;
+}
+
+/**
+ * 刷新授权信息
+ * 此处以SESSION形式存储做演示，实际使用场景请做相应的修改
+ */
+Object OAuth2::refreshToken()
+{
+    map<string, string> header;
+    map<string, string> params;
+    params["client_id"] = strClientId;
+    params["client_secret"] = strClientPass;
+    params["grant_type"] = "refresh_token";
+    params["refresh_token"] = strRefreshToken;
+    const Object& r = CallHTTP(strHost, strAccessTokenURL, "POST", params, header, bIsSSL);
+    if (oauth2debug) {
+        cout << "refresh token url end" << endl;
+    }
+    const Value& access_token  = find_value(r, "access_token");
+    if (access_token.type() != null_type)  {
+        strAccessToken = access_token.get_str();
+        nExpireIn      = find_value(r, "expires_in").get_int();
+        if (oauth2debug) {
+            cout << "refresh access token = " << access_token.get_str() << endl;
+        }
+        return r;
+    }
+    if (oauth2debug) {
+        cout << "refresh access token error" << endl;
+    }
+    return r;
+}
+
+/**
+ * 验证授权是否有效
+ */
+bool OAuth2::checkOAuthValid()
+{
+    map<string,string> params;
+    const Object& r = Macoin::api("user/hello", params);
+    const Value& hello  = find_value(r, "hello");
+    if (hello.type() != null_type && hello.get_str() == "word") {
+        return true;
+    }
+    OAuth2::clear();
+    return false;
+}
+ 
+string OAuth2::getAccessToken() {
+    return strAccessToken;
+}
+
+string OAuth2::getClientId() {
+    return strClientId;
+}
+
+void OAuth2::clear() {
+     strAccessToken = "";
+     strRefreshToken = "";
+     nExpireIn = 0;
+}
+
+void OAuth2::enableDebug() {
+    oauth2debug = true;
+}
+
+void OAuth2::disableDebug() {
+    oauth2debug = false;
+}
+
+string Macoin::strApiUrl = "/api";
+bool Macoin::debug = false;
+string Macoin::strHost = "zc.macoin.org";
+bool   Macoin::bIsSSL = true;
+int    Macoin::seq = 0;
+
+Object Macoin::api(const string& command, map<string,string> params, const string& method)
+{   
+    if (oauth2debug) {
+        cout << "call api/" << command << endl;
+    }
+    if (OAuth2::getAccessToken() != "") {//OAuth 2.0 方式
+        //鉴权参数
+        params["oauth_consumer_key"] = OAuth2::getClientId();
+        params["oauth_version"] = "2.a";
+        params["clientip"] = "c";
+        params["scope"] = "all";
+        params["appfrom"] = "bitcoin-client-9.0";
+        params["seqid"] = Macoin::nextSeq();
+        params["serverip"] = "s";
+    } else {
+        if (oauth2debug) {
+            cout << "not login, may be can refresh the token" << endl;
+        }
+        Value retValue;
+        const Object& obj = retValue.get_obj();
+        return  obj;
+    }
+    map<string,string> header;
+    header["Authorization"] = "Bearer " + OAuth2::getAccessToken();
+    //请求接口
+    Object r = CallHTTP(Macoin::strHost, Macoin::strApiUrl + "/" + command, method, params, header, Macoin::bIsSSL);
+    //调试信息
+    if (oauth2debug) {
+        cout << "call api end." << endl;
+    }
+    return r;
+}
+
+string Macoin::nextSeq() {
+    ostringstream s;
+    s << Macoin::seq;
+    Macoin::seq++;
+    return s.str();
+}
+
+Object Macoin::balance(const string& addr) {
+    map<string, string> params;
+    params["addr"] = addr;
+    return Macoin::api("pay/balance", params, "GET");
+}
+
+Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code, const string& sendaddr) {
+
+    map<string, string> params;
+    params["recvaddr"] = recvaddr;
+    params["amount"] = amount;
+    params["code"] = code;
+    params["sendaddr"] = sendaddr;
+    return Macoin::api("pay/createrawtransaction", params,  "POST");
+}
+
+Object  Macoin::addmultisigaddress(const string& pubkey1) {
+    map<string, string> params;
+    params["pubkey1"] = pubkey1;
+    return Macoin::api("pay/addmultisigaddress", params, "POST");
+}
+
+Object Macoin::sendRandCode(const string& mobile, const string& type) {
+    map<string,string> params;
+    params["mobile"] = mobile;
+    params["type"] = type;
+    return Macoin::api("randcode/send", params, "POST");
+}
+
+Object Macoin::sendRandCode() {
+    map<string,string> params;
+	params["mobile"] = "";
+    params["type"] = "voice_api";
+    return Macoin::api("randcode/send", params, "POST");
+}
+
+
+Object Macoin::validateRandCode(const string& mobile, const string& code, const string& type) {
+    map<string,string> params;
+    params["mobile"] = mobile;
+    params["code"] = code;
+    params["type"] = type;
+    return Macoin::api("randcode/validate", params, "POST");
+}
 
 #ifdef TEST
 int main(int argc, char *argv[])
