@@ -28,7 +28,7 @@ class CNode;
 
 class CTxMemPool;
 
-static const int LAST_POW_BLOCK = 10000;
+static const int LAST_POW_BLOCK = 1000;
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
@@ -57,7 +57,7 @@ static const int64_t COIN_YEAR_REWARD = 15 * CENT; // 1% per year
 static const uint256 hashGenesisBlock("0x000001faef25dec4fbcf906e6242621df2c183bf232f263d0ba5b101911e4563");
 static const uint256 hashGenesisBlockTestNet("0x0000724595fb3b9609d441cbfb9577615c292abf07d996d3edabc48de843642d");
 
-inline bool IsProtocolV2(int nHeight) { return nHeight > 319000; }
+inline bool IsProtocolV2(int nHeight) { return nHeight > 1000; }
 
 inline int64_t PastDrift(int64_t nTime, int nHeight)   { return IsProtocolV2(nHeight) ? nTime      : nTime - 10 * 60; }
 inline int64_t FutureDrift(int64_t nTime, int nHeight) { return IsProtocolV2(nHeight) ? nTime + 15 : nTime + 10 * 60; }

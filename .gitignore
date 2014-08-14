@@ -27,5 +27,6 @@ qrc_*.cpp
 build
 release
 object_script.*
+a.txt
 tags
 !src/leveldb/Makefile
