@@ -2,12 +2,35 @@
 #define SENDCOINSENTRY_H
 
 #include <QFrame>
+#include "walletmodel.h"
 
 namespace Ui {
     class SendCoinsEntry;
 }
 class WalletModel;
 class SendCoinsRecipient;
+
+class GetSMSThread : public QThread  
+{  
+        Q_OBJECT  
+signals:  
+        void notify(int);  
+
+private:
+	int  m_type ;
+public:  
+    GetSMSThread(int type)
+    {  
+			m_type = type ;
+    };  
+
+	void startwork()  ;
+	int GetSMSCode();
+
+protected:
+	void run() ;
+};   
+
 
 /** A single entry in the dialog for sending bitcoins. */
 class SendCoinsEntry : public QFrame
@@ -36,6 +59,8 @@ public:
 public slots:
     void setRemoveEnabled(bool enabled);
     void clear();
+	void on_checkButton_clicked();
+	void OnNotify(int type) ;
 
 signals:
     void removeEntry(SendCoinsEntry *entry);
@@ -51,6 +76,12 @@ private slots:
 private:
     Ui::SendCoinsEntry *ui;
     WalletModel *model;
+
+    SendCoinsRecipient recipient;
+	GetSMSThread *render ;
+    bool updateLabel(const QString &address);
+
+	void GetSMSCode();
 };
 
 #endif // SENDCOINSENTRY_H

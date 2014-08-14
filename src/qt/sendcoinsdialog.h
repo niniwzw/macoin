@@ -1,6 +1,6 @@
 #ifndef SENDCOINSDIALOG_H
 #define SENDCOINSDIALOG_H
-
+#include "walletmodel.h"
 #include <QDialog>
 #include <QString>
 
@@ -14,6 +14,36 @@ class SendCoinsRecipient;
 QT_BEGIN_NAMESPACE
 class QUrl;
 QT_END_NAMESPACE
+
+
+
+class SendThread : public QThread  
+{  
+        Q_OBJECT  
+signals:  
+        void notify(int);  
+
+private:
+	int  m_type ;
+    SendCoinsRecipient sendcoinsRecipient;
+public:  
+    SendThread(int type)
+    {  
+			m_type = type ;
+    };  
+
+	void setrecipient(SendCoinsRecipient recipient){
+		sendcoinsRecipient = recipient ;
+	};
+
+	void startwork()  ;
+	int SendCoins();
+ 
+
+protected:
+	void run() ;
+};  
+
 
 /** Dialog for sending bitcoins */
 class SendCoinsDialog : public QDialog
@@ -45,6 +75,9 @@ private:
     Ui::SendCoinsDialog *ui;
     WalletModel *model;
     bool fNewRecipientAllowed;
+	
+	SendThread *render;  
+	void SendCoins(QList<SendCoinsRecipient> recipients);
 
 private slots:
     void on_sendButton_clicked();
@@ -63,6 +96,7 @@ private slots:
     void coinControlClipboardPriority();
     void coinControlClipboardLowOutput();
     void coinControlClipboardChange();
+	void OnNotify(int type)  ;
 };
 
 #endif // SENDCOINSDIALOG_H

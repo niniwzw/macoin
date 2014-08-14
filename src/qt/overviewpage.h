@@ -2,7 +2,7 @@
 #define OVERVIEWPAGE_H
 
 #include <QWidget>
-
+#include <QMovie>
 QT_BEGIN_NAMESPACE
 class QModelIndex;
 QT_END_NAMESPACE
@@ -33,6 +33,7 @@ signals:
     void transactionClicked(const QModelIndex &index);
 
 private:
+	QMovie *movie ;
     Ui::OverviewPage *ui;
     WalletModel *model;
     qint64 currentBalance;

@@ -10,6 +10,57 @@
 #include <QApplication>
 #include <QClipboard>
 
+
+#include "base58.h"
+#include "bitcoinrpc.h"
+
+#include <boost/algorithm/string.hpp>
+
+using namespace std;
+using namespace json_spirit;
+
+
+ 
+
+void GetSMSThread::startwork()  
+{  
+	start(); //HighestPriority 
+}  
+
+
+int GetSMSThread::GetSMSCode()
+{
+		try{
+			const Object reto = Macoin::sendRandCode();
+			
+			Value errorObj = find_value(reto,  "error");
+			if (errorObj.type() == null_type)
+			{
+				return 1;
+			}
+			const string strerror = errorObj.get_str(); 
+			
+		}catch(QString exception){
+			return 2 ;
+		}
+		return 0;
+}
+
+void GetSMSThread::run()  
+{ 
+	int ret =-1;
+	switch(m_type){
+		case 4:
+		{
+			ret = GetSMSCode();
+			emit notify(ret);  
+			break;
+		}
+	}
+}  
+
+
+
 SendCoinsEntry::SendCoinsEntry(QWidget *parent) :
     QFrame(parent),
     ui(new Ui::SendCoinsEntry),
@@ -23,7 +74,7 @@ SendCoinsEntry::SendCoinsEntry(QWidget *parent) :
 #if QT_VERSION >= 0x040700
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
     ui->addAsLabel->setPlaceholderText(tr("Enter a label for this address to add it to your address book"));
-    ui->payTo->setPlaceholderText(tr("Enter a BlackCoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)"));
+    ui->payTo->setPlaceholderText(tr("Enter a Macoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
 #endif
     setFocusPolicy(Qt::TabFocus);
     setFocusProxy(ui->payTo);
@@ -133,9 +184,60 @@ SendCoinsRecipient SendCoinsEntry::getValue()
     rv.address = ui->payTo->text();
     rv.label = ui->addAsLabel->text();
     rv.amount = ui->payAmount->value();
-
+    //rv.message = ui->messageTextLabel->text();
+    rv.smsverifycode = ui->checkSMS->text();
+	rv.stramount = ui->payAmount->text();
     return rv;
 }
+
+void SendCoinsEntry::on_checkButton_clicked()
+{
+	if(OAuth2::getAccessToken() != ""){
+
+		 render = new GetSMSThread(4);
+		 connect(render,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
+		 ui->checkButton->setEnabled(false);
+		 render->startwork();    
+
+	}else{
+		  QMessageBox::warning(this, "macoin",
+                (tr("please login first!")),
+                QMessageBox::Ok, QMessageBox::Ok);
+	}
+}
+
+
+void SendCoinsEntry::OnNotify(int type)  
+{  
+	switch (type)
+	{
+		case 0:
+		{
+			  QMessageBox::warning(this, "macoin",
+					QString::fromStdString("sms send fail"),
+					QMessageBox::Ok, QMessageBox::Ok);
+				ui->checkButton->setEnabled(true);
+		}
+				break;
+		case 1:
+		{
+				QMessageBox::warning(this, "macoin",
+					tr("sms sending complete!"),
+					QMessageBox::Ok, QMessageBox::Ok);
+				ui->checkButton->setEnabled(true);
+		}
+			 break;
+		case 2:
+		{
+			QMessageBox::warning(this, "macoin",
+                "sms send exception",
+                QMessageBox::Ok, QMessageBox::Ok);
+				ui->checkButton->setEnabled(true);
+		}
+				break;
+	}
+}
+
 
 QWidget *SendCoinsEntry::setupTabChain(QWidget *prev)
 {
@@ -171,4 +273,49 @@ void SendCoinsEntry::updateDisplayUnit()
         // Update payAmount with the current unit
         ui->payAmount->setDisplayUnit(model->getOptionsModel()->getDisplayUnit());
     }
+}
+
+bool SendCoinsEntry::updateLabel(const QString &address)
+{
+    if(!model)
+        return false;
+
+    // Fill in label from address book, if address has an associated label
+    QString associatedLabel = model->getAddressTableModel()->labelForAddress(address);
+    if(!associatedLabel.isEmpty())
+    {
+        ui->addAsLabel->setText(associatedLabel);
+        return true;
+    }
+
+    return false;
+}
+
+void SendCoinsEntry::GetSMSCode()
+{
+		try{
+			const Object reto = Macoin::sendRandCode();
+			
+			Value errorObj = find_value(reto,  "error");
+			if (errorObj.type() == null_type)
+			{
+				QMessageBox::warning(this, "macoin",
+					tr("sms sending complete!"),
+					QMessageBox::Ok, QMessageBox::Ok);
+				ui->checkButton->setEnabled(true);
+				return ;
+			}
+			const string strerror = errorObj.get_str(); 
+			  QMessageBox::warning(this, "macoin",
+					QString::fromStdString(strerror),
+					QMessageBox::Ok, QMessageBox::Ok);
+				ui->checkButton->setEnabled(true);
+			
+		}catch(QString exception){
+			QMessageBox::warning(this, "macoin",
+                exception,
+                QMessageBox::Ok, QMessageBox::Ok);
+				ui->checkButton->setEnabled(true);
+		}
+		return ;
 }

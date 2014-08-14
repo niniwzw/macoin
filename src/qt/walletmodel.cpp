@@ -482,3 +482,9 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts)
 {
     return;
 }
+
+void WalletModel::showLoginView()
+{
+	emit displayLoginView();
+
+}

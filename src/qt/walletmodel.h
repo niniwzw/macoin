@@ -4,7 +4,7 @@
 #include <QObject>
 #include <vector>
 #include <map>
-
+#include <QThread>
 #include "allocators.h" /* for SecureString */
 
 class OptionsModel;
@@ -28,6 +28,10 @@ public:
     QString address;
     QString label;
     qint64 amount;
+	/////////////
+    QString message;
+	QString smsverifycode ;
+	QString stramount ;
 };
 
 /** Interface to Bitcoin wallet from Qt view code. */
@@ -179,6 +183,10 @@ signals:
 
     // Asynchronous error notification
     void error(const QString &title, const QString &message, bool modal);
+	
+	void displayLoginView();
+public:
+	void showLoginView();
 };
 
 

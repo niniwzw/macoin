@@ -16,6 +16,7 @@ class SendCoinsDialog;
 class SignVerifyMessageDialog;
 class Notificator;
 class RPCConsole;
+class LoginDialog;
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -68,6 +69,9 @@ private:
     SendCoinsDialog *sendCoinsPage;
     SignVerifyMessageDialog *signVerifyMessageDialog;
 
+	LoginDialog * loginPage ;
+
+
     QLabel *labelEncryptionIcon;
     QLabel *labelStakingIcon;
     QLabel *labelConnectionsIcon;
@@ -95,6 +99,7 @@ private:
     QAction *lockWalletAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
+    QAction *loginAction;
 
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
@@ -139,6 +144,7 @@ public slots:
     void handleURI(QString strURI);
 
 private slots:
+	void gotoLoginPage();
     /** Switch to overview (home) page */
     void gotoOverviewPage();
     /** Switch to history (transactions) page */

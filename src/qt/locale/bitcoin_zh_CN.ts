@@ -3,22 +3,22 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
-        <source>About BlackCoin</source>
-        <translation>关于黑币</translation>
+        <source>About Macoin</source>
+        <translation>关于马币</translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>&lt;b&gt;BlackCoin&lt;/b&gt; version</source>
-        <translation>&lt;b&gt;黑币客户端&lt;/b&gt; 版本</translation>
+        <source>&lt;b&gt;Macoin&lt;/b&gt; version</source>
+        <translation>&lt;b&gt;马币客户端&lt;/b&gt; 版本</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Copyright © 2009-2014 The Bitcoin developers
 Copyright © 2012-2014 The NovaCoin developers
-Copyright © 2014 The BlackCoin developers</source>
+Copyright © 2014 The Macoin developers</source>
         <translation>版权所有 © 2009-2014 比特币Bitcoin开发组
 版权所有 © 2012-2014 新星币Novacoin开发组
-版权所有 © 2014 黑币BlackCoin开发组</translation>
+版权所有 © 2014 马币MaCoin开发组</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -65,8 +65,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-46"/>
-        <source>These are your BlackCoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>这是您用来接收支付的黑币地址列表。为不同的支付方建立不同的地址以便于了解支付来源。</translation>
+        <source>These are your Macoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
+        <translation>这是您用来接收支付的马币地址列表。为不同的支付方建立不同的地址以便于了解支付来源。</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -80,8 +80,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+11"/>
-        <source>Sign a message to prove you own a BlackCoin address</source>
-        <translation>对信息进行签名以证明您对该黑币地址的所有权</translation>
+        <source>Sign a message to prove you own a Macoin address</source>
+        <translation>对信息进行签名以证明您对该马币地址的所有权</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -95,8 +95,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-14"/>
-        <source>Verify a message to ensure it was signed with a specified BlackCoin address</source>
-        <translation>验证信息以保证其经过指定黑币地址的签名</translation>
+        <source>Verify a message to ensure it was signed with a specified Macoin address</source>
+        <translation>验证信息以保证其经过指定马币地址的签名</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -237,7 +237,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+1"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR COINS&lt;/b&gt;!</source>
-        <translation>警告：如果您丢失了加密该钱包的密码，其中所有的黑币将会丢失！</translation>
+        <translation>警告：如果您丢失了加密该钱包的密码，其中所有的马币将会丢失！</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -263,8 +263,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-58"/>
-        <source>BlackCoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-        <translation>黑币客户端即将关闭以完成加密过程。请记住，加密钱包并不能完全防止您的电子货币被入侵您计算机的木马软件盗窃。</translation>
+        <source>Macoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
+        <translation>马币客户端即将关闭以完成加密过程。请记住，加密钱包并不能完全防止您的电子货币被入侵您计算机的木马软件盗窃。</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -336,9 +336,19 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>交易记录(&amp;T)</translation>
     </message>
     <message>
+        <location line="+28"/>
+        <source>&amp;Usercenter</source>
+        <translation>用户中心(&amp;U)</translation>
+    </message>
+    <message>
         <location line="+1"/>
         <source>Browse transaction history</source>
         <translation>查看交易历史</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>user center</source>
+        <translation>用户中心</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -353,7 +363,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="-13"/>
         <source>&amp;Receive coins</source>
-        <translation>接收黑币(&amp;R)</translation>
+        <translation>接收马币(&amp;R)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -363,7 +373,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="-7"/>
         <source>&amp;Send coins</source>
-        <translation>发送黑币(&amp;S)</translation>
+        <translation>发送马币(&amp;S)</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -377,8 +387,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+4"/>
-        <source>Show information about BlackCoin</source>
-        <translation>显示关于黑币的信息</translation>
+        <source>Show information about Macoin</source>
+        <translation>显示关于马币的信息</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -427,12 +437,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-62"/>
-        <source>Send coins to a BlackCoin address</source>
-        <translation>向指定的地址发送黑币</translation>
+        <source>Send coins to a Macoin address</source>
+        <translation>向指定的地址发送马币</translation>
     </message>
     <message>
         <location line="+45"/>
-        <source>Modify configuration options for BlackCoin</source>
+        <source>Modify configuration options for Macoin</source>
         <translation>更改设置选项</translation>
     </message>
     <message>
@@ -472,8 +482,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-200"/>
-        <source>BlackCoin</source>
-        <translation>黑币</translation>
+        <source>Macoin</source>
+        <translation>马币</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -482,8 +492,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+178"/>
-        <source>&amp;About BlackCoin</source>
-        <translation>关于黑币(&amp;A)</translation>
+        <source>&amp;About Macoin</source>
+        <translation>关于马币(&amp;A)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -539,13 +549,13 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+0"/>
         <location line="+60"/>
-        <source>BlackCoin client</source>
-        <translation>黑币客户端</translation>
+        <source>Macoin client</source>
+        <translation>马币客户端</translation>
     </message>
     <message numerus="yes">
         <location line="+70"/>
-        <source>%n active connection(s) to BlackCoin network</source>
-        <translation><numerusform>与黑币网络建立了 %n 个连接</numerusform></translation>
+        <source>%n active connection(s) to Macoin network</source>
+        <translation><numerusform>与马币网络建立了 %n 个连接</numerusform></translation>
     </message>
     <message>
         <location line="+40"/>
@@ -575,7 +585,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+2"/>
         <source>Not staking because you don&apos;t have mature coins</source>
-        <translation>未进行权益增值，因为钱包中没有成熟的黑币</translation>
+        <translation>未进行权益增值，因为钱包中没有成熟的马币</translation>
     </message>
     <message numerus="yes">
         <location line="-403"/>
@@ -659,8 +669,8 @@ Address: %4
     <message>
         <location line="-15"/>
         <location line="+15"/>
-        <source>URI can not be parsed! This can be caused by an invalid BlackCoin address or malformed URI parameters.</source>
-        <translation>无法解析URI：无效的黑币地址或错误的URI参数。</translation>
+        <source>URI can not be parsed! This can be caused by an invalid Macoin address or malformed URI parameters.</source>
+        <translation>无法解析URI：无效的马币地址或错误的URI参数。</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -719,8 +729,8 @@ Address: %4
     </message>
     <message>
         <location filename="../bitcoin.cpp" line="+109"/>
-        <source>A fatal error occurred. BlackCoin can no longer continue safely and will quit.</source>
-        <translation>发生严重错误，黑币客户端即将关闭。</translation>
+        <source>A fatal error occurred. Macoin can no longer continue safely and will quit.</source>
+        <translation>发生严重错误，马币客户端即将关闭。</translation>
     </message>
 </context>
 <context>
@@ -736,7 +746,7 @@ Address: %4
     <message>
         <location filename="../forms/coincontroldialog.ui" line="+14"/>
         <source>Coin Control</source>
-        <translation>黑币控制</translation>
+        <translation>马币控制</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -1046,8 +1056,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="-5"/>
-        <source>The entered address &quot;%1&quot; is not a valid BlackCoin address.</source>
-        <translation>“%1” 不是有效的黑币地址。</translation>
+        <source>The entered address &quot;%1&quot; is not a valid Macoin address.</source>
+        <translation>“%1” 不是有效的马币地址。</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1065,8 +1075,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../guiutil.cpp" line="+420"/>
         <location line="+12"/>
-        <source>BlackCoin-Qt</source>
-        <translation>黑币客户端BlackCoin-Qt</translation>
+        <source>Macoin-Qt</source>
+        <translation>马币客户端MaCoin-Qt</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -1138,13 +1148,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+31"/>
-        <source>Automatically start BlackCoin after logging in to the system.</source>
-        <translation>开机自动启动黑币客户端</translation>
+        <source>Automatically start Macoin after logging in to the system.</source>
+        <translation>开机自动启动马币客户端</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>&amp;Start BlackCoin on system login</source>
-        <translation>开机时自动启动黑币客户端(&amp;S)</translation>
+        <source>&amp;Start Macoin on system login</source>
+        <translation>开机时自动启动马币客户端(&amp;S)</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1163,8 +1173,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+6"/>
-        <source>Automatically open the BlackCoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>路由器自动打开黑币客户端端口。该功能仅在路由器开启UPnP支持时有效。</translation>
+        <source>Automatically open the Macoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>路由器自动打开马币客户端端口。该功能仅在路由器开启UPnP支持时有效。</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1173,8 +1183,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Connect to the BlackCoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>经SOCKS代理连接到黑币网络(例如使用Tor)</translation>
+        <source>Connect to the Macoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
+        <translation>经SOCKS代理连接到马币网络(例如使用Tor)</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1248,28 +1258,28 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting BlackCoin.</source>
-        <translation>在此设置用户界面语言。重启黑币客户端后设置生效。</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting Macoin.</source>
+        <translation>在此设置用户界面语言。重启马币客户端后设置生效。</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>&amp;Unit to show amounts in:</source>
-        <translation>黑币金额单位(&amp;U)：</translation>
+        <translation>马币金额单位(&amp;U)：</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Choose the default subdivision unit to show in the interface and when sending coins.</source>
-        <translation>选择黑币单位。</translation>
+        <translation>选择马币单位。</translation>
     </message>
     <message>
         <location line="+9"/>
-        <source>Whether to show BlackCoin addresses in the transaction list or not.</source>
-        <translation>是否在交易列表中显示黑币地址</translation>
+        <source>Whether to show Macoin addresses in the transaction list or not.</source>
+        <translation>是否在交易列表中显示马币地址</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Display addresses in transaction list</source>
-        <translation>在交易清单中显示黑币地址(&amp;D)</translation>
+        <translation>在交易清单中显示马币地址(&amp;D)</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1279,7 +1289,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+3"/>
         <source>Display coin &amp;control features (experts only!)</source>
-        <translation>显示黑币控制选项(仅用于专家用户)</translation>
+        <translation>显示马币控制选项(仅用于专家用户)</translation>
     </message>
     <message>
         <location line="+71"/>
@@ -1310,7 +1320,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-9"/>
         <location line="+9"/>
-        <source>This setting will take effect after restarting BlackCoin.</source>
+        <source>This setting will take effect after restarting Macoin.</source>
         <translation>重启客户端后设置生效</translation>
     </message>
     <message>
@@ -1329,7 +1339,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+33"/>
         <location line="+231"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the BlackCoin network after a connection is established, but this process has not completed yet.</source>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Macoin network after a connection is established, but this process has not completed yet.</source>
         <translation>所显示的信息尚未更新，建立连接后钱包客户端会自动和网络进行同步，但目前该过程尚未完成。</translation>
     </message>
     <message>
@@ -1391,6 +1401,11 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="-29"/>
         <source>Total of coins that was staked, and do not yet count toward the current balance</source>
         <translation>正在进行权益累积的货币总额（不计入目前钱包余额）</translation>
+    </message>
+    <message>
+        <location filename="../overviewpage.cpp" line="119"/>
+        <source>&lt;a href = 'http://www.macoin.org'&gt;macoin&lt;/a&gt;</source>
+        <translation>&lt;a href = 'http://www.macoin.org'&gt;马币&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../overviewpage.cpp" line="+113"/>
@@ -1545,7 +1560,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Show the BlackCoin-Qt help message to get a list with possible BlackCoin command-line options.</source>
+        <source>Show the Macoin-Qt help message to get a list with possible Macoin command-line options.</source>
         <translation>显示关于命令行选项的帮助信息。</translation>
     </message>
     <message>
@@ -1565,13 +1580,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="-104"/>
-        <source>BlackCoin - Debug window</source>
-        <translation>黑币客户端-调试窗口</translation>
+        <source>Macoin - Debug window</source>
+        <translation>马币客户端-调试窗口</translation>
     </message>
     <message>
         <location line="+25"/>
-        <source>BlackCoin Core</source>
-        <translation>黑币核心进程</translation>
+        <source>Macoin Core</source>
+        <translation>马币核心进程</translation>
     </message>
     <message>
         <location line="+279"/>
@@ -1580,7 +1595,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Open the BlackCoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <source>Open the Macoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
         <translation>打开调试日志文件，对于较大的文件，这可能持续几秒钟。</translation>
     </message>
     <message>
@@ -1590,8 +1605,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-33"/>
-        <source>Welcome to the BlackCoin RPC console.</source>
-        <translation>欢迎使用黑币RPC控制台。</translation>
+        <source>Welcome to the Macoin RPC console.</source>
+        <translation>欢迎使用马币RPC控制台。</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1749,8 +1764,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../sendcoinsdialog.cpp" line="-173"/>
-        <source>Enter a BlackCoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>输入黑币地址(例如：B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a Macoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
+        <translation>输入马币地址(例如：1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1849,8 +1864,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+251"/>
-        <source>WARNING: Invalid BlackCoin address</source>
-        <translation>警告：无效的黑币地址</translation>
+        <source>WARNING: Invalid Macoin address</source>
+        <translation>警告：无效的马币地址</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -1861,6 +1876,26 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+4"/>
         <source>WARNING: unknown change address</source>
         <translation>警告：未知的零钱地址</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="-228"/>
+        <source>Confirm send coins</source>
+        <translation>确认发送货币</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="286"/>
+        <source>sending fail </source>
+        <translation>发送马币失败</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="292"/>
+        <source>some exception</source>
+        <translation>发送马币异常</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="301"/>
+        <source>please login first!</source>
+        <translation>请先登录!</translation>
     </message>
 </context>
 <context>
@@ -1892,9 +1927,27 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>标签(&amp;L)：</translation>
     </message>
     <message>
+        <location line="59"/>
+        <source>C&amp;heck code:</source>
+        <translation>验证码:</translation>
+    </message>
+    <message>
+        <location line="77"/>
+        <source>SMS check code</source>
+        <translation>请输入短信校验码</translation>
+    </message>
+	
+    <message>
+	    <location filename="../forms/sendcoinsentry.ui" line="90"/>
+        <source>SMS Check</source>
+        <translation>获取验证码</translation>
+    </message>
+
+
+    <message>
         <location line="+18"/>
-        <source>The address to send the payment to  (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>收款人地址(例：B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>The address to send the payment to  (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
+        <translation>收款人地址(例：1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1923,8 +1976,159 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a BlackCoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>输入一个黑币地址 (例：B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a Macoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
+        <translation>输入一个马币地址 (例：1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsentry.cpp" line="132"/>
+        <source>sms sending complete!</source>
+        <translation>验证请求发送完成!</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsentry.cpp" line="149"/>
+        <source>please login first!</source>
+        <translation>请先登录!</translation>
+    </message>
+</context>
+<context>
+    <name>LoginDialog</name>
+    <message>
+        <location filename="../forms/logindialog.ui" line="165"/>
+        <source>user info</source>
+        <translation>用户基本信息</translation>
+    </message>
+
+    <message>
+        <location line="+5"/>
+        <source>&amp;UserName:</source>
+        <translation>用户名称</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>&amp;Login</source>
+        <translation>登陆</translation>
+    </message>
+	
+    <message>
+        <location line="+6"/>
+        <source>&amp;Password:</source>
+        <translation>用户密码</translation>
+    </message>
+
+    <message>
+        <location line="+8"/>
+        <source>username.</source>
+        <translation>用户名称</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>please input user name.</source>
+        <translation>请输入用户名称</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>password.</source>
+        <translation>请输入用户密码</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>please input password.</source>
+        <translation>请输入用户密码</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>username.</source>
+        <translation>用户名称</translation>
+    </message>
+    <message>
+        <location line="182"/>
+        <source>address book</source>
+        <translation>地址簿</translation>
+    </message>
+    <message>
+        <location line="182"/>
+        <source>address book</source>
+        <translation>地址簿</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>UID:</source>
+        <translation>UID:</translation>
+    </message>
+    <message>
+        <location line="202"/>
+        <source>Phone:</source>
+        <translation>手机号码:</translation>
+    </message>
+    <message>
+        <location line="222"/>
+        <source>status:</source>
+        <translation>实名状态:</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Email:</source>
+        <translation>电子邮箱:</translation>
+    </message>
+    <message>
+        <location line="279"/>
+        <source>Address:</source>
+        <translation>实名地址:</translation>
+    </message>
+    <message>
+        <location line="332"/>
+        <source>&amp;Subscription</source>
+        <translation>申请实名地址</translation>
+    </message>
+    <message>
+        <location line="361"/>
+        <source>&amp;Logout</source>
+        <translation>登出</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="77"/>
+        <source>&lt;a href = 'https://zc.macoin.org/user/findPass'&gt;forget password&lt;/a&gt;</source>
+        <translation>&lt;a href = 'https://zc.macoin.org/user/findPass'&gt;忘记密码?&lt;/a&gt;</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="183"/>
+        <source>please login first or checking network!</source>
+        <translation>请先登陆或检查网络连接!</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="189"/>
+        <source>no more than three address or not login</source>
+        <translation>申请最多3个实名地址!</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="199"/>
+        <source>add multisigaddress error </source>
+        <translation>添加多重签名失败!</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="204"/>
+        <source>apply Success!</source>
+        <translation>申请成功!</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="211"/>
+        <source>please login first!</source>
+        <translation>请先登陆!</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="245"/>
+        <source>login server fail!</source>
+        <translation>登录服务器失败!</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="267"/>
+        <source>pass realname verify</source>
+        <translation>通过实名认证</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="269"/>
+        <source>no pass realname verify</source>
+        <translation>没有通过实名认证</translation>
     </message>
 </context>
 <context>
@@ -1947,8 +2151,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to sign the message with (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>用来签名该消息的地址(例： B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>The address to sign the message with (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
+        <translation>用来签名该消息的地址(例： 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1984,8 +2188,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+21"/>
-        <source>Sign the message to prove you own this BlackCoin address</source>
-        <translation>对该消息进行签名以证明您对该黑币地址的所有权</translation>
+        <source>Sign the message to prove you own this Macoin address</source>
+        <translation>对该消息进行签名以证明您对该马币地址的所有权</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2011,13 +2215,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+21"/>
-        <source>The address the message was signed with (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>用来签名该消息的黑币地址(例： B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>The address the message was signed with (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
+        <translation>用来签名该消息的马币地址(例： 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified BlackCoin address</source>
-        <translation>确认该消息以保证它经由指定的黑币地址签名</translation>
+        <source>Verify the message to ensure it was signed with the specified Macoin address</source>
+        <translation>确认该消息以保证它经由指定的马币地址签名</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2027,8 +2231,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a BlackCoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>输入黑币地址(例： B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a Macoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</source>
+        <translation>输入马币地址(例： 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -2037,8 +2241,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+3"/>
-        <source>Enter BlackCoin signature</source>
-        <translation>输入黑币签名</translation>
+        <source>Enter Macoin signature</source>
+        <translation>输入马币签名</translation>
     </message>
     <message>
         <location line="+82"/>
@@ -2608,8 +2812,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <name>bitcoin-core</name>
     <message>
         <location filename="../bitcoinstrings.cpp" line="+33"/>
-        <source>BlackCoin version</source>
-        <translation>黑币客户端 版本</translation>
+        <source>Macoin version</source>
+        <translation>马币客户端 版本</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2618,8 +2822,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+1"/>
-        <source>Send command to -server or blackcoind</source>
-        <translation>向-server服务器或blackcoind发送命令</translation>
+        <source>Send command to -server or macoind</source>
+        <translation>向-server服务器或macoind发送命令</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2641,13 +2845,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: blackcoin.conf)</source>
-        <translation>指定配置文件(默认: blackcoin.conf)</translation>
+        <source>Specify configuration file (default: macoin.conf)</source>
+        <translation>指定配置文件(默认: macoin.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: blackcoind.pid)</source>
-        <translation>指定pid文件(默认: blackcoind.pid)</translation>
+        <source>Specify pid file (default: macoind.pid)</source>
+        <translation>指定pid文件(默认: macoind.pid)</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2698,7 +2902,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+2"/>
         <source>Stake your coins to support network and gain reward (default: 1)</source>
-        <translation>进行权益累积以支持黑币网络并获得报酬(默认: 1)</translation>
+        <translation>进行权益累积以支持马币网络并获得报酬(默认: 1)</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -2801,8 +3005,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+61"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong BlackCoin will not work properly.</source>
-        <translation>警告：请确认您计算机的本地时间。如果时钟错误，黑币客户端将不能正常工作。</translation>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Macoin will not work properly.</source>
+        <translation>警告：请确认您计算机的本地时间。如果时钟错误，马币客户端将不能正常工作。</translation>
     </message>
     <message>
         <location line="-31"/>
@@ -2991,24 +3195,24 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <source>%s, you must set a rpcpassword in the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=blackcoinrpc
+rpcuser=macoinrpc
 rpcpassword=%s
 (you do not need to remember this password)
 The username and password MUST NOT be the same.
 If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;BlackCoin Alert&quot; admin@foo.com
+for example: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.com
 </source>
         <translation>%s, 必须在配置文件里设置rpc密码:
  %s
 建议使用如下的随机密码:
-rpcuser=blackcoinrpc
+rpcuser=macoinrpc
 rpcpassword=%s
 (不需要记住该密码)
 用户名和密码不能重复。
 如果该文件不存在，请自行创建并设为用户本身只读权限。
 建议创建提示以监测可能的问题，如：
-alertnotify=echo %%s | mail -s &quot;BlackCoin Alert&quot; admin@foo.com
+alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.com
 </translation>
     </message>
     <message>
@@ -3137,13 +3341,13 @@ alertnotify=echo %%s | mail -s &quot;BlackCoin Alert&quot; admin@foo.com
     </message>
     <message>
         <location line="+1"/>
-        <source>Cannot obtain a lock on data directory %s.  BlackCoin is probably already running.</source>
-        <translation>无法从数据目录 %s 获得锁定.  黑币客户端可能已在运行中.</translation>
+        <source>Cannot obtain a lock on data directory %s.  Macoin is probably already running.</source>
+        <translation>无法从数据目录 %s 获得锁定.  马币客户端可能已在运行中.</translation>
     </message>
     <message>
         <location line="-98"/>
-        <source>BlackCoin</source>
-        <translation>黑币</translation>
+        <source>Macoin</source>
+        <translation>马币</translation>
     </message>
     <message>
         <location line="+140"/>
@@ -3177,12 +3381,12 @@ alertnotify=echo %%s | mail -s &quot;BlackCoin Alert&quot; admin@foo.com
     </message>
     <message>
         <location line="+4"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of BlackCoin</source>
+        <source>Error loading wallet.dat: Wallet requires newer version of Macoin</source>
         <translation>wallet.dat 钱包文件加载出错：需要新版本的客户端</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Wallet needed to be rewritten: restart BlackCoin to complete</source>
+        <source>Wallet needed to be rewritten: restart Macoin to complete</source>
         <translation>需要重写钱包，重启客户端以完成该操作。</translation>
     </message>
     <message>
@@ -3252,8 +3456,8 @@ alertnotify=echo %%s | mail -s &quot;BlackCoin Alert&quot; admin@foo.com
     </message>
     <message>
         <location line="+122"/>
-        <source>Unable to bind to %s on this computer. BlackCoin is probably already running.</source>
-        <translation>无法绑定到该计算机上的 %s. 黑币客户端可能已在运行中。</translation>
+        <source>Unable to bind to %s on this computer. Macoin is probably already running.</source>
+        <translation>无法绑定到该计算机上的 %s. 马币客户端可能已在运行中。</translation>
     </message>
     <message>
         <location line="-97"/>

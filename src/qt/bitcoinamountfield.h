@@ -49,6 +49,7 @@ private:
     int currentUnit;
 
     void setText(const QString &text);
+public:
     QString text() const;
 
 private slots:

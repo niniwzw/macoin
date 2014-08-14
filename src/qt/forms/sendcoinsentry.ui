@@ -52,6 +52,72 @@
    <item row="5" column="1">
     <widget class="BitcoinAmountField" name="payAmount"/>
    </item>
+
+    <item row="6" column="0">
+     <widget class="QLabel" name="checkLabel">
+      <property name="text">
+       <string>C&amp;heck code:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="buddy">
+       <cstring>payAmount</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <layout class="QHBoxLayout" name="checkLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLineEdit" name="checkSMS">
+        <property name="toolTip">
+         <string>SMS check code</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="checkButton">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>SMS Check</string>
+        </property>
+        <property name="text">
+         <string>SMS Check</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../bitcoin.qrc">
+          <normaloff>:/icons/sms</normaloff>:/icons/sms</iconset>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>15</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+
+
    <item row="4" column="1">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <property name="spacing">

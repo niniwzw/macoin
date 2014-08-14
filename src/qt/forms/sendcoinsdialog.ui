@@ -659,7 +659,7 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+    <!-- <item>
       <widget class="QPushButton" name="addButton">
        <property name="toolTip">
         <string>Send to multiple recipients at once</string>
@@ -676,6 +676,7 @@
        </property>
       </widget>
      </item>
+	 -->
      <item>
       <widget class="QPushButton" name="clearButton">
        <property name="sizePolicy">
