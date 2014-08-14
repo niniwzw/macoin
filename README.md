@@ -1,7 +1,7 @@
 
-MaCoin development tree
+Macoin development tree
 
-MaCoin is a PoS-based cryptocurrency.
+Macoin is a PoS-based cryptocurrency.
 
 Development process
 ===========================
