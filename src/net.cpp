@@ -361,17 +361,17 @@ bool GetMyExternalIP(CNetAddr& ipRet)
         //  <?php echo $_SERVER["REMOTE_ADDR"]; ?>
         if (nHost == 1)
         {
-            addrConnect = CService("91.198.22.70",80); // checkip.dyndns.org
+            addrConnect = CService("115.29.76.136",80); // checkip.dyndns.org
 
             if (nLookup == 1)
             {
-                CService addrIP("checkip.dyndns.org", 80, true);
+                CService addrIP("api.macoin.org", 80, true);
                 if (addrIP.IsValid())
                     addrConnect = addrIP;
             }
 
             pszGet = "GET / HTTP/1.1\r\n"
-                     "Host: checkip.dyndns.org\r\n"
+                     "Host: api.macoin.org\r\n"
                      "User-Agent: Macoin\r\n"
                      "Connection: close\r\n"
                      "\r\n";
@@ -1251,9 +1251,9 @@ void MapPort()
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
-    {"rat4.macoin.co", "seed.macoin.co"},
-    {"archon.darkfox.id.au", "foxy.seeds.darkfox.id.au"},
-    {"6.syllabear.us.to", "bcseed.syllabear.us.to"},
+    {"seed31", "seed31.macoin.org"},
+    {"seed32", "seed32.macoin.org"},
+    {"seed33", "seed33.macoin.org"},
 };
 
 void ThreadDNSAddressSeed(void* parg)
@@ -1337,14 +1337,7 @@ void ThreadDNSAddressSeed2(void* parg)
 
 unsigned int pnSeed[] =
 {
-    0xdf4bd379, 0x7934d29b, 0x26bc02ad, 0x7ab743ad, 0x0ab3a7bc,
-    0x375ab5bc, 0xc90b1617, 0x5352fd17, 0x5efc6c18, 0xccdc7d18,
-    0x443d9118, 0x84031b18, 0x347c1e18, 0x86512418, 0xfcfe9031,
-    0xdb5eb936, 0xef8d2e3a, 0xcf51f23c, 0x18ab663e, 0x36e0df40,
-    0xde48b641, 0xad3e4e41, 0xd0f32b44, 0x09733b44, 0x6a51f545,
-    0xe593ef48, 0xc5f5ef48, 0x96f4f148, 0xd354d34a, 0x36206f4c,
-    0xceefe953, 0x50468c55, 0x89d38d55, 0x65e61a5a, 0x16b1b95d,
-    0x702b135e, 0x0f57245e, 0xdaab5f5f, 0xba15ef63,
+    0x884c1d73,0xba4de07a,0xbc4de07a,0x5ff792a,
 };
 
 void DumpAddresses()
