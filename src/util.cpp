@@ -59,7 +59,7 @@ using namespace std;
 
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
-bool fDebug = false;
+bool fDebug = true;
 bool fDebugNet = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugger = false;
@@ -987,13 +987,13 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Macoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Macoin
-    // Mac: ~/Library/Application Support/Macoin
-    // Unix: ~/.macoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Macoin3
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Macoin3
+    // Mac: ~/Library/Application Support/Macoin3
+    // Unix: ~/.macoin3
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Macoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Macoin3";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -1005,10 +1005,10 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     fs::create_directory(pathRet);
-    return pathRet / "Macoin";
+    return pathRet / "Macoin3";
 #else
     // Unix
-    return pathRet / ".macoin";
+    return pathRet / ".macoin3";
 #endif
 #endif
 }
