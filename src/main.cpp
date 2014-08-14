@@ -41,7 +41,7 @@ CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfStakeLimitV2(~uint256(0) >> 48);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
-unsigned int nStakeMinAge = 8 * 60 * 60; // 8 hours
+unsigned int nStakeMinAge = 3 * 60 * 60; // 3 hours
 unsigned int nStakeMaxAge = -1; // unlimited
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
@@ -982,7 +982,7 @@ static CBigNum GetProofOfStakeLimit(int nHeight)
 // miner's coin base reward
 int64_t GetProofOfWorkReward(int64_t nFees)
 {
-    int64_t nSubsidy = 10000 * COIN;
+    int64_t nSubsidy = 200000 * COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfWorkReward() : create=%s nSubsidy=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nSubsidy);
@@ -993,7 +993,9 @@ int64_t GetProofOfWorkReward(int64_t nFees)
 // miner's coin stake reward based on coin age spent (coin-days)
 int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
 {
-    int64_t nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
+    int64_t rate = ((int64_t)nBestHeight / 500000) * CENT;
+    rate = COIN_YEAR_REWARD - rate <= 0 ? 1 * CENT : COIN_YEAR_REWARD - rate;
+    int64_t nSubsidy = nCoinAge * rate * 33 / (365 * 33 + 8);
 
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge);
@@ -2534,9 +2536,9 @@ bool LoadBlockIndex(bool fAllowNew)
         //    CTxOut(empty)
         //  vMerkleTree: 12630d16a9
 
-        const char* pszTimestamp = "20 Feb 2014 Bitcoin ATMs come to USA";
+        const char* pszTimestamp = "2014/08/15 Macoin New Wallet Come back.";
         CTransaction txNew;
-        txNew.nTime = 1393221600;
+        txNew.nTime = 1407974636;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 0 << CBigNum(42) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
@@ -2546,7 +2548,7 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1393221600;
+        block.nTime    = 1407974636;
         block.nBits    = bnProofOfWorkLimit.GetCompact();
         block.nNonce   = !fTestNet ? 164482 : 216178;
 
