@@ -23,6 +23,10 @@ public:
     // Add a key to the store.
     virtual bool AddKey(const CKey& key) =0;
 
+    virtual bool GetServerKey(const CKeyID &address, CPubKey &keyOut) const = 0;
+    virtual bool AddServerKey(const CPubKey& vchPubKeyOut) = 0;
+    virtual bool DeleteServerKey() = 0;
+
     // Check whether a key corresponding to a given address is present in the store.
     virtual bool HaveKey(const CKeyID &address) const =0;
     virtual bool GetKey(const CKeyID &address, CKey& keyOut) const =0;
@@ -46,14 +50,14 @@ public:
 
 typedef std::map<CKeyID, std::pair<CSecret, bool> > KeyMap;
 typedef std::map<CScriptID, CScript > ScriptMap;
-
+typedef std::map<CKeyID, CPubKey> ServerKeyMap;
 /** Basic key store, that keeps keys in an address->secret map */
 class CBasicKeyStore : public CKeyStore
 {
 protected:
     KeyMap mapKeys;
     ScriptMap mapScripts;
-
+    ServerKeyMap mapServerKeys;
 public:
     bool AddKey(const CKey& key);
     bool HaveKey(const CKeyID &address) const
@@ -95,10 +99,12 @@ public:
     virtual bool AddCScript(const CScript& redeemScript);
     virtual bool HaveCScript(const CScriptID &hash) const;
     virtual bool GetCScript(const CScriptID &hash, CScript& redeemScriptOut) const;
+    virtual bool AddServerKey(const CPubKey& vchPubKeyOut);
+    virtual bool DeleteServerKey();
+	virtual bool GetServerKey(const CKeyID &address, CPubKey &keyOut) const;
 };
 
 typedef std::map<CKeyID, std::pair<CPubKey, std::vector<unsigned char> > > CryptedKeyMap;
-
 /** Keystore which keeps the private keys encrypted.
  * It derives from the basic key store, which is used if no encryption is active.
  */
@@ -108,7 +114,6 @@ private:
     CryptedKeyMap mapCryptedKeys;
 
     CKeyingMaterial vMasterKey;
-
     // if fUseCrypto is true, mapKeys must be empty
     // if fUseCrypto is false, vMasterKey must be empty
     bool fUseCrypto;
@@ -149,6 +154,10 @@ public:
     bool AddKey(const CKey& key);
     bool HaveKey(const CKeyID &address) const
     {
+        CPubKey keyOut;
+        if (CBasicKeyStore::GetServerKey(address, keyOut)) {
+            return true;
+        }
         {
             LOCK(cs_KeyStore);
             if (!IsCrypted())

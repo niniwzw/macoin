@@ -20,9 +20,6 @@
 #include <QTextDocument>
 #include <QScrollBar>
 
- 
-
-
 Value CallRPC(string args)
 {
     vector<string> vArgs;
@@ -41,8 +38,6 @@ Value CallRPC(string args)
         throw runtime_error(find_value(objError, "message").get_str());
     }
 }
-
-
 
 void LoginThread::setpassword(QString password){
 	strpassword = password ;

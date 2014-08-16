@@ -153,6 +153,27 @@ Value importprivkey(const Array& params, bool fHelp)
     return Value::null;
 }
 
+Value rescanwallet(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "rescanwallet \n"
+            "rescanwallet to update balance.");
+
+    if (fWalletUnlockStakingOnly)
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
+    {
+        LOCK2(cs_main, pwalletMain->cs_wallet);
+
+        pwalletMain->MarkDirty();
+        // whenever a key is imported, we need to scan the whole chain
+        pwalletMain->nTimeFirstKey = 1; // 0 would be considered 'no value'
+        pwalletMain->ScanForWalletTransactions(pindexGenesisBlock, true);
+        pwalletMain->ReacceptWalletTransactions();
+    }
+    return Value::null;
+}
+
 Value importwallet(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)

@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <stdint.h>
-
+typedef long long  int64;
 /** Errors thrown by the bignum class */
 class bignum_error : public std::runtime_error
 {

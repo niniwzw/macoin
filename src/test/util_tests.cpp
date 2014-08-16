@@ -7,7 +7,7 @@
 #include "util.h"
 
 using namespace std;
-
+typedef long int  int64_t;
 BOOST_AUTO_TEST_SUITE(util_tests)
 
 BOOST_AUTO_TEST_CASE(util_criticalsection)
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE(util_FormatMoney)
 
 BOOST_AUTO_TEST_CASE(util_ParseMoney)
 {
-    int64 ret = 0;
+    int64_t ret = 0;
     BOOST_CHECK(ParseMoney("0.0", ret));
     BOOST_CHECK_EQUAL(ret, 0);
 

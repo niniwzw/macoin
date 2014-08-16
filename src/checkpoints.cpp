@@ -46,6 +46,11 @@ namespace Checkpoints
         return hash == i->second;
     }
 
+    bool CheckBlock(int nHeight, const uint256& hash)
+    {
+        return CheckHardened(nHeight, hash);
+    }
+
     int GetTotalBlocksEstimate()
     {
         MapCheckpoints& checkpoints = (fTestNet ? mapCheckpointsTestnet : mapCheckpoints);

@@ -138,6 +138,24 @@ Value getnewpubkey(const Array& params, bool fHelp)
     return HexStr(vchPubKey.begin(), vchPubKey.end());
 }
 
+//don,t add to address book
+Value getnewpubkey2(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 0)
+        throw runtime_error(
+            "getnewpubkey2\n"
+            "Returns new public key for coinbase generation.");
+
+    if (!pwalletMain->IsLocked())
+        pwalletMain->TopUpKeyPool();
+
+    // Generate a new key that is added to wallet
+    CPubKey newKey;
+    if (!pwalletMain->GetKeyFromPool(newKey, false))
+        throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
+    vector<unsigned char> vchPubKey = newKey.Raw();
+    return HexStr(vchPubKey.begin(), vchPubKey.end());
+}
 
 Value getnewaddress(const Array& params, bool fHelp)
 {
@@ -254,6 +272,31 @@ Value setaccount(const Array& params, bool fHelp)
     return Value::null;
 }
 
+Value setserverpubkey(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "setserverpubkey <pubkey>\n"
+            "Sets the server  pubkey for logined user.");
+
+	CPubKey vchPubKey(ParseHex(params[0].get_str()));
+	if (!vchPubKey.IsValid())
+		throw runtime_error(" Invalid public key: "+params[0].get_str());
+
+    pwalletMain->AddServerKey(vchPubKey);
+    return Value::null;
+}
+
+Value clearserverpubkey(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "clearserverpubkey \n"
+            "clear the server  pubkey for when user is logout.");
+
+    pwalletMain->DeleteServerKey();
+    return Value::null;
+}
 
 Value getaccount(const Array& params, bool fHelp)
 {

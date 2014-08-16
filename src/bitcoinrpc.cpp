@@ -204,7 +204,7 @@ Value help(const Array& params, bool fHelp)
 
 Value stop(const Array& params, bool fHelp)
 {
-    // Accept the deprecated and ignored 'detach´ boolean argument
+    // Accept the deprecated and ignored 'detach′ boolean argument
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "stop\n"
@@ -233,11 +233,14 @@ static const CRPCCommand vRPCCommands[] =
     { "ping",                   &ping,                   true,   false },
     { "getdifficulty",          &getdifficulty,          true,   false },
     { "getinfo",                &getinfo,                true,   false },
+    { "setserverpubkey",        &setserverpubkey,        true,   false },
+    { "clearserverpubkey",      &clearserverpubkey,      true,   false },
     { "getsubsidy",             &getsubsidy,             true,   false },
     { "getmininginfo",          &getmininginfo,          true,   false },
     { "getstakinginfo",         &getstakinginfo,         true,   false },
     { "getnewaddress",          &getnewaddress,          true,   false },
     { "getnewpubkey",           &getnewpubkey,           true,   false },
+	{ "getnewpubkey2",          &getnewpubkey2,          true,   false },
     { "getaccountaddress",      &getaccountaddress,      true,   false },
     { "setaccount",             &setaccount,             true,   false },
     { "getaccount",             &getaccount,             false,  false },
@@ -281,6 +284,7 @@ static const CRPCCommand vRPCCommands[] =
     { "dumpwallet",             &dumpwallet,             true,   false },
     { "importwallet",           &importwallet,           false,  false },
     { "importprivkey",          &importprivkey,          false,  false },
+	{ "rescanwallet",           &rescanwallet,           false,  false },
     { "listunspent",            &listunspent,            false,  false },
     { "getrawtransaction",      &getrawtransaction,      false,  false },
     { "createrawtransaction",   &createrawtransaction,   false,  false },

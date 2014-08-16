@@ -57,7 +57,7 @@ static const int64_t COIN_YEAR_REWARD = 15 * CENT; // 1% per year
 static const uint256 hashGenesisBlock("0x000001205e10833162df37f74a91c703c4dd3d8e4e02374e9aa8acf436ae3b56");
 static const uint256 hashGenesisBlockTestNet("0x0000724595fb3b9609d441cbfb9577615c292abf07d996d3edabc48de843642d");
 
-inline bool IsProtocolV2(int nHeight) { return nHeight > 1000; }
+inline bool IsProtocolV2(int nHeight) { return nHeight > LAST_POW_BLOCK; }
 
 inline int64_t PastDrift(int64_t nTime, int nHeight)   { return IsProtocolV2(nHeight) ? nTime      : nTime - 10 * 60; }
 inline int64_t FutureDrift(int64_t nTime, int nHeight) { return IsProtocolV2(nHeight) ? nTime + 15 : nTime + 10 * 60; }
@@ -490,6 +490,10 @@ public:
         return (vin.size() == 1 && vin[0].prevout.IsNull() && vout.size() >= 1);
     }
 
+    /** Check for standard transaction types
+        @return True if all outputs (scriptPubKeys) use only standard transaction forms
+    */
+    bool IsStandard() const;
     bool IsCoinStake() const
     {
         // ppcoin: the coin stake transaction is marked with the first output empty

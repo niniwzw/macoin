@@ -23,6 +23,9 @@ using namespace boost;
 //
 // Global state
 //
+unsigned int nNodeLifespan;
+bool fUseFastIndex;
+unsigned int nDerivationMethodIndex;
 
 CCriticalSection cs_setpwalletRegistered;
 set<CWallet*> setpwalletRegistered;
@@ -41,7 +44,7 @@ CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfStakeLimitV2(~uint256(0) >> 48);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
-unsigned int nStakeMinAge = 3 * 60 * 60; // 3 hours
+unsigned int nStakeMinAge = 3 * 60 * 60; // 8 hours
 unsigned int nStakeMaxAge = -1; // unlimited
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
@@ -75,7 +78,7 @@ int64_t nTransactionFee = MIN_TX_FEE;
 int64_t nReserveBalance = 0;
 int64_t nMinimumInputValue = 0;
 
-extern enum Checkpoints::CPMode CheckpointsMode;
+enum Checkpoints::CPMode CheckpointsMode;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -289,6 +292,11 @@ bool CTransaction::ReadFromDisk(COutPoint prevout)
     CTxDB txdb("r");
     CTxIndex txindex;
     return ReadFromDisk(txdb, prevout, txindex);
+}
+
+bool CTransaction::IsStandard() const
+{
+    return IsStandardTx(*this);
 }
 
 bool IsStandardTx(const CTransaction& tx)

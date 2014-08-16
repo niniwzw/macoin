@@ -5,7 +5,7 @@
 #include "init.h"
 #include "wallet.h"
 #include "walletdb.h"
-
+typedef long long  int64;
 BOOST_AUTO_TEST_SUITE(accounting_tests)
 
 static void

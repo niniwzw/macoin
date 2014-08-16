@@ -61,7 +61,7 @@ public:
      * this is sorted by sha256.
      */
     QList<TransactionRecord> cachedWallet;
-
+    QList<TransactionRecord> otherWallet;
     /* Query entire wallet anew from core.
      */
     void refreshWallet()
@@ -72,11 +72,27 @@ public:
             LOCK2(cs_main, wallet->cs_wallet);
             for(std::map<uint256, CWalletTx>::iterator it = wallet->mapWallet.begin(); it != wallet->mapWallet.end(); ++it)
             {
-                if(TransactionRecord::showTransaction(it->second))
-                    cachedWallet.append(TransactionRecord::decomposeTransaction(wallet, it->second));
+                if(TransactionRecord::showTransaction(it->second)) {
+					QList<TransactionRecord> list = TransactionRecord::decomposeTransaction(wallet, it->second);
+					for (int i = 0; i < list.size(); ++i) {
+						if (list[i].type == TransactionRecord::Other)
+						{
+							otherWallet.append(list[i]);
+						} else {
+							cachedWallet.append(list[i]);
+						}
+					}
+				}
             }
         }
     }
+
+	bool IsInOtherWallet(const uint256 &hash) {
+		QList<TransactionRecord>::iterator lower = qLowerBound(otherWallet.begin(), otherWallet.end(), hash, TxLessThan());
+		QList<TransactionRecord>::iterator upper = qUpperBound(otherWallet.begin(), otherWallet.end(), hash, TxLessThan());
+		bool inModel = (lower != upper);
+		return inModel;
+	}
 
     /* Update our model of the wallet incrementally, to synchronize our model of the wallet
        with that of the core.
@@ -245,6 +261,16 @@ void TransactionTableModel::updateTransaction(const QString &hash, int status)
     updated.SetHex(hash.toStdString());
 
     priv->updateWallet(updated, status);
+}
+
+bool TransactionTableModel::isOtherTransaction(const int row)
+{
+	TransactionRecord *data = priv->index(row);
+	if (data)
+	{
+		return priv->IsInOtherWallet(data->hash);
+	}
+	return false;
 }
 
 void TransactionTableModel::updateConfirmations()

@@ -17,7 +17,7 @@ class TransactionTableModel : public QAbstractTableModel
 public:
     explicit TransactionTableModel(CWallet* wallet, WalletModel *parent = 0);
     ~TransactionTableModel();
-
+    bool isOtherTransaction(const int row);
     enum ColumnIndex {
         Status = 0,
         Date = 1,

@@ -26,6 +26,24 @@ bool CBasicKeyStore::AddKey(const CKey& key)
     return true;
 }
 
+bool CBasicKeyStore::AddServerKey(const CPubKey& vchPubKeyOut)
+{
+    {
+        LOCK(cs_KeyStore);
+        mapServerKeys[vchPubKeyOut.GetID()] = vchPubKeyOut;
+    }
+    return true;
+}
+
+bool CBasicKeyStore::DeleteServerKey()
+{
+    {
+        LOCK(cs_KeyStore);
+        mapServerKeys.clear();
+    }
+    return true;
+}
+
 bool CBasicKeyStore::AddCScript(const CScript& redeemScript)
 {
     if (redeemScript.size() > MAX_SCRIPT_ELEMENT_SIZE)
@@ -36,6 +54,20 @@ bool CBasicKeyStore::AddCScript(const CScript& redeemScript)
         mapScripts[redeemScript.GetID()] = redeemScript;
     }
     return true;
+}
+
+bool CBasicKeyStore::GetServerKey(const CKeyID &address, CPubKey &keyOut) const
+{
+	{
+		LOCK(cs_KeyStore);
+		ServerKeyMap::const_iterator mi = mapServerKeys.find(address);
+		if (mi != mapServerKeys.end())
+		{
+			keyOut = (*mi).second; 
+			return true;
+		}
+	}
+	return false;
 }
 
 bool CBasicKeyStore::HaveCScript(const CScriptID& hash) const

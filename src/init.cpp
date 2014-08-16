@@ -28,12 +28,12 @@ using namespace boost;
 
 CWallet* pwalletMain;
 CClientUIInterface uiInterface;
-bool fConfChange;
-unsigned int nNodeLifespan;
-unsigned int nDerivationMethodIndex;
-unsigned int nMinerSleep;
-bool fUseFastIndex;
-enum Checkpoints::CPMode CheckpointsMode;
+extern bool fConfChange;
+extern unsigned int nNodeLifespan;
+extern unsigned int nDerivationMethodIndex;
+extern unsigned int nMinerSleep;
+extern bool fUseFastIndex;
+extern enum Checkpoints::CPMode CheckpointsMode;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -115,10 +115,6 @@ void HandleSIGHUP(int)
 {
     fReopenDebugLog = true;
 }
-
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////
 //

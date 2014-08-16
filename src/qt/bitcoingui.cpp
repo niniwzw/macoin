@@ -684,6 +684,10 @@ void BitcoinGUI::incomingTransaction(const QModelIndex & parent, int start, int 
     if(!walletModel || !clientModel)
         return;
     TransactionTableModel *ttm = walletModel->getTransactionTableModel();
+	if (ttm->isOtherTransaction(start))
+	{
+		return;
+	}
     qint64 amount = ttm->index(start, TransactionTableModel::Amount, parent)
                     .data(Qt::EditRole).toULongLong();
     if(!clientModel->inInitialBlockDownload())
