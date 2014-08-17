@@ -147,7 +147,7 @@ public:
     // keystore implementation
     // Generate a new key
     CPubKey GenerateNewKey();
-    CKey GenerateNewPrivKey();
+    CKey GenerateNewPrivKey(const bool isstore = false);
     // Adds a key to the store, and saves it to disk.
     bool AddKey(const CKey& key);
     // Adds a key to the store, without saving it to disk (used by LoadWallet)

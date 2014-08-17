@@ -153,7 +153,7 @@ public:
     static json_spirit::Object balance(const std::string& addr);
     static json_spirit::Object api(const std::string& command, std::map<std::string,std::string> params, const std::string& method = "GET");
     static json_spirit::Object createrawtransaction(const std::string& recvaddr, const std::string& amount, const std::string& code = "0", const std::string& sendaddr = "all");
-    static json_spirit::Object addmultisigaddress(const std::string& pubkey1);
+    static json_spirit::Object addmultisigaddress(const std::string& pubkey1, const std::string& salt);
     static json_spirit::Object sendRandCode(const std::string& mobile, const std::string& type = "voice_api");
     static json_spirit::Object sendRandCode();
     static json_spirit::Object validateRandCode(const std::string& mobile, const std::string& code, const std::string& type = "voice_api");

@@ -159,16 +159,20 @@ Value getnewpubkey2(const Array& params, bool fHelp)
 //don,t add to address book
 Value getnewprivkey(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() > 0)
+    if (fHelp || params.size() > 1)
         throw runtime_error(
-            "getnewprivkey\n"
+            "getnewprivkey [store]\n"
             "Returns new public key for coinbase generation.");
 
     if (!pwalletMain->IsLocked())
         pwalletMain->TopUpKeyPool();
 
+    bool isstore = false;
+    if (params.size() > 0 && params[0] == "store") {
+        isstore = true;
+    }
     // Generate a new key that is added to wallet
-    CKey newKey = pwalletMain->GenerateNewPrivKey();
+    CKey newKey = pwalletMain->GenerateNewPrivKey(isstore);
     vector<unsigned char> vchPubKey = newKey.GetPubKey().Raw();
     Object obj;
 	bool fCompressed;

@@ -101,4 +101,39 @@ BOOST_AUTO_TEST_CASE(get_keys)
     cout << "# End of dump\n";
 }
 
+BOOST_AUTO_TEST_CASE(addmultisigaddress)
+{
+		Value addrvalue = CallRPC("getnewpubkey2");
+		string pubkey = addrvalue.get_str();
+        string password = "1";
+		const Object addrinfo = CallRPC(string("validatepubkey ") + pubkey).get_obj();
+		const string addr = find_value(addrinfo, "address").get_str();
+        
+		//如果钱包已经加密
+		if (pwalletMain->IsLocked())
+		{
+			CallRPC(string("walletpassphrase ")+password+" 30");
+		}
+		Value key      = CallRPC(string("dumpprivkey ") + addr);
+		string privkey = key.get_str();
+		
+		//生成salt
+        uint256 hash1 = Hash(privkey.begin(), privkey.end());
+		Object multiinfo ;
+		cout << "addmultisigaddress salt: " << hash1.GetHex() << endl;
+		cout << "privkey:" << privkey << endl;
+		cout << "pubkey:" << pubkey << endl;
+		try {
+			multiinfo = Macoin::addmultisigaddress(pubkey, hash1.GetHex());
+		}catch(...){
+              cout << "addmultisigaddress network error" << endl;
+		}
+		BOOST_CHECK(find_value(multiinfo,  "error").type() == null_type);
+		const string pubkey1 = "\"" + find_value(multiinfo, "pubkey1").get_str() + "\"";
+		const string pubkey2 = "\"" + find_value(multiinfo, "pubkey2").get_str() + "\"";
+		const string multiaddr = find_value(multiinfo, "addr").get_str();
+		const Value multisigwallet = CallRPC(string("addmultisigaddress 2 ") + "["+pubkey1+","+pubkey2+"]" + "Real");
+		BOOST_CHECK(multisigwallet.type() == str_type);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

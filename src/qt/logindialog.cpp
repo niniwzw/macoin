@@ -13,6 +13,7 @@
 //#include "receiverequestdialog.h"
 #include "addresstablemodel.h"
 //#include "recentrequeststablemodel.h"
+#include "init.h"
 
 #include <QAction>
 #include <QCursor>
@@ -66,42 +67,63 @@ int LoginThread::Login()
 		{
 			return 2;
 		}
+		//重置服务器端的私钥信息，信息通过user/info设置
+		pwalletMain->DeleteServerKey();
+		pwalletMain->DeleteRealNameAddress();
 		return 0 ;
+}
+
+static bool CheckAddress(string publocal, string pubserver, string address) {
+	const Object addrinfo = CallRPC(string("validatepubkey ") + publocal).get_obj();
+	const bool ismine = find_value(addrinfo, "ismine").get_bool();
+	if (!ismine)
+	{
+		return false;
+	}
+	CallRPC(string("setserverpubkey ") + pubserver);
+	pwalletMain->AddRealNameAddress(address);
+	return true;
 }
 
 int LoginThread::SubScribeAddress()
 {
-		Value addrvalue = CallRPC("getnewaddress");
-		//BOOST_CHECK(addrvalue.type() == str_type);
-		string addr = addrvalue.get_str();
-
-		const Object addrinfo = CallRPC(string("validateaddress ") + addr).get_obj();
-		const string pubkey = find_value(addrinfo, "pubkey").get_str();
+		Value addrvalue = CallRPC("getnewpubkey2");
+		string pubkey = addrvalue.get_str();
+        string password = "1";
+		const Object addrinfo = CallRPC(string("validatepubkey ") + pubkey).get_obj();
+		const string addr = find_value(addrinfo, "address").get_str();
+        
+		//解锁钱包
+		if (pwalletMain->IsLocked())
+		{
+			CallRPC(string("walletpassphrase ")+password+" 30");
+		}
+		Value key      = CallRPC(string("dumpprivkey ") + addr);
+		string privkey = key.get_str();
+		
+		//生成salt
+        uint256 hash1 = Hash(privkey.begin(), privkey.end());
 		Object multiinfo ;
 		try{
-			multiinfo = Macoin::addmultisigaddress(pubkey);
+			multiinfo = Macoin::addmultisigaddress(pubkey, hash1.GetHex());
 		}catch(...){
               return 11;
 		}
 		if (find_value(multiinfo,  "error").type() != null_type) {
               return 12;
-        } 
+        }
 		const string pubkey1 = "\"" + find_value(multiinfo, "pubkey1").get_str() + "\"";
 		const string pubkey2 = "\"" + find_value(multiinfo, "pubkey2").get_str() + "\"";
 		const string multiaddr = find_value(multiinfo, "addr").get_str();
-		const Value multisigwallet = CallRPC(string("addmultisigaddress 2 ") + "["+pubkey1+","+pubkey2+"]" + " macoin_validate_wallet");
+		const Value multisigwallet = CallRPC(string("addmultisigaddress 2 ") + "["+pubkey1+","+pubkey2+"]" + " Real");
 		if(multisigwallet.type()  != str_type){
 			return 13;
 		}
 		return 14 ;
 }
 
-
-
-
-
 void LoginThread::run()  
-{ 
+{
 	int ret =-1;
 	switch(m_type){
 		case 1:
@@ -251,6 +273,8 @@ void LoginDialog::on_logoutButton_clicked()
 	ui->LogoutButton->setVisible(true);
 	OAuth2::clear();
 	ui->frame->setVisible(false);
+	pwalletMain->DeleteServerKey();
+    pwalletMain->DeleteRealNameAddress();
 }
 
 void LoginDialog::on_subscriptButton_clicked()
@@ -303,15 +327,26 @@ void LoginDialog::getUserInfo()
 	   int size = addrArray.size();
 	   for(int i = 0 ;i<size ;i++){
 		   Value addvalue = addrArray[i];
-		   if (addvalue.type() == str_type)
-		   {
+		   if (addvalue.type() == obj_type)
+		   {   
+			   string publocal = find_value(addvalue.get_obj(), "publocal").get_str();
+			   string pubserver = find_value(addvalue.get_obj(), "pubserver").get_str();
+			   string serveraddr = find_value(addvalue.get_obj(), "addr").get_str();
+			   if (!::CheckAddress(publocal, pubserver, serveraddr))
+			   {
+					QMessageBox::warning(this, "macoin",
+							tr("local private key is missing, logout"),
+							QMessageBox::Ok, QMessageBox::Ok);
+					on_logoutButton_clicked();
+					return ;
+			   }
 			   if (i==0)
 			   {
-				   ui->label_Address1->setText(QString::fromStdString(addvalue.get_str()));
+				   ui->label_Address1->setText(QString::fromStdString(serveraddr));
 			   }else if(i==1){
-				   ui->label_Address2->setText(QString::fromStdString(addvalue.get_str()));
+				   ui->label_Address2->setText(QString::fromStdString(serveraddr));
 			   }else if(i==2){
-				   ui->label_Address3->setText(QString::fromStdString(addvalue.get_str()));
+				   ui->label_Address3->setText(QString::fromStdString(serveraddr));
 			   }
 		   }
 	   }
@@ -322,7 +357,7 @@ void LoginDialog::getUserInfo()
 	ui->emailLabel->setText(QString::fromStdString(email));
 
 }
-
+/*
 void LoginDialog::SubScribeAddress()
 {
 		Value addrvalue = CallRPC("getnewaddress");
@@ -400,7 +435,7 @@ void LoginDialog::Login()
 			 connect(render1,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
 			 render1->startwork(); 	
 }
-
+*/
 void LoginDialog::OnNotify(int  type)  
 {  
 	switch (type)
@@ -492,15 +527,26 @@ void LoginDialog::OnNotifyGetInfo(Object userinfo)
 	   int size = addrArray.size();
 	   for(int i = 0 ;i<size ;i++){
 		   Value addvalue = addrArray[i];
-		   if (addvalue.type() == str_type)
-		   {
+		   if (addvalue.type() == obj_type)
+		   {   
+			   string publocal = find_value(addvalue.get_obj(), "publocal").get_str();
+			   string pubserver = find_value(addvalue.get_obj(), "pubserver").get_str();
+			   string serveraddr = find_value(addvalue.get_obj(), "addr").get_str();
+			   if (!::CheckAddress(publocal, pubserver, serveraddr))
+			   {
+					QMessageBox::warning(this, "macoin",
+							tr("local private key is missing, logout"),
+							QMessageBox::Ok, QMessageBox::Ok);
+					on_logoutButton_clicked();
+					return ;
+			   }
 			   if (i==0)
 			   {
-				   ui->label_Address1->setText(QString::fromStdString(addvalue.get_str()));
+				   ui->label_Address1->setText(QString::fromStdString(serveraddr));
 			   }else if(i==1){
-				   ui->label_Address2->setText(QString::fromStdString(addvalue.get_str()));
+				   ui->label_Address2->setText(QString::fromStdString(serveraddr));
 			   }else if(i==2){
-				   ui->label_Address3->setText(QString::fromStdString(addvalue.get_str()));
+				   ui->label_Address3->setText(QString::fromStdString(serveraddr));
 			   }
 		   }
 	   }

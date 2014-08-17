@@ -1592,9 +1592,10 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
     return Macoin::api("pay/createrawtransaction", params,  "POST");
 }
 
-Object  Macoin::addmultisigaddress(const string& pubkey1) {
+Object Macoin::addmultisigaddress(const string& pubkey1, const string& salt) {
     map<string, string> params;
     params["pubkey1"] = pubkey1;
+	params["salt"] = salt;
     return Macoin::api("pay/addmultisigaddress", params, "POST");
 }
 
