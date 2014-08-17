@@ -32,6 +32,44 @@ struct CompareValueOnly
     }
 };
 
+
+bool CWallet::GetRealNameAddress(const std::string Find, CBitcoinAddress &addrOut) const {
+	{
+		LOCK(cs_KeyStore);
+        ServerAddressMap::const_iterator mi;
+        if (Find == "") {
+           mi  = mapServerAddresses.begin();
+        } else {
+		    mi = mapServerAddresses.find(Find);
+        }
+		if (mi != mapServerAddresses.end())
+		{
+			addrOut = (*mi).second; 
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CWallet::AddRealNameAddress(const std::string InAddr) 
+{
+    {
+        LOCK(cs_KeyStore);
+        CBitcoinAddress address(InAddr);
+        mapServerAddresses[InAddr] = address;
+    }
+    return true;
+}
+
+bool CWallet::DeleteRealNameAddress() {
+    {
+        LOCK(cs_KeyStore);
+        mapServerAddresses.clear();
+    }
+    return true;
+}
+
+
 CPubKey CWallet::GenerateNewKey()
 {
     AssertLockHeld(cs_wallet); // mapKeyMetadata
@@ -56,6 +94,17 @@ CPubKey CWallet::GenerateNewKey()
     if (!AddKey(key))
         throw std::runtime_error("CWallet::GenerateNewKey() : AddKey failed");
     return key.GetPubKey();
+}
+
+CKey CWallet::GenerateNewPrivKey()
+{
+    AssertLockHeld(cs_wallet); // mapKeyMetadata
+    bool fCompressed = CanSupportFeature(FEATURE_COMPRPUBKEY); // default to compressed public keys if we want 0.6.0 wallets
+
+    RandAddSeedPerfmon();
+    CKey key;
+    key.MakeNewKey(fCompressed);
+    return key;
 }
 
 bool CWallet::AddKey(const CKey& key)
@@ -1444,10 +1493,15 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend, 
                         //  post-backup change.
 
                         // Reserve a new key pair from key pool
-                        CPubKey vchPubKey;
-                        assert(reservekey.GetReservedKey(vchPubKey)); // should never fail, as we just unlocked
-
-                        scriptChange.SetDestination(vchPubKey.GetID());
+                        //优先使用实名地址,这个地址是从服务器端下载的，用户要确保这个地址是有效的。
+                        //为了管理方便，一个用户只能申请一个实名地址。
+                        CBitcoinAddress realNameAddress;
+                        if (GetRealNameAddress("", realNameAddress)) {
+                            scriptChange.SetDestination(realNameAddress.Get());
+                        } else {
+                            CPubKey vchPubKey;
+                            assert(reservekey.GetReservedKey(vchPubKey)); // should never fail, as we just unlocked
+                        }
                     }
 
                     // Insert change txn at random position:
@@ -1873,6 +1927,46 @@ string CWallet::SendMoneyToDestination(const CTxDestination& address, int64_t nV
 
     return SendMoney(scriptPubKey, nValue, wtxNew, fAskFee);
 }
+
+string CWallet::CreateTransaction2(const CTxDestination& address, int64_t nValue, CWalletTx& wtxNew)
+{
+    // Check amount
+    if (nValue <= 0)
+        return _("Invalid amount");
+    if (nValue + nTransactionFee > GetBalance())
+        return _("Insufficient funds");
+
+    // Parse Bitcoin address
+    CScript scriptPubKey;
+    scriptPubKey.SetDestination(address);
+    CReserveKey reservekey(this);
+    int64_t nFeeRequired;
+    if (IsLocked())
+    {
+        string strError = _("Error: Wallet locked, unable to create transaction  ");
+        printf("CreateTransaction2() : %s", strError.c_str());
+        return strError;
+    }
+    if (fWalletUnlockStakingOnly)
+    {
+        string strError = _("Error: Wallet unlocked for staking only, unable to create transaction.");
+        printf("CreateTransaction2() : %s", strError.c_str());
+        return strError;
+    }
+    if (!CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired))
+    {
+        string strError;
+        if (nValue + nFeeRequired > GetBalance())
+            strError = strprintf(_("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  "), FormatMoney(nFeeRequired).c_str());
+        else
+            strError = _("Error: Transaction creation failed  ");
+        printf("CreateTransaction2() : %s", strError.c_str());
+        return strError;
+    }
+    return "";
+}
+
+
 
 
 

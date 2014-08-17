@@ -240,6 +240,7 @@ static const CRPCCommand vRPCCommands[] =
     { "getstakinginfo",         &getstakinginfo,         true,   false },
     { "getnewaddress",          &getnewaddress,          true,   false },
     { "getnewpubkey",           &getnewpubkey,           true,   false },
+	{ "getnewprivkey",           &getnewprivkey,           true,   false },
 	{ "getnewpubkey2",          &getnewpubkey2,          true,   false },
     { "getaccountaddress",      &getaccountaddress,      true,   false },
     { "setaccount",             &setaccount,             true,   false },

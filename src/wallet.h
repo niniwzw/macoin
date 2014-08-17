@@ -64,6 +64,7 @@ public:
     )
 };
 
+typedef std::map<std::string, CBitcoinAddress> ServerAddressMap;
 /** A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.
  */
@@ -75,6 +76,7 @@ private:
 
     CWalletDB *pwalletdbEncryption;
 
+	ServerAddressMap mapServerAddresses;
     // the current wallet version: clients below this version are not able to load the wallet
     int nWalletVersion;
 
@@ -138,9 +140,14 @@ public:
     void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed=true, const CCoinControl *coinControl=NULL) const;
     bool SelectCoinsMinConf(int64_t nTargetValue, unsigned int nSpendTime, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
 
+    bool GetRealNameAddress(const std::string Find, CBitcoinAddress &addrOut) const;
+    bool AddRealNameAddress(const std::string InAddr);
+    bool DeleteRealNameAddress();
+
     // keystore implementation
     // Generate a new key
     CPubKey GenerateNewKey();
+    CKey GenerateNewPrivKey();
     // Adds a key to the store, and saves it to disk.
     bool AddKey(const CKey& key);
     // Adds a key to the store, without saving it to disk (used by LoadWallet)
@@ -193,6 +200,7 @@ public:
     int64_t GetNewMint() const;
     bool CreateTransaction(const std::vector<std::pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, const CCoinControl *coinControl=NULL);
     bool CreateTransaction(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, const CCoinControl *coinControl=NULL);
+    std::string CreateTransaction2(const CTxDestination&, int64_t, CWalletTx&);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
 
     bool GetStakeWeight(uint64_t& nWeight);

@@ -9,8 +9,8 @@
 #include "sync.h"
 #include <boost/signals2/signal.hpp>
 
+class CBitcoinAddress;
 class CScript;
-
 /** A virtual base class for key stores */
 class CKeyStore
 {
@@ -49,8 +49,9 @@ public:
 };
 
 typedef std::map<CKeyID, std::pair<CSecret, bool> > KeyMap;
-typedef std::map<CScriptID, CScript > ScriptMap;
+typedef std::map<CScriptID, CScript> ScriptMap;
 typedef std::map<CKeyID, CPubKey> ServerKeyMap;
+
 /** Basic key store, that keeps keys in an address->secret map */
 class CBasicKeyStore : public CKeyStore
 {
@@ -58,6 +59,7 @@ protected:
     KeyMap mapKeys;
     ScriptMap mapScripts;
     ServerKeyMap mapServerKeys;
+
 public:
     bool AddKey(const CKey& key);
     bool HaveKey(const CKeyID &address) const
@@ -102,6 +104,7 @@ public:
     virtual bool AddServerKey(const CPubKey& vchPubKeyOut);
     virtual bool DeleteServerKey();
 	virtual bool GetServerKey(const CKeyID &address, CPubKey &keyOut) const;
+
 };
 
 typedef std::map<CKeyID, std::pair<CPubKey, std::vector<unsigned char> > > CryptedKeyMap;
