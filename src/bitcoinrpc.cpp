@@ -1372,7 +1372,7 @@ int CommandLineRPC(int argc, char *argv[])
 }
 
 
-static bool oauth2debug = false;
+static bool oauth2debug = true;
 Object CallHTTP(const string& host, const string& url, const string& method, const map<string,string>& params, const map<string,string>& header, bool fUseSSL)
 {
     // Connect to localhost
