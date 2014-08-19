@@ -69,9 +69,14 @@ int SendThread::SendCoins()
 {
 		try{
 				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
+				Value retvalue = find_value(transactionObj , "result");
+				if (retvalue.type() == null_type)
+				{
+					return 8;
+				}
 					
-				Value errorobj = find_value(transactionObj , "error");
-				if (errorobj.type() != null_type)
+				Value errorvalue = find_value(transactionObj , "error");
+				if (errorvalue.type() != null_type)
 				{
 					return 1;
 				}
@@ -354,6 +359,15 @@ void SendCoinsDialog::OnNotify(int type)
 					QMessageBox::Ok, QMessageBox::Ok);
 		}
 			break;
+		case 8:
+		{
+
+				model->showLoginView();
+				QMessageBox::warning(this, "macoin",
+						(tr("please login first!")),
+						QMessageBox::Ok, QMessageBox::Ok);
+		}
+			break;
 	}
 }
 
@@ -418,7 +432,6 @@ void SendCoinsDialog::on_sendButton_clicked()
 
 	///////////////////////////////////////////////////////////////////////////
 
-	if(OAuth2::getAccessToken() != ""){
 		 render = new SendThread(5);
 		 connect(render,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
 		 ui->sendButton->setEnabled(false);
@@ -426,12 +439,7 @@ void SendCoinsDialog::on_sendButton_clicked()
 		 render->setrecipient(sendcoinsRecipient);
 		 render->startwork();    
 
-	}else{
-		model->showLoginView();
-		QMessageBox::warning(this, "macoin",
-                (tr("please login first!")),
-                QMessageBox::Ok, QMessageBox::Ok);
-	}
+
 	return ;
 	/////////////////////////////////////////////////////////////////////////////////
 

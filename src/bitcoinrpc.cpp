@@ -1587,8 +1587,9 @@ Object Macoin::balance(const string& addr) {
     return Macoin::api("pay/balance", params, "GET");
 }
 
-Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code) {
 
+
+Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code) {
     map<string, string> params;
     params["code"] = code;
     CBitcoinAddress address(recvaddr);
@@ -1604,6 +1605,12 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
     string strError = pwalletMain->CreateTransaction2(address.Get(), nAmount, wtx, fComplete, redeemScript);
     if (strError != "")
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
+	if((!fComplete) && (OAuth2::getAccessToken() == "")){
+	    Object reply;
+        reply.push_back(Pair("result", Value::null));
+		return reply ;
+	}
+
 
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << *(CTransaction *)(&wtx);
@@ -1618,10 +1625,15 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
 			throw JSONRPCError(RPC_WALLET_ERROR, "get private key salt error.");
 		}
 		Object item;
-		item.push_back(Pair("script", HexStr(ss.begin(), ss.end())));
+		item.push_back(Pair("script", HexStr(script.begin(), script.end())));
 		item.push_back(Pair("hash", hash.GetHex()));
 		ret.push_back(item);
     }
+	if(fComplete){
+		result.push_back(Pair("hex", HexStr(ss.begin(), ss.end())));
+		result.push_back(Pair("complete", fComplete));
+		return result;
+	}
 	params["hex"] = HexStr(ss.begin(), ss.end());
 	params["redeemScript"] = write_string(Value(ret), false);
     return Macoin::api("pay/createrawtransaction", params,  "POST");
