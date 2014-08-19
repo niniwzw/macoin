@@ -1370,7 +1370,7 @@ int CommandLineRPC(int argc, char *argv[])
 }
 
 
-static bool oauth2debug = false;
+static bool oauth2debug = true;
 Object CallHTTP(const string& host, const string& url, const string& method, const map<string,string>& params, const map<string,string>& header, bool fUseSSL)
 {
     // Connect to localhost
@@ -1587,13 +1587,43 @@ Object Macoin::balance(const string& addr) {
     return Macoin::api("pay/balance", params, "GET");
 }
 
-Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code, const string& sendaddr) {
+Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code) {
 
     map<string, string> params;
-    params["recvaddr"] = recvaddr;
-    params["amount"] = amount;
     params["code"] = code;
-    params["sendaddr"] = sendaddr;
+    CBitcoinAddress address(recvaddr);
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Macoin address");
+    int64_t nAmount = AmountFromValue(amount);
+    CWalletTx wtx;
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+    bool fComplete;
+    map<uint160, CScript> redeemScript;
+    string strError = pwalletMain->CreateTransaction2(address.Get(), nAmount, wtx, fComplete, redeemScript);
+    if (strError != "")
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+    ss << *(CTransaction *)(&wtx);
+    Object result;
+    Array ret;
+    BOOST_FOREACH(const PAIRTYPE(uint160, CScript)& item, redeemScript)
+    {
+        CScript script = item.second;
+		uint256 hash = pwalletMain->getHashFromRedeemScript(script);
+		if (hash == uint256(0))
+		{
+			throw JSONRPCError(RPC_WALLET_ERROR, "get private key salt error.");
+		}
+		Object item;
+		item.push_back(Pair("script", HexStr(ss.begin(), ss.end())));
+		item.push_back(Pair("hash", hash.GetHex()));
+		ret.push_back(item);
+    }
+	params["hex"] = HexStr(ss.begin(), ss.end());
+	params["redeemScript"] = write_string(Value(ret), false);
     return Macoin::api("pay/createrawtransaction", params,  "POST");
 }
 

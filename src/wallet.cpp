@@ -1567,6 +1567,27 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend, 
     return true;
 }
 
+uint256 CWallet::getHashFromRedeemScript(CScript &redeemScript) {
+    vector<valtype> vSolutions;
+    txnouttype whichType;
+    if (!Solver(redeemScript, whichType, vSolutions)) {
+        return uint256(0);
+    }
+    if (whichType != TX_MULTISIG) {
+        CPubKey pubkey1 =  CPubKey(vSolutions[1]);
+        //getprivkey
+        CKeyID keyID = pubkey1.GetID();
+        CSecret vchSecret;
+        bool fCompressed;
+        if (!this->GetSecret(keyID, vchSecret, fCompressed)) {
+            return uint256(0);
+        }
+        string privkey = CBitcoinSecret(vchSecret, fCompressed).ToString();
+        return Hash(privkey.begin(), privkey.end());
+    }
+    return uint256(0);
+}
+
 //这个版本的交易创建函数会创建一个签名未完成的交易
 //同时监控签名后size的变化，同时预留服务器2倍的签名size
 bool CWallet::CreateTransactionV2(const vector<pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, bool& complete, map<uint160, CScript>& redeemScript, const CCoinControl* coinControl)

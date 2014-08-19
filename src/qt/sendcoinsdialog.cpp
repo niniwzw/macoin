@@ -68,7 +68,7 @@ void SendThread::startwork()
 int SendThread::SendCoins()
 {
 		try{
-				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString(),"all");
+				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
 					
 				Value errorobj = find_value(transactionObj , "error");
 				if (errorobj.type() != null_type)
@@ -82,41 +82,28 @@ int SendThread::SendCoins()
 					return 2;
 				}
 				string raw = rawValue.get_str();
-				Value rpcobj = CallRPC1(string("signrawtransaction ") + raw);
-				if (rpcobj.type() != obj_type)
-				{
-					return 3;
-				}
-
-				const Object resultobj = rpcobj.get_obj();
-
-				Value completeValue = find_value(resultobj , "complete");
+				Value completeValue = find_value(transactionObj , "complete");
 				if (completeValue.type() !=  bool_type)
 				{
 					return 4;
 				}
 				bool complete = completeValue.get_bool();
-				  
-				Value hexValue = find_value(resultobj , "hex");
 				if (complete == true) {
 
-					if (hexValue.type() == null_type)
+					if (rawValue.type() == null_type)
 					{
 						return 5;
 					}
-					string hex = hexValue.get_str();
+					string hex = rawValue.get_str();
 					Value callrpc = CallRPC1(string("sendrawtransaction ") + hex);
 					return 0 ;
 				}else{
 					return 6  ;
 				}
-
 			}catch(...){
 				return 7 ;
 			}
 }
-
-
 
 void SendThread::run()  
 { 
@@ -228,7 +215,7 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 {
 		SendCoinsRecipient sendcoinsRecipient = (SendCoinsRecipient)recipients.takeAt(0);
 		try{
-				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString(),"all");
+				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
 					
 				Value errorobj = find_value(transactionObj , "error");
 				if (errorobj.type() != null_type)
