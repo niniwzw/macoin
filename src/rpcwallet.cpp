@@ -395,6 +395,123 @@ Value sendtoaddress(const Array& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
+
+static string sendtransaction(CTransaction &tx) {
+
+    uint256 hashTx = tx.GetHash();
+    CTransaction existingTx;
+    uint256 hashBlock = 0;
+    if (GetTransaction(hashTx, existingTx, hashBlock))
+    {
+        if (hashBlock != 0)
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("transaction already in block ")+hashBlock.GetHex());
+        // Not in block, but already in the memory pool; will drop
+        // through to re-relay it.
+    }
+    else
+    {
+        // push to local node
+        if (!AcceptToMemoryPool(mempool, tx, NULL))
+            throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX rejected");
+
+        SyncWithWallets(tx, NULL, true);
+    }
+    RelayTransaction(tx, hashTx);
+    return hashTx.GetHex();
+}
+
+Value sendtoaddress2(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 2 || params.size() > 3)
+        throw runtime_error(
+            "sendtoaddress2 <macoinaddress> <amount> [code]\n"
+            "<amount> is a real and is rounded to the nearest 0.000001"
+            + HelpRequiringPassphrase());
+
+    CBitcoinAddress address(params[0].get_str());
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Macoin address");
+
+    // Amount
+    int64_t nAmount = AmountFromValue(params[1]);
+
+    // Wallet comments
+    CWalletTx wtx;
+    map<string, string> params2;
+    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty()) {
+        params2["code"] = params[2].get_str(); 
+    }
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+    bool fComplete;
+    map<uint160, CScript> redeemScript;
+    string strError = pwalletMain->CreateTransaction2(address.Get(), nAmount, wtx, fComplete, redeemScript);
+    if (strError != "")
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+
+    if (fComplete) {
+       return sendtransaction(*(CTransaction *)(&wtx));
+    }
+
+    //
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+    ss << *(CTransaction *)(&wtx);
+    Object result;
+    Array ret;
+    BOOST_FOREACH(const PAIRTYPE(uint160, CScript)& item, redeemScript)
+    {
+        CScript script = item.second;
+		uint256 hash = pwalletMain->getHashFromRedeemScript(script);
+		if (hash == uint256(0))
+		{
+			throw JSONRPCError(RPC_WALLET_ERROR, "get private key salt error.");
+		}
+		Object item;
+		item.push_back(Pair("script", HexStr(script.begin(), script.end())));
+		item.push_back(Pair("hash", hash.GetHex()));
+		ret.push_back(item);
+    }
+	params2["hex"] = HexStr(ss.begin(), ss.end());
+	params2["redeemScript"] = write_string(Value(ret), false);
+    Object transactionObj = Macoin::api("pay/signrawtransaction", params2,  "POST");
+
+    Value errorobj = find_value(transactionObj , "error");
+    if (errorobj.type() != null_type)
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, errorobj.get_str());
+    }
+    Value rawValue = find_value(transactionObj , "hex");
+    if (rawValue.type() == null_type)
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, "obj no key hex");
+    }
+    Value completeValue = find_value(transactionObj , "complete");
+    if (completeValue.type() !=  bool_type)
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, "obj no key complete");
+    }
+    bool complete = completeValue.get_bool();
+    if (complete == false) 
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, "sign in server error.");;
+    }
+    //开始decoderawtransaction
+    // parse hex string from parameter
+    vector<unsigned char> txData(ParseHex(rawValue.get_str()));
+    CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+    CTransaction tx;
+    // deserialize binary data stream
+    try {
+        ssData >> tx;
+    }
+    catch (std::exception &e) {
+        throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+    }
+    return sendtransaction(tx);
+}
+
+
 Value createrawtransaction2(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 4)

@@ -247,6 +247,7 @@ static const CRPCCommand vRPCCommands[] =
     { "getaccount",             &getaccount,             false,  false },
     { "getaddressesbyaccount",  &getaddressesbyaccount,  true,   false },
     { "sendtoaddress",          &sendtoaddress,          false,  false },
+	{ "sendtoaddress2",          &sendtoaddress2,          false,  false },
     { "getreceivedbyaddress",   &getreceivedbyaddress,   false,  false },
     { "getreceivedbyaccount",   &getreceivedbyaccount,   false,  false },
     { "listreceivedbyaddress",  &listreceivedbyaddress,  false,  false },
@@ -1253,6 +1254,7 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     //
     if (strMethod == "stop"                   && n > 0) ConvertTo<bool>(params[0]);
     if (strMethod == "sendtoaddress"          && n > 1) ConvertTo<double>(params[1]);
+	if (strMethod == "sendtoaddress2"         && n > 1) ConvertTo<double>(params[1]);
 	if (strMethod == "createrawtransaction2"  && n > 1) ConvertTo<double>(params[1]);
     if (strMethod == "settxfee"               && n > 0) ConvertTo<double>(params[0]);
     if (strMethod == "getreceivedbyaddress"   && n > 1) ConvertTo<int64_t>(params[1]);
@@ -1385,7 +1387,6 @@ Object CallHTTP(const string& host, const string& url, const string& method, con
     if (!fConnected) {
         throw runtime_error("couldn't connect to http server");
     }
-
     // Send request
     string strRequest;
     if (method == "GET") {
@@ -1406,7 +1407,7 @@ Object CallHTTP(const string& host, const string& url, const string& method, con
     string strReply;
     ReadHTTP(stream, mapHeaders, strReply);
     if (oauth2debug) {
-        cout << "reply: " << strReply << endl;
+        cout << "status:" << nStatus << " reply: " << strReply << endl;
     }
     if (nStatus == HTTP_UNAUTHORIZED)
         throw runtime_error("incorrect httpuser or httppassword (authorization failed)");
@@ -1617,10 +1618,10 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
 		{
 			throw JSONRPCError(RPC_WALLET_ERROR, "get private key salt error.");
 		}
-		Object item;
-		item.push_back(Pair("script", HexStr(ss.begin(), ss.end())));
-		item.push_back(Pair("hash", hash.GetHex()));
-		ret.push_back(item);
+		Object item2;
+		item2.push_back(Pair("script", HexStr(script.begin(), script.end())));
+		item2.push_back(Pair("hash", hash.GetHex()));
+		ret.push_back(item2);
     }
 	params["hex"] = HexStr(ss.begin(), ss.end());
 	params["redeemScript"] = write_string(Value(ret), false);
