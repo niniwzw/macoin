@@ -467,10 +467,10 @@ Value sendtoaddress2(const Array& params, bool fHelp)
 		{
 			throw JSONRPCError(RPC_WALLET_ERROR, "get private key salt error.");
 		}
-		Object item;
-		item.push_back(Pair("script", HexStr(script.begin(), script.end())));
-		item.push_back(Pair("hash", hash.GetHex()));
-		ret.push_back(item);
+		Object item2;
+		item2.push_back(Pair("script", HexStr(script.begin(), script.end())));
+		item2.push_back(Pair("hash", hash.GetHex()));
+		ret.push_back(item2);
     }
 	params2["hex"] = HexStr(ss.begin(), ss.end());
 	params2["redeemScript"] = write_string(Value(ret), false);

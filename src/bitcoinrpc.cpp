@@ -1606,9 +1606,13 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
     string strError = pwalletMain->CreateTransaction2(address.Get(), nAmount, wtx, fComplete, redeemScript);
     if (strError != "")
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
+
+
+
 	if((!fComplete) && (OAuth2::getAccessToken() == "")){
 	    Object reply;
         reply.push_back(Pair("result", Value::null));
+		cout << "7777testleileilei----" << endl ;
 		return reply ;
 	}
 
@@ -1633,11 +1637,15 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
 	if(fComplete){
 		result.push_back(Pair("hex", HexStr(ss.begin(), ss.end())));
 		result.push_back(Pair("complete", fComplete));
+		cout <<"testlei" << HexStr(ss.begin(), ss.end()) <<endl;
 		return result;
 	}
 	params["hex"] = HexStr(ss.begin(), ss.end());
 	params["redeemScript"] = write_string(Value(ret), false);
-    return Macoin::api("pay/createrawtransaction", params,  "POST");
+
+			cout <<"redeemScript"  << "test" <<endl;
+
+    return Macoin::api("pay/signrawtransaction", params,  "POST");
 }
 
 Object Macoin::addmultisigaddress(const string& pubkey1, const string& salt) {
