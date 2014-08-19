@@ -1691,7 +1691,7 @@ bool CWallet::CreateTransactionV2(const vector<pair<CScript, int64_t> >& vecSend
 
                 // Sign
                 int nIn = 0;
-				complete = false;
+				complete = true;
 				unsigned int beginsign = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
                 BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins) {
                     if (!SignSignature(*this, *coin.first, wtxNew, nIn++)) {
