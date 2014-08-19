@@ -1573,7 +1573,8 @@ uint256 CWallet::getHashFromRedeemScript(CScript &redeemScript) {
     if (!Solver(redeemScript, whichType, vSolutions)) {
         return uint256(0);
     }
-    if (whichType != TX_MULTISIG) {
+    //cout << "whichType = " << whichType << " multisig = " << TX_MULTISIG << endl;
+    if (whichType == TX_MULTISIG) {
         CPubKey pubkey1 =  CPubKey(vSolutions[1]);
         //getprivkey
         CKeyID keyID = pubkey1.GetID();
