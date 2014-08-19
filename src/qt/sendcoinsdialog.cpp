@@ -67,10 +67,10 @@ void SendThread::startwork()
 
 int SendThread::SendCoins()
 {
-		try{
+		//try{
 				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
-				Value retvalue = find_value(transactionObj , "result");
-				if (retvalue.type() == null_type)
+				Value retvalue = find_value(transactionObj , "nologin");
+				if (retvalue.type() == str_type)
 				{
 					return 8;
 				}
@@ -105,9 +105,9 @@ int SendThread::SendCoins()
 				}else{
 					return 6  ;
 				}
-			}catch(...){
-				return 7 ;
-			}
+			//}catch(...){
+			//	return 7 ;
+			//}
 }
 
 void SendThread::run()  

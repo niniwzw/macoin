@@ -1594,31 +1594,36 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
     map<string, string> params;
     params["code"] = code;
     CBitcoinAddress address(recvaddr);
-    if (!address.IsValid())
+    if (!address.IsValid()) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Macoin address");
-    int64_t nAmount = AmountFromValue(amount);
+	}
+	double dAmount = atof(amount.c_str());
+    if (dAmount <= 0.0 || dAmount > MAX_MONEY)
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
+    int64_t nAmount = roundint64(dAmount * COIN);
+    if (!MoneyRange(nAmount))
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     CWalletTx wtx;
-    if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
-
+    if (pwalletMain->IsLocked()) {
+		pwalletMain->Unlock("1");
+		if (pwalletMain->IsLocked())
+		{
+			throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+		}
+	}
     bool fComplete;
     map<uint160, CScript> redeemScript;
     string strError = pwalletMain->CreateTransaction2(address.Get(), nAmount, wtx, fComplete, redeemScript);
-    if (strError != "")
-        throw JSONRPCError(RPC_WALLET_ERROR, strError);
-
-
-
-	if((!fComplete) && (OAuth2::getAccessToken() == "")){
-	    Object reply;
-        reply.push_back(Pair("result", Value::null));
-		cout << "7777testleileilei----" << endl ;
-		return reply ;
+    if (strError != "") {
+         throw JSONRPCError(RPC_WALLET_ERROR, strError);
 	}
-
-
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << *(CTransaction *)(&wtx);
+	if((!fComplete) && (OAuth2::getAccessToken() == "")){
+	    Object reply;
+        reply.push_back(Pair("nologin", "nologin"));
+		return reply ;
+	}
     Object result;
     Array ret;
     BOOST_FOREACH(const PAIRTYPE(uint160, CScript)& item, redeemScript)
@@ -1637,14 +1642,10 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
 	if(fComplete){
 		result.push_back(Pair("hex", HexStr(ss.begin(), ss.end())));
 		result.push_back(Pair("complete", fComplete));
-		cout <<"testlei" << HexStr(ss.begin(), ss.end()) <<endl;
 		return result;
 	}
 	params["hex"] = HexStr(ss.begin(), ss.end());
 	params["redeemScript"] = write_string(Value(ret), false);
-
-			cout <<"redeemScript"  << "test" <<endl;
-
     return Macoin::api("pay/signrawtransaction", params,  "POST");
 }
 
