@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(getinfo)
 	Value info = CallRPC("getinfo");
 	BOOST_CHECK(info.type() == obj_type);
 }
-
+/*
 BOOST_AUTO_TEST_CASE(get_keys)
 {
     EnsureWalletIsUnlocked();
@@ -135,5 +135,13 @@ BOOST_AUTO_TEST_CASE(addmultisigaddress)
 		const Value multisigwallet = CallRPC(string("addmultisigaddress 2 ") + "["+pubkey1+","+pubkey2+"]" + "Real");
 		BOOST_CHECK(multisigwallet.type() == str_type);
 }
+*/
 
+BOOST_AUTO_TEST_CASE(hashprivkey)
+{
+		string privkey = "KwN4sKXB2qb6nWVNduQR26wNivp5JtVMwdBLbHp2k3U1kxH1WcZS";
+		//生成salt
+        uint256 hash1 = Hash(privkey.begin(), privkey.end());
+		cout << "addmultisigaddress salt: " << hash1.GetHex() << endl;
+}
 BOOST_AUTO_TEST_SUITE_END()

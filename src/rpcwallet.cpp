@@ -420,13 +420,25 @@ Value createrawtransaction2(const Array& params, bool fHelp)
     if (pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
-    string strError = pwalletMain->CreateTransaction2(address.Get(), nAmount, wtx);
+    bool fComplete;
+    map<uint160, CScript> redeemScript;
+    string strError = pwalletMain->CreateTransaction2(address.Get(), nAmount, wtx, fComplete, redeemScript);
     if (strError != "")
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
 
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-    ss << wtx;
-    return HexStr(ss.begin(), ss.end());
+    ss << *(CTransaction *)(&wtx);
+    Object result;
+    Array ret;
+    BOOST_FOREACH(const PAIRTYPE(uint160, CScript)& item, redeemScript)
+    {
+        CScript script = item.second;
+        ret.push_back(HexStr(script.begin(), script.end()));
+    }
+    result.push_back(Pair("hex", HexStr(ss.begin(), ss.end())));
+    result.push_back(Pair("complete", fComplete));
+    result.push_back(Pair("redeemScript", ret));
+    return result;
 }
 
 

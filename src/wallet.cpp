@@ -1518,9 +1518,9 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend, 
                         } else {
                             CPubKey vchPubKey;
                             assert(reservekey.GetReservedKey(vchPubKey)); // should never fail, as we just unlocked
+							scriptChange.SetDestination(vchPubKey.GetID());
                         }
                     }
-
                     // Insert change txn at random position:
                     vector<CTxOut>::iterator position = wtxNew.vout.begin()+GetRandInt(wtxNew.vout.size());
                     wtxNew.vout.insert(position, CTxOut(nChange, scriptChange));
@@ -1534,12 +1534,175 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64_t> >& vecSend, 
 
                 // Sign
                 int nIn = 0;
-                BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins)
-                    if (!SignSignature(*this, *coin.first, wtxNew, nIn++))
+                BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins) {
+                    if (!SignSignature(*this, *coin.first, wtxNew, nIn++)) {
+					    printf("CreateTransaction: sign transaction error.");
                         return false;
-
+				    }
+                }
                 // Limit size
                 unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
+                if (nBytes >= MAX_STANDARD_TX_SIZE)
+                    return false;
+                dPriority /= nBytes;
+
+                // Check that enough fee is included
+                int64_t nPayFee = nTransactionFee * (1 + (int64_t)nBytes / 1000);
+                int64_t nMinFee = wtxNew.GetMinFee(1, GMF_SEND, nBytes);
+
+                if (nFeeRet < max(nPayFee, nMinFee))
+                {
+                    nFeeRet = max(nPayFee, nMinFee);
+                    continue;
+                }
+
+                // Fill vtxPrev by copying from previous transactions vtxPrev
+                wtxNew.AddSupportingTransactions(txdb);
+                wtxNew.fTimeReceivedIsTxTime = true;
+
+                break;
+            }
+        }
+    }
+    return true;
+}
+
+//这个版本的交易创建函数会创建一个签名未完成的交易
+//同时监控签名后size的变化，同时预留服务器2倍的签名size
+bool CWallet::CreateTransactionV2(const vector<pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, bool& complete, map<uint160, CScript>& redeemScript, const CCoinControl* coinControl)
+{
+    int64_t nValue = 0;
+    BOOST_FOREACH (const PAIRTYPE(CScript, int64_t)& s, vecSend)
+    {
+        if (nValue < 0)
+            return false;
+        nValue += s.second;
+    }
+    if (vecSend.empty() || nValue < 0)
+        return false;
+
+    wtxNew.BindWallet(this);
+
+    {
+        LOCK2(cs_main, cs_wallet);
+        // txdb must be opened before the mapWallet lock
+        CTxDB txdb("r");
+        {
+            nFeeRet = nTransactionFee;
+            while (true)
+            {
+                wtxNew.vin.clear();
+                wtxNew.vout.clear();
+                wtxNew.fFromMe = true;
+
+                int64_t nTotalValue = nValue + nFeeRet;
+                double dPriority = 0;
+                // vouts to the payees
+                BOOST_FOREACH (const PAIRTYPE(CScript, int64_t)& s, vecSend)
+                    wtxNew.vout.push_back(CTxOut(s.second, s.first));
+
+                // Choose coins to use
+                set<pair<const CWalletTx*,unsigned int> > setCoins;
+                int64_t nValueIn = 0;
+                if (!SelectCoins(nTotalValue, wtxNew.nTime, setCoins, nValueIn, coinControl))
+                    return false;
+                BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
+                {
+                    int64_t nCredit = pcoin.first->vout[pcoin.second].nValue;
+                    dPriority += (double)nCredit * pcoin.first->GetDepthInMainChain();
+                }
+
+                int64_t nChange = nValueIn - nValue - nFeeRet;
+                // if sub-cent change is required, the fee must be raised to at least MIN_TX_FEE
+                // or until nChange becomes zero
+                // NOTE: this depends on the exact behaviour of GetMinFee
+                if (nFeeRet < MIN_TX_FEE && nChange > 0 && nChange < CENT)
+                {
+                    int64_t nMoveToFee = min(nChange, MIN_TX_FEE - nFeeRet);
+                    nChange -= nMoveToFee;
+                    nFeeRet += nMoveToFee;
+                }
+
+                if (nChange > 0)
+                {
+                    // Fill a vout to ourself
+                    // TODO: pass in scriptChange instead of reservekey so
+                    // change transaction isn't always pay-to-bitcoin-address
+                    CScript scriptChange;
+
+                    // coin control: send change to custom address
+                    if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
+                        scriptChange.SetDestination(coinControl->destChange);
+
+                    // no coin control: send change to newly generated address
+                    else
+                    {
+                        // Note: We use a new key here to keep it from being obvious which side is the change.
+                        //  The drawback is that by not reusing a previous key, the change may be lost if a
+                        //  backup is restored, if the backup doesn't have the new private key for the change.
+                        //  If we reused the old key, it would be possible to add code to look for and
+                        //  rediscover unknown transactions that were written with keys of ours to recover
+                        //  post-backup change.
+
+                        // Reserve a new key pair from key pool
+                        //优先使用实名地址,这个地址是从服务器端下载的，用户要确保这个地址是有效的。
+                        //为了管理方便，一个用户只能申请一个实名地址。
+                        CBitcoinAddress realNameAddress;
+                        if (GetRealNameAddress("", realNameAddress)) {
+                            scriptChange.SetDestination(realNameAddress.Get());
+                        } else {
+                            CPubKey vchPubKey;
+                            assert(reservekey.GetReservedKey(vchPubKey)); // should never fail, as we just unlocked
+							scriptChange.SetDestination(vchPubKey.GetID());
+                        }
+                    }
+                    // Insert change txn at random position:
+                    vector<CTxOut>::iterator position = wtxNew.vout.begin()+GetRandInt(wtxNew.vout.size());
+                    wtxNew.vout.insert(position, CTxOut(nChange, scriptChange));
+                }
+                else
+                    reservekey.ReturnKey();
+
+                // Fill vin
+                BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins)
+                    wtxNew.vin.push_back(CTxIn(coin.first->GetHash(),coin.second));
+
+                // Sign
+                int nIn = 0;
+				complete = false;
+				unsigned int beginsign = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
+                BOOST_FOREACH(const PAIRTYPE(const CWalletTx*,unsigned int)& coin, setCoins) {
+                    if (!SignSignature(*this, *coin.first, wtxNew, nIn++)) {
+                        CTxIn& txin = wtxNew.vin[nIn-1];
+                        const CTxOut& txout = (*coin.first).vout[txin.prevout.n];
+                        txnouttype whichType;
+                        vector<valtype> vSolutions;
+                        CScript scriptSigRet;
+                        if (Solver(txout.scriptPubKey, whichType, vSolutions)) {
+                            printf("CreateTransactionV2 whichType = %d, TX_SCRIPTHASH = %d\n", whichType, TX_SCRIPTHASH);
+                            if (whichType == TX_SCRIPTHASH) {
+                                uint160 hashscript = uint160(vSolutions[0]);
+                                if (this->GetCScript(hashscript, scriptSigRet)) {
+                                   redeemScript[hashscript] = scriptSigRet;
+                                   printf("CreateTransactionV2 get script = %s\n", hashscript.GetHex().c_str());
+                                } else {
+                                   printf("CreateTransactionV2 get script = %s error.\n", hashscript.GetHex().c_str());
+                                }
+                            }
+                        } else {
+                            printf("CreateTransactionV2 Solver error\n");
+                        }
+						complete = false;
+				    }
+                }
+                // Limit size
+                unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
+				unsigned int dt = (nBytes - beginsign) * 2;
+				printf("CreateTransactionV2 sign size = %d\n", dt / 2); //这部分size的2倍是给服务器端签名预留的
+				if (!complete)
+				{
+					nBytes += dt;
+				}
                 if (nBytes >= MAX_STANDARD_TX_SIZE)
                     return false;
                 dPriority /= nBytes;
@@ -1945,7 +2108,7 @@ string CWallet::SendMoneyToDestination(const CTxDestination& address, int64_t nV
     return SendMoney(scriptPubKey, nValue, wtxNew, fAskFee);
 }
 
-string CWallet::CreateTransaction2(const CTxDestination& address, int64_t nValue, CWalletTx& wtxNew)
+string CWallet::CreateTransaction2(const CTxDestination& address, int64_t nValue, CWalletTx& wtxNew, bool& complete, std::map<uint160, CScript>& redeemScript)
 {
     // Check amount
     if (nValue <= 0)
@@ -1970,7 +2133,9 @@ string CWallet::CreateTransaction2(const CTxDestination& address, int64_t nValue
         printf("CreateTransaction2() : %s", strError.c_str());
         return strError;
     }
-    if (!CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired))
+    vector< pair<CScript, int64_t> > vecSend;
+    vecSend.push_back(make_pair(scriptPubKey, nValue));
+    if (!CreateTransactionV2(vecSend, wtxNew, reservekey, nFeeRequired, complete, redeemScript))
     {
         string strError;
         if (nValue + nFeeRequired > GetBalance())

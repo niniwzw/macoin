@@ -275,6 +275,7 @@ void LoginDialog::on_logoutButton_clicked()
 	ui->frame->setVisible(false);
 	pwalletMain->DeleteServerKey();
     pwalletMain->DeleteRealNameAddress();
+	CallRPC("rescanwallet");
 }
 
 void LoginDialog::on_subscriptButton_clicked()
@@ -350,6 +351,7 @@ void LoginDialog::getUserInfo()
 			   }
 		   }
 	   }
+	   CallRPC("rescanwallet");
    }
 
 	ui->UIDLabel->setText(QString::fromStdString(UID));
