@@ -1372,7 +1372,7 @@ int CommandLineRPC(int argc, char *argv[])
 }
 
 
-static bool oauth2debug = false;
+static bool oauth2debug = true;
 Object CallHTTP(const string& host, const string& url, const string& method, const map<string,string>& params, const map<string,string>& header, bool fUseSSL)
 {
     // Connect to localhost
@@ -1588,8 +1588,9 @@ Object Macoin::balance(const string& addr) {
     return Macoin::api("pay/balance", params, "GET");
 }
 
-Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code) {
 
+
+Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code) {
     map<string, string> params;
     params["code"] = code;
     CBitcoinAddress address(recvaddr);
@@ -1605,6 +1606,16 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
     string strError = pwalletMain->CreateTransaction2(address.Get(), nAmount, wtx, fComplete, redeemScript);
     if (strError != "")
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
+
+
+
+	if((!fComplete) && (OAuth2::getAccessToken() == "")){
+	    Object reply;
+        reply.push_back(Pair("result", Value::null));
+		cout << "7777testleileilei----" << endl ;
+		return reply ;
+	}
+
 
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << *(CTransaction *)(&wtx);
@@ -1623,9 +1634,18 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
 		item2.push_back(Pair("hash", hash.GetHex()));
 		ret.push_back(item2);
     }
+	if(fComplete){
+		result.push_back(Pair("hex", HexStr(ss.begin(), ss.end())));
+		result.push_back(Pair("complete", fComplete));
+		cout <<"testlei" << HexStr(ss.begin(), ss.end()) <<endl;
+		return result;
+	}
 	params["hex"] = HexStr(ss.begin(), ss.end());
 	params["redeemScript"] = write_string(Value(ret), false);
-    return Macoin::api("pay/createrawtransaction", params,  "POST");
+
+			cout <<"redeemScript"  << "test" <<endl;
+
+    return Macoin::api("pay/signrawtransaction", params,  "POST");
 }
 
 Object Macoin::addmultisigaddress(const string& pubkey1, const string& salt) {
