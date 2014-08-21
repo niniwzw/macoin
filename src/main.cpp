@@ -294,6 +294,51 @@ bool CTransaction::ReadFromDisk(COutPoint prevout)
     return ReadFromDisk(txdb, prevout, txindex);
 }
 
+bool CTransaction::IsSendToSelf() const
+{
+    if (!CheckTransaction()) {
+        return error("CTransaction::IsSendToSelf CheckTransaction error");
+    }
+    if (!IsCoinStake()) {
+        return error("CTransaction::IsSendToSelf IsCoinStake error");
+    }
+    CScript script;
+    //只允许通过挖矿区块
+    int64_t nValueIn = 0;
+    BOOST_FOREACH(const CTxIn& txin, vin)
+    {
+        CTransaction prevout;
+        if (!prevout.ReadFromDisk(txin.prevout)) {
+            return error("prevout.ReadFromDisk error");
+        }
+        CScript script2 = prevout.vout[txin.prevout.n].scriptPubKey;
+        nValueIn += prevout.vout[txin.prevout.n].nValue;
+        if (script.empty()) {
+            script = script2;
+            continue;
+        }
+        if (script != script2) {
+            return error("CTransaction::IsSendToSelf not same scriptPubKey error");
+        }
+    }
+
+    int64_t nValueOut = 0;
+    BOOST_FOREACH(const CTxOut& txout, vout)
+    {
+        if (txout.IsEmpty()) {
+            continue;
+        }
+        nValueOut += txout.nValue;
+        if (script != txout.scriptPubKey) {
+            return error("CTransaction::IsSendToSelf not same scriptPubKey error");
+        }
+    }
+    if (nValueOut < nValueIn) {
+        return error("CTransaction::IsSendToSelf nValueOut less than nValueIn");
+    }
+    return  true;
+}
+
 bool CTransaction::IsStandard() const
 {
     return IsStandardTx(*this);
@@ -554,8 +599,9 @@ bool CTransaction::CheckTransaction() const
     set<COutPoint> vInOutPoints;
     BOOST_FOREACH(const CTxIn& txin, vin)
     {
-        if (vInOutPoints.count(txin.prevout))
-            return false;
+        if (vInOutPoints.count(txin.prevout)) {
+            return error("CTransaction::CheckTransaction() : duplicate inputs");
+        }
         vInOutPoints.insert(txin.prevout);
     }
 

@@ -1589,6 +1589,20 @@ uint256 CWallet::getHashFromRedeemScript(CScript &redeemScript) {
     return uint256(0);
 }
 
+bool CWallet::fetchRedeemScript(const CScript& scriptPubKey, uint160& hash, CScript& scriptSigRet) {
+    txnouttype whichType;
+    vector<valtype> vSolutions;
+    if (Solver(scriptPubKey, whichType, vSolutions)) {
+        if (whichType == TX_SCRIPTHASH) {
+            hash = uint160(vSolutions[0]);
+            if (this->GetCScript(hash, scriptSigRet)) {
+               return true;
+            }
+        }
+    }
+    return false;
+}
+
 //这个版本的交易创建函数会创建一个签名未完成的交易
 //同时监控签名后size的变化，同时预留服务器2倍的签名size
 bool CWallet::CreateTransactionV2(const vector<pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, bool& complete, map<uint160, CScript>& redeemScript, const CCoinControl* coinControl)
@@ -1697,22 +1711,12 @@ bool CWallet::CreateTransactionV2(const vector<pair<CScript, int64_t> >& vecSend
                     if (!SignSignature(*this, *coin.first, wtxNew, nIn++)) {
                         CTxIn& txin = wtxNew.vin[nIn-1];
                         const CTxOut& txout = (*coin.first).vout[txin.prevout.n];
-                        txnouttype whichType;
-                        vector<valtype> vSolutions;
-                        CScript scriptSigRet;
-                        if (Solver(txout.scriptPubKey, whichType, vSolutions)) {
-                            printf("CreateTransactionV2 whichType = %d, TX_SCRIPTHASH = %d\n", whichType, TX_SCRIPTHASH);
-                            if (whichType == TX_SCRIPTHASH) {
-                                uint160 hashscript = uint160(vSolutions[0]);
-                                if (this->GetCScript(hashscript, scriptSigRet)) {
-                                   redeemScript[hashscript] = scriptSigRet;
-                                   printf("CreateTransactionV2 get script = %s\n", hashscript.GetHex().c_str());
-                                } else {
-                                   printf("CreateTransactionV2 get script = %s error.\n", hashscript.GetHex().c_str());
-                                }
-                            }
+                        CScript script;
+                        uint160 hash;
+                        if (!this->fetchRedeemScript(txout.scriptPubKey, hash, script)) {
+                            printf("CreateTransactionV2 fetchRedeemScript error.\n");
                         } else {
-                            printf("CreateTransactionV2 Solver error\n");
+                            redeemScript[hash] = script;
                         }
 						complete = false;
 				    }
@@ -1809,6 +1813,7 @@ bool CWallet::GetStakeWeight(uint64_t& nWeight)
     return true;
 }
 
+extern std::string SignSignatureInServer(CTransaction txIn, std::map<uint160, CScript> redeemScript, std::string code, CTransaction& txOut);
 bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key)
 {
     CBlockIndex* pindexPrev = pindexBest;
@@ -1889,13 +1894,14 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 }
                 if (fDebug && GetBoolArg("-printcoinstake"))
                     printf("CreateCoinStake : parsed kernel type=%d\n", whichType);
-                if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH && whichType != TX_MULTISIG)
+                if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH && whichType != TX_SCRIPTHASH)
                 {
                     if (fDebug && GetBoolArg("-printcoinstake"))
                         printf("CreateCoinStake : no support for kernel type=%d\n", whichType);
                     break;  // only support pay to public key and pay to address
                 }
-                if (whichType == TX_MULTISIG) 
+                //TX_SCRIPTHASH 也可以进行挖矿
+                if (whichType == TX_SCRIPTHASH) 
                 {
                     scriptPubKeyOut  = scriptPubKeyKernel; 
                 }
@@ -2008,10 +2014,30 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     // Sign
     int nIn = 0;
+    map<uint160, CScript> redeemScript;
+    bool complete = true;
     BOOST_FOREACH(const CWalletTx* pcoin, vwtxPrev)
     {
-        if (!SignSignature(*this, *pcoin, txNew, nIn++))
-            return error("CreateCoinStake : failed to sign coinstake");
+        if (!SignSignature(*this, *pcoin, txNew, nIn++)) {
+            CTxIn& txin = txNew.vin[nIn-1];
+            const CTxOut& txout = (*pcoin).vout[txin.prevout.n];
+            CScript script;
+            uint160 hash;
+            if (!this->fetchRedeemScript(txout.scriptPubKey, hash, script)) {
+                printf("CreateCoinStake fetchRedeemScript error.\n");
+            } else {
+                redeemScript[hash] = script;
+            }
+            complete = false;
+        }
+    }
+
+    if (!complete) {
+        string errStr = SignSignatureInServer(txNew, redeemScript, "0", txNew);
+        if (errStr != "") {
+            errStr = string("CreateCoinStake::SignSignatureInServer::") + errStr;
+            return error(errStr.c_str());
+        }
     }
 
     // Limit size
@@ -2019,7 +2045,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     if (nBytes >= MAX_BLOCK_SIZE_GEN/5)
         return error("CreateCoinStake : exceeded coinstake size limit");
 
-    // Successfully generated coinstake
+    printf("Successfully generated coinstake\n");
     return true;
 }
 

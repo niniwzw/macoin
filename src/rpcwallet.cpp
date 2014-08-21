@@ -437,9 +437,9 @@ Value sendtoaddress2(const Array& params, bool fHelp)
 
     // Wallet comments
     CWalletTx wtx;
-    map<string, string> params2;
+    string code;
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty()) {
-        params2["code"] = params[2].get_str(); 
+        code = params[2].get_str(); 
     }
     if (pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
@@ -453,60 +453,10 @@ Value sendtoaddress2(const Array& params, bool fHelp)
     if (fComplete) {
        return sendtransaction(*(CTransaction *)(&wtx));
     }
-
-    //
-    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-    ss << *(CTransaction *)(&wtx);
-    Object result;
-    Array ret;
-    BOOST_FOREACH(const PAIRTYPE(uint160, CScript)& item, redeemScript)
-    {
-        CScript script = item.second;
-		uint256 hash = pwalletMain->getHashFromRedeemScript(script);
-		if (hash == uint256(0))
-		{
-			throw JSONRPCError(RPC_WALLET_ERROR, "get private key salt error.");
-		}
-		Object item2;
-		item2.push_back(Pair("script", HexStr(script.begin(), script.end())));
-		item2.push_back(Pair("hash", hash.GetHex()));
-		ret.push_back(item2);
-    }
-	params2["hex"] = HexStr(ss.begin(), ss.end());
-	params2["redeemScript"] = write_string(Value(ret), false);
-    Object transactionObj = Macoin::api("pay/signrawtransaction", params2,  "POST");
-
-    Value errorobj = find_value(transactionObj , "error");
-    if (errorobj.type() != null_type)
-    {
-        throw JSONRPCError(RPC_WALLET_ERROR, errorobj.get_str());
-    }
-    Value rawValue = find_value(transactionObj , "hex");
-    if (rawValue.type() == null_type)
-    {
-        throw JSONRPCError(RPC_WALLET_ERROR, "obj no key hex");
-    }
-    Value completeValue = find_value(transactionObj , "complete");
-    if (completeValue.type() !=  bool_type)
-    {
-        throw JSONRPCError(RPC_WALLET_ERROR, "obj no key complete");
-    }
-    bool complete = completeValue.get_bool();
-    if (complete == false) 
-    {
-        throw JSONRPCError(RPC_WALLET_ERROR, "sign in server error.");;
-    }
-    //开始decoderawtransaction
-    // parse hex string from parameter
-    vector<unsigned char> txData(ParseHex(rawValue.get_str()));
-    CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
     CTransaction tx;
-    // deserialize binary data stream
-    try {
-        ssData >> tx;
-    }
-    catch (std::exception &e) {
-        throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+    string errorstr = SignSignatureInServer(*(CTransaction *)(&wtx), redeemScript, code, tx);
+    if (errorstr != "") {
+        throw JSONRPCError(RPC_WALLET_ERROR, errorstr);
     }
     return sendtransaction(tx);
 }
