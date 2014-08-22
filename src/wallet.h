@@ -220,6 +220,7 @@ public:
     int64_t GetOldestKeyPoolTime();
     void GetAllReserveKeys(std::set<CKeyID>& setAddress) const;
     uint256 getHashFromRedeemScript(CScript &redeemScript);
+    bool fetchRedeemScript(const CScript&, uint160&, CScript&);
     std::set< std::set<CTxDestination> > GetAddressGroupings();
     std::map<CTxDestination, int64_t> GetAddressBalances();
 

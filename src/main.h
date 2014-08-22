@@ -535,6 +535,7 @@ public:
         }
         return nValueOut;
     }
+    bool IsSendToSelf() const;
 
     /** Amount of bitcoins coming in to this transaction
         Note that lightweight clients may not know anything besides the hash of previous transactions,

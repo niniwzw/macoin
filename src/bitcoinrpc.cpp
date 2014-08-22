@@ -1589,6 +1589,65 @@ Object Macoin::balance(const string& addr) {
 }
 
 
+string SignSignatureInServer(CTransaction txIn, map<uint160, CScript> redeemScript, string code, CTransaction& txOut)
+{
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+    ss << txIn;
+    Object result;
+    Array ret;
+    map<string, string> params2;
+    BOOST_FOREACH(const PAIRTYPE(uint160, CScript)& item, redeemScript)
+    {
+        CScript script = item.second;
+		uint256 hash = pwalletMain->getHashFromRedeemScript(script);
+		if (hash == uint256(0))
+		{
+			return "get private key salt error.";
+		}
+		Object item2;
+		item2.push_back(Pair("script", HexStr(script.begin(), script.end())));
+		item2.push_back(Pair("hash", hash.GetHex()));
+		ret.push_back(item2);
+    }
+    params2["code"] = code;
+	params2["hex"] = HexStr(ss.begin(), ss.end());
+	params2["redeemScript"] = write_string(Value(ret), false);
+    Object transactionObj = Macoin::api("pay/signrawtransaction", params2,  "POST");
+    Value errorobj = find_value(transactionObj , "error");
+    if (errorobj.type() != null_type)
+    {
+        return errorobj.get_str();
+    }
+    Value rawValue = find_value(transactionObj , "hex");
+    if (rawValue.type() == null_type)
+    {
+        return "obj no key hex";
+    }
+    Value completeValue = find_value(transactionObj , "complete");
+    if (completeValue.type() !=  bool_type)
+    {
+        return "obj no key complete";
+    }
+    bool complete = completeValue.get_bool();
+    if (complete == false) 
+    {
+        return "sign in server error.";
+    }
+    //开始decoderawtransaction
+    // parse hex string from parameter
+    vector<unsigned char> txData(ParseHex(rawValue.get_str()));
+    CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+    txOut.vin.clear();
+    txOut.vout.clear();
+    // deserialize binary data stream
+    try {
+        ssData >> txOut;
+    }
+    catch (std::exception &e) {
+        return "TX decode failed";
+    }
+    return "";
+}
 
 Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code) {
     map<string, string> params;
