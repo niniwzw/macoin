@@ -23,15 +23,20 @@ class SendThread : public QThread
 signals:  
         void notify(int);  
 
+public:
+		//WalletModel *model;
 private:
 	int  m_type ;
+	WalletModel::UnlockContext *m_ctx ;
+
+
     SendCoinsRecipient sendcoinsRecipient;
 public:  
     SendThread(int type)
     {  
 			m_type = type ;
     };  
-
+	void setUnlockContext(WalletModel::UnlockContext * ctx);
 	void setrecipient(SendCoinsRecipient recipient){
 		sendcoinsRecipient = recipient ;
 	};

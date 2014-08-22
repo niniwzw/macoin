@@ -2,7 +2,7 @@
 #include "ui_sendcoinsdialog.h"
 
 #include "init.h"
-#include "walletmodel.h"
+
 #include "addresstablemodel.h"
 #include "addressbookpage.h"
 
@@ -63,33 +63,41 @@ void SendThread::startwork()
 	start(); //HighestPriority 
 }  
 
+void SendThread::setUnlockContext(WalletModel::UnlockContext * ctx)
+{
+	m_ctx = ctx ;
+}
 
 
 int SendThread::SendCoins()
 {
-		//try{
+		try{
 				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
 				Value retvalue = find_value(transactionObj , "nologin");
 				if (retvalue.type() == str_type)
 				{
+					delete m_ctx;
 					return 8;
 				}
 					
 				Value errorvalue = find_value(transactionObj , "error");
 				if (errorvalue.type() != null_type)
 				{
+					delete m_ctx;
 					return 1;
 				}
 				
 				Value rawValue = find_value(transactionObj , "hex");
 				if (rawValue.type() == null_type)
 				{
+					delete m_ctx;
 					return 2;
 				}
 				string raw = rawValue.get_str();
 				Value completeValue = find_value(transactionObj , "complete");
 				if (completeValue.type() !=  bool_type)
 				{
+					delete m_ctx;
 					return 4;
 				}
 				bool complete = completeValue.get_bool();
@@ -97,17 +105,21 @@ int SendThread::SendCoins()
 
 					if (rawValue.type() == null_type)
 					{
+						delete m_ctx;
 						return 5;
 					}
 					string hex = rawValue.get_str();
 					Value callrpc = CallRPC1(string("sendrawtransaction ") + hex);
+					delete m_ctx;
 					return 0 ;
 				}else{
+					delete m_ctx;
 					return 6  ;
 				}
-			//}catch(...){
-			//	return 7 ;
-			//}
+			}catch(...){
+				delete m_ctx;
+				return 7 ;
+			}
 }
 
 void SendThread::run()  
@@ -221,7 +233,16 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 		SendCoinsRecipient sendcoinsRecipient = (SendCoinsRecipient)recipients.takeAt(0);
 		try{
 				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
-					
+				Value retvalue = find_value(transactionObj , "nologin");
+				if (retvalue.type() == str_type)
+				{
+					model->showLoginView();
+					QMessageBox::warning(this, "macoin",
+							(tr("please login first!")),
+							QMessageBox::Ok, QMessageBox::Ok);
+					return ;
+				}
+										
 				Value errorobj = find_value(transactionObj , "error");
 				if (errorobj.type() != null_type)
 				{
@@ -242,7 +263,8 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 							QMessageBox::Ok, QMessageBox::Ok);
 					return ;
 				}
-				string raw = rawValue.get_str();
+				//string raw = rawValue.get_str();
+				/*
 				Value rpcobj = CallRPC1(string("signrawtransaction ") + raw);
 				if (rpcobj.type() != obj_type)
 				{
@@ -254,8 +276,9 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 				}
 
 				const Object resultobj = rpcobj.get_obj();
+				*/
 
-				Value completeValue = find_value(resultobj , "complete");
+				Value completeValue = find_value(transactionObj , "complete");
 				if (completeValue.type() !=  bool_type)
 				{
  				  ui->sendButton->setEnabled(true);
@@ -266,10 +289,10 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 				}
 				bool complete = completeValue.get_bool();
 				  
-				Value hexValue = find_value(resultobj , "hex");
+				//Value hexValue = find_value(resultobj , "hex");
 				if (complete == true) {
 
-					if (hexValue.type() == null_type)
+					if (rawValue.type() == null_type)
 					{
 	 				  ui->sendButton->setEnabled(true);
 					  QMessageBox::warning(this, "macoin",
@@ -277,12 +300,12 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 								QMessageBox::Ok, QMessageBox::Ok);
 						return ;
 					}
-					string hex = hexValue.get_str();
+					string hex = rawValue.get_str();
 					Value callrpc = CallRPC1(string("sendrawtransaction ") + hex);
 				}else{
 	 				  ui->sendButton->setEnabled(true);
 					  QMessageBox::warning(this, "macoin",
-								tr("sending fail ") + QString::fromStdString(hexValue.get_str()),
+								tr("sending fail ") + QString::fromStdString(rawValue.get_str()),
 								QMessageBox::Ok, QMessageBox::Ok);
 				}
 
@@ -302,6 +325,7 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 void SendCoinsDialog::OnNotify(int type)  
 {  
 	ui->sendButton->setEnabled(true);
+	delete render ;
 	switch(type){
 		case 0:
 		{
@@ -369,6 +393,9 @@ void SendCoinsDialog::OnNotify(int type)
 		}
 			break;
 	}
+
+
+
 }
 
 
@@ -422,8 +449,8 @@ void SendCoinsDialog::on_sendButton_clicked()
         return;
     }
 
-    WalletModel::UnlockContext ctx(model->requestUnlock());
-    if(!ctx.isValid())
+    WalletModel::UnlockContext *ctx= new WalletModel::UnlockContext(model->requestUnlock());
+    if(!ctx->isValid())
     {
         // Unlock wallet was cancelled
         fNewRecipientAllowed = true;
@@ -432,23 +459,28 @@ void SendCoinsDialog::on_sendButton_clicked()
 
 	///////////////////////////////////////////////////////////////////////////
 
-		 render = new SendThread(5);
-		 connect(render,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
-		 ui->sendButton->setEnabled(false);
-		 SendCoinsRecipient sendcoinsRecipient = (SendCoinsRecipient)recipients.takeAt(0);
-		 render->setrecipient(sendcoinsRecipient);
-		 render->startwork();    
-
+	render = new SendThread(5);
+	render->setUnlockContext(ctx);
+	connect(render,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
+	ui->sendButton->setEnabled(false);
+	SendCoinsRecipient sendcoinsRecipient = (SendCoinsRecipient)recipients.takeAt(0);
+	render->setrecipient(sendcoinsRecipient);
+	render->startwork();    
+		
 
 	return ;
+	
 	/////////////////////////////////////////////////////////////////////////////////
 
     WalletModel::SendCoinsReturn sendstatus;
 
-    if (!model->getOptionsModel() || !model->getOptionsModel()->getCoinControlFeatures())
+    if (!model->getOptionsModel() || !model->getOptionsModel()->getCoinControlFeatures()){
         sendstatus = model->sendCoins(recipients);
-    else
+		}
+    else{
         sendstatus = model->sendCoins(recipients, CoinControlDialog::coinControl);
+
+		}
 
     switch(sendstatus.status)
     {

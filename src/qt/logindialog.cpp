@@ -5,7 +5,7 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
 
-#include "walletmodel.h"
+
 #include "bitcoinunits.h"
 #include "addressbookpage.h"
 #include "optionsmodel.h"
@@ -45,6 +45,11 @@ void LoginThread::setpassword(QString password){
 }
 void LoginThread::setusername(QString name){
 	strusername = name ;
+}
+
+void LoginThread::setUnlockContext(WalletModel::UnlockContext * ctx)
+{
+	m_ctx = ctx ;
 }
 
 void LoginThread::setgetinfoobj(Object obj){
@@ -89,15 +94,9 @@ int LoginThread::SubScribeAddress()
 {
 		Value addrvalue = CallRPC("getnewpubkey2");
 		string pubkey = addrvalue.get_str();
-        string password = "1";
 		const Object addrinfo = CallRPC(string("validatepubkey ") + pubkey).get_obj();
 		const string addr = find_value(addrinfo, "address").get_str();
         
-		//解锁钱包
-		if (pwalletMain->IsLocked())
-		{
-			CallRPC(string("walletpassphrase ")+password+" 30");
-		}
 		Value key      = CallRPC(string("dumpprivkey ") + addr);
 		string privkey = key.get_str();
 		
@@ -107,9 +106,11 @@ int LoginThread::SubScribeAddress()
 		try{
 			multiinfo = Macoin::addmultisigaddress(pubkey, hash1.GetHex());
 		}catch(...){
+			  delete m_ctx;
               return 11;
 		}
 		if (find_value(multiinfo,  "error").type() != null_type) {
+			  delete m_ctx;
               return 12;
         }
 		const string pubkey1 = "\"" + find_value(multiinfo, "pubkey1").get_str() + "\"";
@@ -117,8 +118,10 @@ int LoginThread::SubScribeAddress()
 		const string multiaddr = find_value(multiinfo, "addr").get_str();
 		const Value multisigwallet = CallRPC(string("addmultisigaddress 2 ") + "["+pubkey1+","+pubkey2+"]" + " Real");
 		if(multisigwallet.type()  != str_type){
+			delete m_ctx;
 			return 13;
 		}
+		delete m_ctx;
 		return 14 ;
 }
 
@@ -145,6 +148,12 @@ void LoginThread::run()
 			emit notify(ret);  
 			break;
 		}
+		case 4:
+		{
+			CallRPC("rescanwallet");
+			emit notify(15);  
+			break;
+		}
 	}
 }  
 
@@ -163,7 +172,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 
 #ifdef Q_OS_MAC // Icons on push buttons are very uncommon on Mac
     //ui->clearButton->setIcon(QIcon());
-    ui->loginButton->setIcon(QIcon());
+    ui->LoginButton->setIcon(QIcon());
     //ui->showRequestButton->setIcon(QIcon());
     //ui->removeRequestButton->setIcon(QIcon());
 #endif
@@ -185,7 +194,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     //connect(copyMessageAction, SIGNAL(triggered()), this, SLOT(copyMessage()));
     connect(copyAmountAction, SIGNAL(triggered()), this, SLOT(copyAmount()));
 	
-	connect(ui->loginButton, SIGNAL(clicked()), this, SLOT(on_loginButton_clicked()));
+	connect(ui->LoginButton, SIGNAL(clicked()), this, SLOT(on_loginButton_clicked()));
 	connect(ui->SubscriptButton, SIGNAL(clicked()), this, SLOT(on_subscriptButton_clicked()));
 	connect(ui->LogoutButton, SIGNAL(clicked()), this, SLOT(on_logoutButton_clicked()));
 
@@ -259,11 +268,11 @@ void LoginDialog::updateDisplayUnit()
 void LoginDialog::on_logoutButton_clicked()
 {
     ui->label_Address1->setText("");
-	ui->label_Address2->setText("");
+	//ui->label_Address2->setText("");
 	ui->label_Address3->setText("");
 
 	ui->UIDLabel->setText("");
-	ui->phoneLabel->setText("");
+	//ui->phoneLabel->setText("");
 	ui->emailLabel->setText("");
 
 	ui->statusLabel->setText("");
@@ -275,18 +284,34 @@ void LoginDialog::on_logoutButton_clicked()
 	ui->frame->setVisible(false);
 	pwalletMain->DeleteServerKey();
     pwalletMain->DeleteRealNameAddress();
-	CallRPC("rescanwallet");
+
+	render3 = new LoginThread(4);
+	connect(render3,SIGNAL(notify(int)),this,SLOT(OnNotify(int))); 
+	ui->SubscriptButton->setEnabled(false);
+	ui->LogoutButton->setEnabled(false);
+	render3->startwork(); 	
+
+	//CallRPC("rescanwallet");
 }
+
 
 void LoginDialog::on_subscriptButton_clicked()
 {
 	if(OAuth2::getAccessToken() != ""){
 
+		WalletModel::UnlockContext *ctx = new WalletModel::UnlockContext(model->requestUnlock());
+		if(!ctx->isValid())
+		{
+			// Unlock wallet was cancelled
+			//fNewRecipientAllowed = true;
+			return;
+		}
 		render2 = new LoginThread(3);
+		render2->setUnlockContext(ctx);
 		connect(render2,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
 		ui->SubscriptButton->setEnabled(false);
 		render2->startwork(); 	
-
+		
 	}else{
 		ui->passwordLabel->setText("");
 		ui->frame2->setVisible(true);
@@ -345,149 +370,86 @@ void LoginDialog::getUserInfo()
 			   {
 				   ui->label_Address1->setText(QString::fromStdString(serveraddr));
 			   }else if(i==1){
-				   ui->label_Address2->setText(QString::fromStdString(serveraddr));
+				   //ui->label_Address2->setText(QString::fromStdString(serveraddr));
 			   }else if(i==2){
 				   ui->label_Address3->setText(QString::fromStdString(serveraddr));
 			   }
 		   }
 	   }
-	   CallRPC("rescanwallet");
+
+		render3 = new LoginThread(4);
+		connect(render3,SIGNAL(notify(int)),this,SLOT(OnNotify(int))); 
+		ui->SubscriptButton->setEnabled(false);
+		ui->LogoutButton->setEnabled(false);
+		render3->startwork(); 	
+	   //CallRPC("rescanwallet");
    }
 
 	ui->UIDLabel->setText(QString::fromStdString(UID));
-	ui->phoneLabel->setText(QString::fromStdString(phone));
+	//ui->phoneLabel->setText(QString::fromStdString(phone));
 	ui->emailLabel->setText(QString::fromStdString(email));
 
 }
-/*
-void LoginDialog::SubScribeAddress()
-{
-		Value addrvalue = CallRPC("getnewaddress");
-		//BOOST_CHECK(addrvalue.type() == str_type);
-		string addr = addrvalue.get_str();
-
-		const Object addrinfo = CallRPC(string("validateaddress ") + addr).get_obj();
-		const string pubkey = find_value(addrinfo, "pubkey").get_str();
-		Object multiinfo ;
-		try{
-			multiinfo = Macoin::addmultisigaddress(pubkey);
-		}catch(...){
-			  QMessageBox::warning(this, "macoin",
-					(tr("please login first or checking network!")),
-					QMessageBox::Ok, QMessageBox::Ok);
-			  ui->SubscriptButton->setEnabled(true);
-              return;
-		}
-		if (find_value(multiinfo,  "error").type() != null_type) {
-  			  QMessageBox::warning(this, "macoin",
-					(tr("no more than three address or not login")),
-					QMessageBox::Ok, QMessageBox::Ok);
-			  ui->SubscriptButton->setEnabled(true);
-              return;
-        } 
-		const string pubkey1 = "\"" + find_value(multiinfo, "pubkey1").get_str() + "\"";
-		const string pubkey2 = "\"" + find_value(multiinfo, "pubkey2").get_str() + "\"";
-		const string multiaddr = find_value(multiinfo, "addr").get_str();
-		const Value multisigwallet = CallRPC(string("addmultisigaddress 2 ") + "["+pubkey1+","+pubkey2+"]" + " macoin_validate_wallet");
-		if(multisigwallet.type()  != str_type){
-  			  QMessageBox::warning(this, "macoin",
-					(tr("add multisigaddress error ")),
-					QMessageBox::Ok, QMessageBox::Ok);
-			  ui->SubscriptButton->setEnabled(true);
-			return ;
-		}
-		getUserInfo();
-  		QMessageBox::warning(this, "macoin",
-					(tr("apply Success!")),
-					QMessageBox::Ok, QMessageBox::Ok);
-		ui->SubscriptButton->setEnabled(true);
-}
-
-
-void LoginDialog::Login()
-{
-			QString strusername = ui->usernameLabel->text();
-			QString strpassword = ui->passwordLabel->text();
-			try{
-				OAuth2::login(strusername.toStdString() ,strpassword.toStdString());
-				
-			}catch(...){
-				QMessageBox::warning(this, "macoin",
-						tr("login server fail!"),
-						QMessageBox::Ok, QMessageBox::Ok);
-				ui->loginButton->setEnabled(true);
-				return ;
-			}
-		   if (OAuth2::getAccessToken() == "")
-		   {
-				QMessageBox::warning(this, "macoin",
-						tr("login server fail!"),
-						QMessageBox::Ok, QMessageBox::Ok);
-				ui->loginButton->setEnabled(true);
-				return ;
-		   }
-
-
-		   ui->frame2->setVisible(false);
-		   ui->LogoutButton->setVisible(true);
-		   ui->frame->setVisible(true);
-		   ui->loginButton->setEnabled(true);
-
-			render1 = new LoginThread(2);
-			 connect(render1,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
-			 render1->startwork(); 	
-}
-*/
 void LoginDialog::OnNotify(int  type)  
-{  
+{ 
+
 	switch (type)
 	{
 		case 0:
 		{
+		   delete render ;
 		   ui->frame2->setVisible(false);
 		   ui->LogoutButton->setVisible(true);
 		   ui->frame->setVisible(true);
-		   ui->loginButton->setEnabled(true);
-
+		   ui->LoginButton->setEnabled(true);
 		   getUserInfo();	
 		   break;
 		}
 		case 1:
 		{
+			delete render ;
 				QMessageBox::warning(this, "macoin",
 						tr("login server fail!"),
 						QMessageBox::Ok, QMessageBox::Ok);
-				ui->loginButton->setEnabled(true);
+				ui->LoginButton->setEnabled(true);
 			 //Login();
 			 break;
 		}
 		case 2:
 		{
+			delete render ;
 			//getUserInfo();
 				QMessageBox::warning(this, "macoin",
 						tr("login server fail!"),
 						QMessageBox::Ok, QMessageBox::Ok);
-				ui->loginButton->setEnabled(true);
+				ui->LoginButton->setEnabled(true);
 			break;
 		}
 		case 11:
 		{
+			delete render2 ;
 			  QMessageBox::warning(this, "macoin",
 					(tr("please login first or checking network!")),
 					QMessageBox::Ok, QMessageBox::Ok);
 			  ui->SubscriptButton->setEnabled(true);
+
+			ui->passwordLabel->setText("");
+			ui->frame2->setVisible(true);
+			ui->frame->setVisible(false);
 			break;
 		}
 		case 12:
 		{
+			delete render2 ;
   			  QMessageBox::warning(this, "macoin",
-					(tr("no more than three address or not login")),
+					(tr("no more than one address or not login")),
 					QMessageBox::Ok, QMessageBox::Ok);
 			  ui->SubscriptButton->setEnabled(true);
 			break;
 		}
 		case 13:
 		{
+			delete render2 ;
   			  QMessageBox::warning(this, "macoin",
 					(tr("add multisigaddress error ")),
 					QMessageBox::Ok, QMessageBox::Ok);
@@ -496,6 +458,7 @@ void LoginDialog::OnNotify(int  type)
 		}
 		case 14:
 		{
+			delete render2 ;
 		   //render1 = new LoginThread(2);
 		   //connect(render1,SIGNAL(getinfonotify(Object)),this,SLOT(OnNotifyGetInfo(Object)));  
 		   //render1->startwork(); 
@@ -504,6 +467,14 @@ void LoginDialog::OnNotify(int  type)
 						(tr("apply Success!")),
 						QMessageBox::Ok, QMessageBox::Ok);
 			ui->SubscriptButton->setEnabled(true);
+			break;
+		}
+		case 15:
+		{
+			delete render3;
+			ui->SubscriptButton->setEnabled(true);
+			ui->LogoutButton->setEnabled(true);
+
 			break;
 		}
 	}
@@ -546,7 +517,7 @@ void LoginDialog::OnNotifyGetInfo(Object userinfo)
 			   {
 				   ui->label_Address1->setText(QString::fromStdString(serveraddr));
 			   }else if(i==1){
-				   ui->label_Address2->setText(QString::fromStdString(serveraddr));
+				   //ui->label_Address2->setText(QString::fromStdString(serveraddr));
 			   }else if(i==2){
 				   ui->label_Address3->setText(QString::fromStdString(serveraddr));
 			   }
@@ -555,14 +526,18 @@ void LoginDialog::OnNotifyGetInfo(Object userinfo)
    }
 
 	ui->UIDLabel->setText(QString::fromStdString(UID));
-	ui->phoneLabel->setText(QString::fromStdString(phone));
+	//ui->phoneLabel->setText(QString::fromStdString(phone));
 	ui->emailLabel->setText(QString::fromStdString(email));
 }
 
 void LoginDialog::on_loginButton_clicked()
 {
+		 ui->LoginButton->setEnabled(false);
     if(!model || !model->getOptionsModel() || !model->getAddressTableModel() )//|| !model->getRecentRequestsTableModel()
+	{
+		ui->LoginButton->setEnabled(true);	
         return;
+	}
 
     QString strusername = ui->usernameLabel->text();
 	QString strpassword = ui->passwordLabel->text();
@@ -571,12 +546,13 @@ void LoginDialog::on_loginButton_clicked()
         QMessageBox::warning(this, "macoin",
                 tr("username or password is empty"),
                 QMessageBox::Ok, QMessageBox::Ok);
+		ui->LoginButton->setEnabled(true);	
 		return ;
 	}
 	
 	render = new LoginThread(1);
      connect(render,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
-	 ui->loginButton->setEnabled(false);
+	 ui->LoginButton->setEnabled(false);
 	 render->setpassword(strpassword);
 	 render->setusername(strusername);
      render->startwork();    
@@ -632,46 +608,4 @@ void LoginDialog::keyPressEvent(QKeyEvent *event)
     }
 
     this->QDialog::keyPressEvent(event);
-}
-
-// copy column of selected row to clipboard
-void LoginDialog::copyColumnToClipboard(int column)
-{
-    //if(!model || !model->getRecentRequestsTableModel() || !ui->recentRequestsView->selectionModel())
-        //return;
-    //QModelIndexList selection = ui->recentRequestsView->selectionModel()->selectedRows();
-    //if(selection.empty())
-        //return;
-    // correct for selection mode ContiguousSelection
-//    QModelIndex firstIndex = selection.at(0);
-    //GUIUtil::setClipboard(model->getRecentRequestsTableModel()->data(firstIndex.child(firstIndex.row(), column), Qt::EditRole).toString());
-}
-
-// context menu
-void LoginDialog::showMenu(const QPoint &point)
-{
-    //if(!model || !model->getRecentRequestsTableModel() || !ui->recentRequestsView->selectionModel())
-        //return;
-    //QModelIndexList selection = ui->recentRequestsView->selectionModel()->selectedRows();
-    //if(selection.empty())
-        //return;
-    //contextMenu->exec(QCursor::pos());
-}
-
-// context menu action: copy label
-void LoginDialog::copyLabel()
-{
-    //copyColumnToClipboard(RecentRequestsTableModel::Label);
-}
-
-// context menu action: copy message
-void LoginDialog::copyMessage()
-{
-    //copyColumnToClipboard(RecentRequestsTableModel::Message);
-}
-
-// context menu action: copy amount
-void LoginDialog::copyAmount()
-{
-    //copyColumnToClipboard(RecentRequestsTableModel::Amount);
 }

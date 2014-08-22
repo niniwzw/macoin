@@ -12,7 +12,7 @@
 #include <QVariant>
 #include <QThread>  
 
-
+#include "walletmodel.h"
 //#include "rpcserver.h"
 //#include "rpcclient.h"
 #include "bitcoinrpc.h"
@@ -47,6 +47,7 @@ signals:
 		void getinfonotify(Object);
 
 private:
+	WalletModel::UnlockContext *m_ctx ;
 	int  m_type ;
 	QString strusername ;
 	QString strpassword;
@@ -55,7 +56,9 @@ public:
     LoginThread(int type)
     {  
 			m_type = type ;
-    };  
+    }; 
+ 
+	void setUnlockContext(WalletModel::UnlockContext * ctx);
 
 	void setpassword(QString password);
 	void setusername(QString name);
@@ -97,6 +100,8 @@ private:
 	LoginThread *render;  
 	LoginThread *render1;  
 	LoginThread *render2;  
+	LoginThread *render3;  
+
 
 	void SubScribeAddress();
 	void Login();
@@ -109,10 +114,6 @@ private slots:
     void on_removeRequestButton_clicked();
     void on_recentRequestsView_doubleClicked(const QModelIndex &index);
     void updateDisplayUnit();
-    void showMenu(const QPoint &);
-    void copyLabel();
-    void copyMessage();
-    void copyAmount();
 
 	void showLoginView();
 

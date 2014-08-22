@@ -37,7 +37,7 @@
         <item row="3" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QPushButton" name="loginButton">
+           <widget class="QPushButton" name="LoginButton">
             <property name="minimumSize">
              <size>
               <width>120</width>
@@ -247,39 +247,6 @@
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="label_phone">
-          <property name="toolTip">
-           <string>Phone</string>
-          </property>
-          <property name="text">
-           <string>Phone:</string>
-          </property>
-          <property name="buddy">
-           <cstring>phoneLabel</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="phoneLabel">
-          <property name="toolTip">
-           <string>phone.</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_Address2">
-          <property name="toolTip">
-           <string>Address.</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="buddy">
-           <cstring>addressLabel</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
          <widget class="QLabel" name="label_status">
           <property name="text">
            <string>status:</string>
@@ -289,14 +256,14 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="2" column="1">
          <widget class="QLabel" name="statusLabel">
           <property name="toolTip">
            <string>status.</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="2">
+        <item row="2" column="2">
          <widget class="QLabel" name="label_Address3">
           <property name="toolTip">
            <string>Address</string>
@@ -309,7 +276,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
+        <item row="3" column="2">
          <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -322,7 +289,7 @@
           </property>
          </spacer>
         </item>
-        <item row="4" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="label_email">
           <property name="toolTip">
            <string>Email.</string>
@@ -338,20 +305,20 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="3" column="1">
          <widget class="QLabel" name="emailLabel">
           <property name="toolTip">
            <string>email.</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="blank_label1"/>
         </item>
-        <item row="6" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="blank_label2"/>
         </item>
-        <item row="7" column="1">
+        <item row="6" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QPushButton" name="SubscriptButton">
@@ -385,7 +352,7 @@
           </item>
          </layout>
         </item>
-        <item row="7" column="2">
+        <item row="6" column="2">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QPushButton" name="LogoutButton">
@@ -419,7 +386,7 @@
           </item>
          </layout>
         </item>
-        <item row="8" column="0">
+        <item row="7" column="0">
          <widget class="QLabel" name="blank_label3"/>
         </item>
        </layout>
@@ -432,7 +399,7 @@
  <tabstops>
   <tabstop>usernameLabel</tabstop>
   <tabstop>passwordLabel</tabstop>
-  <tabstop>loginButton</tabstop>
+  <tabstop>LoginButton</tabstop>
   <tabstop>SubscriptButton</tabstop>
   <tabstop>LogoutButton</tabstop>
  </tabstops>

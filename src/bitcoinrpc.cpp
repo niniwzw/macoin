@@ -1372,7 +1372,7 @@ int CommandLineRPC(int argc, char *argv[])
 }
 
 
-static bool oauth2debug = true;
+static bool oauth2debug = false;
 Object CallHTTP(const string& host, const string& url, const string& method, const map<string,string>& params, const map<string,string>& header, bool fUseSSL)
 {
     // Connect to localhost
@@ -1605,11 +1605,11 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     CWalletTx wtx;
     if (pwalletMain->IsLocked()) {
-		pwalletMain->Unlock("1");
-		if (pwalletMain->IsLocked())
-		{
+		//pwalletMain->Unlock("1");
+		//if (pwalletMain->IsLocked())
+		//{
 			throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
-		}
+		//}
 	}
     bool fComplete;
     map<uint160, CScript> redeemScript;

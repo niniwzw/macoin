@@ -483,7 +483,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="-200"/>
         <source>Macoin</source>
-        <translation>马币</translation>
+        <translation>马币测试</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -2097,8 +2097,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../logindialog.cpp" line="189"/>
-        <source>no more than three address or not login</source>
-        <translation>申请最多3个实名地址!</translation>
+        <source>no more than one address or not login</source>
+        <translation>申请最多1个实名地址!</translation>
     </message>
     <message>
         <location filename="../logindialog.cpp" line="199"/>
