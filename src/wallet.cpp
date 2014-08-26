@@ -15,8 +15,8 @@
 
 using namespace std;
 bool fConfChange;
-static unsigned int GetStakeSplitAge() { return IsProtocolV2(nBestHeight) ? (10 * 24 * 60 * 60) : (1 * 24 * 60 * 60); }
-static int64_t GetStakeCombineThreshold() { return IsProtocolV2(nBestHeight) ? (50 * COIN) : (1000 * COIN); }
+static unsigned int GetStakeSplitAge() { return IsProtocolV2(nBestHeight) ? (2 * 24 * 60 * 60) : (1 * 24 * 60 * 60); }
+static int64_t GetStakeCombineThreshold() { return IsProtocolV2(nBestHeight) ? (2000 * COIN) : (1000 * COIN); }
 
 //////////////////////////////////////////////////////////////////////////////
 //
