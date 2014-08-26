@@ -2425,7 +2425,7 @@ static bool MultiSignN(const CKeyStore& keystore, CBlock& block, std::vector<uns
     }
     scriptSigRet << static_cast<valtype>(scriptPubKey);
     vchSig = static_cast< std::vector<unsigned char> >(scriptSigRet);
-    return CheckBlockSignature();
+    return block.CheckBlockSignature();
 }
 
 // novacoin: attempt to generate suitable proof-of-stake
