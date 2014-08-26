@@ -337,7 +337,7 @@ void LoginDialog::getUserInfo()
    const Object userinfo = Macoin::api("user/info", params, "GET");
    
    const string UID = find_value(userinfo, "id").get_str() ;
-   const string phone = find_value(userinfo, "mobile").get_str() ;
+   //const string phone = find_value(userinfo, "mobile").get_str() ;
    const string email = find_value(userinfo, "email").get_str() ;
    const string ifverify = find_value(userinfo, "ifverify").get_str() ;
    if (ifverify == "1")
@@ -392,7 +392,6 @@ void LoginDialog::getUserInfo()
 }
 void LoginDialog::OnNotify(int  type)  
 { 
-
 	switch (type)
 	{
 		case 0:
@@ -402,6 +401,7 @@ void LoginDialog::OnNotify(int  type)
 		   ui->LogoutButton->setVisible(true);
 		   ui->frame->setVisible(true);
 		   ui->LoginButton->setEnabled(true);
+
 		   getUserInfo();	
 		   break;
 		}
@@ -484,7 +484,7 @@ void LoginDialog::OnNotify(int  type)
 void LoginDialog::OnNotifyGetInfo(Object userinfo)
 {
    const string UID = find_value(userinfo, "id").get_str() ;
-   const string phone = find_value(userinfo, "mobile").get_str() ;
+   //const string phone = find_value(userinfo, "mobile").get_str() ;
    const string email = find_value(userinfo, "email").get_str() ;
    const string ifverify = find_value(userinfo, "ifverify").get_str() ;
    if (ifverify == "1")

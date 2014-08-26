@@ -2130,6 +2130,11 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <source>no pass realname verify</source>
         <translation>没有通过实名认证</translation>
     </message>
+    <message>
+        <location filename="../logindialog.cpp" line="189"/>
+        <source>local private key is missing, logout</source>
+        <translation>本地私钥没有找到,请登出!</translation>
+    </message>
 </context>
 <context>
     <name>SignVerifyMessageDialog</name>

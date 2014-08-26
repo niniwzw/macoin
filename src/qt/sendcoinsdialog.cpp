@@ -85,6 +85,11 @@ int SendThread::SendCoins()
 				{
 					delete m_ctx;
 					return 1;
+
+					/*if(errorvalue.get_str() == "11000"){
+						println("Î´Öª´íÎó");
+					}
+					*/
 				}
 				
 				Value rawValue = find_value(transactionObj , "hex");
