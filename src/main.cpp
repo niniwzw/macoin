@@ -1193,7 +1193,7 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
 
     // Check proof of work matches claimed amount
     if (hash > bnTarget.getuint256())
-        return error("CheckProofOfWork() : hash doesn't match nBits");
+        return false;
 
     return true;
 }
@@ -2728,7 +2728,7 @@ bool LoadBlockIndex(bool fAllowNew)
         block.nVersion = 1;
         block.nTime    = 1409049471;
         block.nBits    = bnProofOfWorkLimit.GetCompact();
-        block.nNonce   = !fTestNet ? 766845 : 216178;
+        block.nNonce   = !fTestNet ? 1680281 : 216178;
 
         //find genesisblock
         
@@ -2737,7 +2737,7 @@ bool LoadBlockIndex(bool fAllowNew)
         }
         //// debug print
         block.print();
-        assert(block.hashMerkleRoot == uint256("0x8899abebd005596bde66e811cc877fef0b1f2ba47839d51995937dd25a7b0be8"));
+        assert(block.hashMerkleRoot == uint256("0x0d38063e851dfae17b785d775e59fb4719cc351fa05a5af93552e32e6be611a7"));
         assert(block.GetHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet));
         assert(block.CheckBlock());
 
