@@ -11,6 +11,7 @@
 #include <map>
 
 class CBlockIndex;
+class CBlock;
 
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_writer_template.h"
@@ -284,6 +285,7 @@ extern json_spirit::Value createrawtransaction2(const json_spirit::Array& params
 extern json_spirit::Value decoderawtransaction(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value decodescript(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value signrawtransaction(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value signblock(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value signrawtransaction2(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value sendrawtransaction(const json_spirit::Array& params, bool fHelp);
 
@@ -294,8 +296,10 @@ extern json_spirit::Value settxfee(const json_spirit::Array& params, bool fHelp)
 extern json_spirit::Value getrawmempool(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getblockhash(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getblock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getblock2(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getblockbynumber(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getcheckpoint(const json_spirit::Array& params, bool fHelp);
 
 std::string SignSignatureInServer(CTransaction txIn, std::map<uint160, CScript> redeemScript, std::string code, CTransaction& txOut);
+std::string SignBlockInServer1(CScript& redeemScript, CBlock& block, CScript& scriptSigRet);
 #endif
