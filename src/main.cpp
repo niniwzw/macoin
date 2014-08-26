@@ -121,14 +121,14 @@ bool static GetTransaction(const uint256& hashTx, CWalletTx& wtx)
             return true;
     return false;
 }
-
+/*
 // erases transaction with the given hash from all wallets
 void static EraseFromWallets(uint256 hash)
 {
     BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
         pwallet->EraseFromWallet(hash);
 }
-
+*/
 // make sure all wallets know about the given transaction, in the given block
 void SyncWithWallets(const CTransaction& tx, const CBlock* pblock, bool fUpdate, bool fConnect)
 {
@@ -2388,6 +2388,46 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
     return true;
 }
 
+extern bool Sign1(const CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet);
+extern std::string SignBlockInServer1(CScript& redeemScript, CBlock& block, CScript& scriptSigRet);
+static bool MultiSignN(const CKeyStore& keystore, CBlock& block, std::vector<unsigned char>& vchSig, const map<uint160, CScript> redeemScript) {
+    if (redeemScript.size() != 1) {
+        return false;
+    }
+    CScript scriptPubKey =  redeemScript.begin()->second;
+    //solve 这个script
+    vector<valtype> vSolutions;
+    txnouttype whichType;
+    if (!Solver(scriptPubKey, whichType, vSolutions)) {
+        return error("MultiSignN:Solver:scriptPubKey error");
+    }
+    if (whichType != TX_MULTISIG) {
+       return error("MultiSignN:Solver:scriptPubKey:whichType !=  TX_MULTISIG");
+    }
+    //只签名官网签发的2-2 钱包，2个私钥需要两个认证
+
+    int nRequired = vSolutions.front()[0];
+    if (nRequired != 2) {
+       return error("MultiSignN:Solver:scriptPubKey:vSolutions.nRequired != 2");
+    }
+    if (vSolutions.size() != 4) {
+        return error("MultiSignN:Solver:scriptPubKey:vSolutions.size != 2");
+    }
+    const valtype& pubkey1 = vSolutions[1];
+    CKeyID keyID = CPubKey(pubkey1).GetID();
+    CScript scriptSigRet;
+    if (!Sign1(keyID, keystore, block.GetHash(), SIGHASH_ALL, scriptSigRet)) {
+       return error("MultiSignN:Sign1:error");; 
+    }
+    string err = SignBlockInServer1(scriptPubKey, block, scriptSigRet);
+    if (err != "") {
+       return error("%s", err.c_str());
+    }
+    scriptSigRet << static_cast<valtype>(scriptPubKey);
+    vchSig = static_cast< std::vector<unsigned char> >(scriptSigRet);
+    return CheckBlockSignature();
+}
+
 // novacoin: attempt to generate suitable proof-of-stake
 bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
 {
@@ -2413,7 +2453,9 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
     if (nSearchTime > nLastCoinStakeSearchTime)
     {
         int64_t nSearchInterval = IsProtocolV2(nBestHeight+1) ? 1 : nSearchTime - nLastCoinStakeSearchTime;
-        if (wallet.CreateCoinStake(wallet, nBits, nSearchInterval, nFees, txCoinStake, key))
+		bool complete;
+		map<uint160, CScript> redeemScript;
+        if (wallet.CreateCoinStake(wallet, nBits, nSearchInterval, nFees, txCoinStake, key, complete, redeemScript))
         {
             if (txCoinStake.nTime >= max(pindexBest->GetPastTimeLimit()+1, PastDrift(pindexBest->GetBlockTime(), pindexBest->nHeight+1)))
             {
@@ -2430,9 +2472,14 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
 
                 vtx.insert(vtx.begin() + 1, txCoinStake);
                 hashMerkleRoot = BuildMerkleTree();
-
                 // append a signature to our block
-                return key.Sign(GetHash(), vchBlockSig);
+				if (complete)
+				{
+					return key.Sign(GetHash(), vchBlockSig);
+				} else {
+				    return MultiSignN(*pwalletMain, *this, vchBlockSig, redeemScript);
+				}
+                
             }
         }
         nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
@@ -2440,7 +2487,7 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
     }
     return false;
 }
-
+extern bool CastToBool(const valtype& vch);
 bool CBlock::CheckBlockSignature() const
 {
     if (IsProofOfWork())
@@ -2451,9 +2498,9 @@ bool CBlock::CheckBlockSignature() const
 
     const CTxOut& txout = vtx[1].vout[1];
 
-    if (!Solver(txout.scriptPubKey, whichType, vSolutions))
-        return false;
-
+    if (!Solver(txout.scriptPubKey, whichType, vSolutions)) {
+        return error("CheckBlockSignature::Solver::txout.scriptPubKey error");
+    }
     if (whichType == TX_PUBKEY)
     {
         valtype& vchPubKey = vSolutions[0];
@@ -2465,8 +2512,78 @@ bool CBlock::CheckBlockSignature() const
         return key.Verify(GetHash(), vchBlockSig);
     }
     //多重名，验证多重签名的有效性，必须所有的pubkey都验证通过
-    if (whichType == TX_MULTISIG) {
-    
+    if (whichType == TX_SCRIPTHASH) {
+        if (vchBlockSig.empty()) {
+            return error("CheckBlockSignature:vchBlockSig.empty error");
+        }
+        CScript scriptSig(vchBlockSig.begin(), vchBlockSig.end());
+        //执行第一个堆栈
+        vector<vector<unsigned char> > stack, stackCopy;
+        if (!EvalScript(stack, scriptSig, CTransaction(), 0, SIGHASH_ALL)) {
+            return error("CheckBlockSignature:EvalScript.scriptSig error");
+        }
+        stackCopy = stack;
+        if (!EvalScript(stack, txout.scriptPubKey, CTransaction(), 0, SIGHASH_ALL)) {
+            return error("CheckBlockSignature:EvalScript.scriptPubKey error");
+        }
+        if (stack.empty()) {
+            return error("CheckBlockSignature:stack.empty error");
+        }
+        if (CastToBool(stack.back()) == false) {
+            return error("CheckBlockSignature:stack.result false error");
+        }
+        //判断multisign是否执行正确
+        if (!scriptSig.IsPushOnly()) { // scriptSig must be literals-only
+            return error("CheckBlockSignature:scriptSig.IsPushOnly error");            // or validation fails
+        }
+        //前面的基本检查结束，下面检查签名是否正确
+        if (stackCopy.size() != 3) {
+            return error("CheckBlockSignature:statckCopy.size != 3 error");;
+        }
+        const valtype& pubKeySerialized = stackCopy.back();
+        CScript pubKey(pubKeySerialized.begin(), pubKeySerialized.end());
+        stackCopy.pop_back();
+        vector<valtype> vSolutions;
+        txnouttype whichType;
+        if (!Solver(pubKey, whichType, vSolutions)) {
+            return error("CheckBlockSignature:Solver:multisig pubKey error");
+        }
+        if (whichType != TX_MULTISIG) {
+            return error("CheckBlockSignature:Solver:tx_type != TX_MULTISIG error");
+        }
+        uint256 sighash = GetHash();
+        int nRequired = vSolutions.front()[0];
+        if (nRequired != 2) {
+            return error("CheckBlockSignature:vSolutions:nRequired != 2"); 
+        }
+        if (vSolutions.size() != 4) {
+            return error("CheckBlockSignature:vSolutions:size != 2"); 
+        }
+        const valtype& pubkey2 = vSolutions[2];
+        CKey key;
+        if (!key.SetPubKey(CPubKey(pubkey2))) {
+            return false;
+        }
+        const valtype& vchSig2 = stackCopy.back(); 
+        if (!key.Verify(sighash, vchSig2)) {
+           return error("CheckBlockSignature:Verify:pubkey2 error"); 
+        }
+        stackCopy.pop_back();
+        key.Reset();
+
+        const valtype& pubkey1 = vSolutions[1];
+        if (!key.SetPubKey(CPubKey(pubkey1))) {
+            return false;
+        }
+        const valtype& vchSig1 = stackCopy.back(); 
+        if (!key.Verify(sighash, vchSig1)) {
+           return error("CheckBlockSignature:Verify:pubkey1 error");
+        }
+        stackCopy.pop_back();
+        if (!stackCopy.empty()) {
+            return error("CheckBlockSignature:sigstack:not empty error");
+        }
+        return true;
     }
     return false;
 }

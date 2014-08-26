@@ -159,9 +159,10 @@ Value rescanwallet(const Array& params, bool fHelp)
         throw runtime_error(
             "rescanwallet \n"
             "rescanwallet to update balance.");
-
-    if (fWalletUnlockStakingOnly)
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
+    bool copy = fWalletUnlockStakingOnly;
+    if (copy) {
+        fWalletUnlockStakingOnly = false;
+	}
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -171,6 +172,9 @@ Value rescanwallet(const Array& params, bool fHelp)
         pwalletMain->ScanForWalletTransactions(pindexGenesisBlock, true);
         pwalletMain->ReacceptWalletTransactions();
     }
+	if (copy) {
+        fWalletUnlockStakingOnly = true;
+	}
     return Value::null;
 }
 

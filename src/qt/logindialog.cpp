@@ -176,33 +176,10 @@ LoginDialog::LoginDialog(QWidget *parent) :
     //ui->showRequestButton->setIcon(QIcon());
     //ui->removeRequestButton->setIcon(QIcon());
 #endif
-
-    // context menu actions
-    QAction *copyLabelAction = new QAction(tr("Copy label"), this);
-    //QAction *copyMessageAction = new QAction(tr("Copy message"), this);
-    QAction *copyAmountAction = new QAction(tr("Copy amount"), this);
-
-    // context menu
-    contextMenu = new QMenu();
-    contextMenu->addAction(copyLabelAction);
-    //contextMenu->addAction(copyMessageAction);
-    contextMenu->addAction(copyAmountAction);
-
-    // context menu signals
-    //connect(ui->recentRequestsView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showMenu(QPoint)));
-    connect(copyLabelAction, SIGNAL(triggered()), this, SLOT(copyLabel()));
-    //connect(copyMessageAction, SIGNAL(triggered()), this, SLOT(copyMessage()));
-    connect(copyAmountAction, SIGNAL(triggered()), this, SLOT(copyAmount()));
-	
 	connect(ui->LoginButton, SIGNAL(clicked()), this, SLOT(on_loginButton_clicked()));
 	connect(ui->SubscriptButton, SIGNAL(clicked()), this, SLOT(on_subscriptButton_clicked()));
 	connect(ui->LogoutButton, SIGNAL(clicked()), this, SLOT(on_logoutButton_clicked()));
-
-
 	ui->frame->setVisible(false);
-		
-
-    //connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(clear()));
 }
 
 void LoginDialog::setModel(WalletModel *model)

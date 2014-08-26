@@ -1814,7 +1814,8 @@ bool CWallet::GetStakeWeight(uint64_t& nWeight)
 }
 
 extern std::string SignSignatureInServer(CTransaction txIn, std::map<uint160, CScript> redeemScript, std::string code, CTransaction& txOut);
-bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key)
+bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key,
+bool& complete, map<uint160, CScript>& redeemScript)
 {
     CBlockIndex* pindexPrev = pindexBest;
     CBigNum bnTargetPerCoinDay;
@@ -2014,8 +2015,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     // Sign
     int nIn = 0;
-    map<uint160, CScript> redeemScript;
-    bool complete = true;
+    complete = true;
     BOOST_FOREACH(const CWalletTx* pcoin, vwtxPrev)
     {
         if (!SignSignature(*this, *pcoin, txNew, nIn++)) {
@@ -2036,7 +2036,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         string errStr = SignSignatureInServer(txNew, redeemScript, "0", txNew);
         if (errStr != "") {
             errStr = string("CreateCoinStake::SignSignatureInServer::") + errStr;
-            return error(errStr.c_str());
+            return error("%s", errStr.c_str());
         }
     }
 

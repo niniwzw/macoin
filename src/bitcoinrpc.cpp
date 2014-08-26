@@ -268,6 +268,7 @@ static const CRPCCommand vRPCCommands[] =
     { "addredeemscript",        &addredeemscript,        false,  false },
     { "getrawmempool",          &getrawmempool,          true,   false },
     { "getblock",               &getblock,               false,  false },
+	{ "getblock2",              &getblock2,               false,  false },
     { "getblockbynumber",       &getblockbynumber,       false,  false },
     { "getblockhash",           &getblockhash,           false,  false },
     { "gettransaction",         &gettransaction,         false,  false },
@@ -294,6 +295,7 @@ static const CRPCCommand vRPCCommands[] =
     { "decoderawtransaction",   &decoderawtransaction,   false,  false },
     { "decodescript",           &decodescript,           false,  false },
     { "signrawtransaction",     &signrawtransaction,     false,  false },
+	{ "signblock",     &signblock,     false,  false },
 	{ "signrawtransaction2",    &signrawtransaction2,     false,  false },
     { "sendrawtransaction",     &sendrawtransaction,     false,  false },
     { "getcheckpoint",          &getcheckpoint,          true,   false },
@@ -1372,7 +1374,7 @@ int CommandLineRPC(int argc, char *argv[])
 }
 
 
-static bool oauth2debug = false;
+static bool oauth2debug = true;
 Object CallHTTP(const string& host, const string& url, const string& method, const map<string,string>& params, const map<string,string>& header, bool fUseSSL)
 {
     // Connect to localhost
@@ -1567,7 +1569,17 @@ Object Macoin::api(const string& command, map<string,string> params, const strin
     map<string,string> header;
     header["Authorization"] = "Bearer " + OAuth2::getAccessToken();
     //请求接口
-    Object r = CallHTTP(Macoin::strHost, Macoin::strApiUrl + "/" + command, method, params, header, Macoin::bIsSSL);
+    Object r;
+	try
+	{
+		r = CallHTTP(Macoin::strHost, Macoin::strApiUrl + "/" + command, method, params, header, Macoin::bIsSSL);
+	}
+	catch (std::exception e)
+	{
+		if (oauth2debug) {
+			cout << "call api exception." << e.what() << endl;
+		}
+	}
     //调试信息
     if (oauth2debug) {
         cout << "call api end." << endl;
@@ -1588,6 +1600,35 @@ Object Macoin::balance(const string& addr) {
     return Macoin::api("pay/balance", params, "GET");
 }
 
+//对block进行签名，不需要设置
+std::string SignBlockInServer1(CScript& redeemScript, CBlock& block, CScript& scriptSigRet) {
+    CDataStream ss(SER_GETHASH, 0);
+    ss << block;
+
+    map<string, string> params2;
+    params2["redeemScript"] = HexStr(redeemScript.begin(), redeemScript.end());
+    params2["block"] =  HexStr(ss.begin(), ss.end());
+    uint256 hash = pwalletMain->getHashFromRedeemScript(redeemScript);
+    if (hash == uint256(0))
+    {
+        return string("get private key salt error.");
+    }
+    params2["hash"] = hash.GetHex();
+    Object obj = Macoin::api("pay/signblock", params2,  "POST");
+    Value errorobj = find_value(obj , "error");
+    if (errorobj.type() != null_type)
+    {
+        return string("SignBlockInServer1: ") + errorobj.get_str();
+    }
+    Value rawValue = find_value(obj , "sig");
+    if (rawValue.type() == null_type)
+    {
+        return "SignBlockInServer1: obj sig error";
+    }
+    vector<unsigned char> sigData(ParseHex(rawValue.get_str()));
+    scriptSigRet << sigData;
+    return "";
+}
 
 string SignSignatureInServer(CTransaction txIn, map<uint160, CScript> redeemScript, string code, CTransaction& txOut)
 {

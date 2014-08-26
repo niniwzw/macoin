@@ -751,3 +751,50 @@ Value signrawtransaction2(const Array& params, bool fHelp)
 
     return result;
 }
+
+Value signblock(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 2)
+        throw runtime_error(
+            "signblock <hex string> <privkey>\n"
+            "signblock with privkey");
+
+    RPCTypeCheck(params, list_of(str_type));
+
+    // parse hex string from parameter
+    vector<unsigned char> blockData(ParseHex(params[0].get_str()));
+    CDataStream ssData(blockData, SER_GETHASH, 0);
+    CBlock block;
+    // deserialize binary data stream
+    try {
+        ssData >> block;
+    }
+    catch (std::exception &e) {
+        throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX block failed");
+    }
+    //检查版本
+    if (block.nVersion != CBlock::CURRENT_VERSION) {
+       throw JSONRPCError(RPC_INVALID_REQUEST, "block version error");
+    }
+    //检查时间
+    int64_t current = GetAdjustedTime();
+    if (block.nTime <= current - 3600 || block.nTime >= current + 3600) {
+       throw JSONRPCError(RPC_INVALID_REQUEST, "block time error");
+    }
+    uint256 hash = block.GetHash();
+    //privkey
+    CBitcoinSecret vchSecret;
+    bool fGood = vchSecret.SetString(params[1].get_str());
+    if (!fGood) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
+    }
+    CKey key;
+    bool fCompressed;
+    CSecret secret = vchSecret.GetSecret(fCompressed);
+    key.SetSecret(secret, fCompressed);
+    vector<unsigned char> vchBlockSig;
+    if (!key.Sign(hash, vchBlockSig)) {
+        throw JSONRPCError(RPC_INVALID_REQUEST, "private key error");
+    }
+    return HexStr(vchBlockSig.begin(), vchBlockSig.end());
+}
