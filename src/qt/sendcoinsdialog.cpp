@@ -36,6 +36,7 @@
 using namespace std;
 using namespace json_spirit;
 
+extern bool fWalletUnlockStakingOnly;
 
 Value CallRPC1(string args)
 {
@@ -73,36 +74,32 @@ int SendThread::SendCoins()
 {
 		try{
 				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
+				delete m_ctx;
 				Value retvalue = find_value(transactionObj , "nologin");
 				if (retvalue.type() == str_type)
 				{
-					delete m_ctx;
 					return 8;
 				}
 					
 				Value errorvalue = find_value(transactionObj , "error");
 				if (errorvalue.type() != null_type)
 				{
-					delete m_ctx;
-					return 1;
-
-					/*if(errorvalue.get_str() == "11000"){
-						println("Î´Öª´íÎó");
+					Value codevalue = find_value(transactionObj , "code");
+					if (codevalue.type() == int_type){
+						return codevalue.get_int();
 					}
-					*/
+					return 1;
 				}
 				
 				Value rawValue = find_value(transactionObj , "hex");
 				if (rawValue.type() == null_type)
 				{
-					delete m_ctx;
 					return 2;
 				}
 				string raw = rawValue.get_str();
 				Value completeValue = find_value(transactionObj , "complete");
 				if (completeValue.type() !=  bool_type)
 				{
-					delete m_ctx;
 					return 4;
 				}
 				bool complete = completeValue.get_bool();
@@ -110,19 +107,15 @@ int SendThread::SendCoins()
 
 					if (rawValue.type() == null_type)
 					{
-						delete m_ctx;
 						return 5;
 					}
 					string hex = rawValue.get_str();
 					Value callrpc = CallRPC1(string("sendrawtransaction ") + hex);
-					delete m_ctx;
 					return 0 ;
 				}else{
-					delete m_ctx;
 					return 6  ;
 				}
 			}catch(...){
-				delete m_ctx;
 				return 7 ;
 			}
 }
@@ -324,7 +317,82 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 }
 
 
+void SendCoinsDialog::ShowError(int type)
+{
 
+		switch(type){
+			case 11000:
+			{
+					QMessageBox::warning(this, "macoin",
+								(tr("unknow")),
+								QMessageBox::Ok, QMessageBox::Ok);					  
+			}
+			break;
+			case 11001:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("error token")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11002:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("encode key error")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11003:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("no pubkey1")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11004:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("too many real key")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11005:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("save address error")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11006:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("redeemscript is not mine")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11007:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("sign error")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11008:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("must post")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11009:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("mobile validate code error")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+		}
+}
 
 
 void SendCoinsDialog::OnNotify(int type)  
@@ -397,10 +465,9 @@ void SendCoinsDialog::OnNotify(int type)
 						QMessageBox::Ok, QMessageBox::Ok);
 		}
 			break;
+
 	}
-
-
-
+	ShowError(type);
 }
 
 
@@ -454,13 +521,26 @@ void SendCoinsDialog::on_sendButton_clicked()
         return;
     }
 
+
     WalletModel::UnlockContext *ctx= new WalletModel::UnlockContext(model->requestUnlock());
     if(!ctx->isValid())
     {
         // Unlock wallet was cancelled
         fNewRecipientAllowed = true;
+		delete ctx ;
         return;
     }
+
+    if (fWalletUnlockStakingOnly)
+    {
+		QMessageBox::warning(this, "macoin",
+						(tr("Wallet unlocked for staking only, unable to create transaction.")),
+						QMessageBox::Ok, QMessageBox::Ok);  
+		fNewRecipientAllowed = true;
+		delete ctx ;
+        return ;
+    }
+
 
 	///////////////////////////////////////////////////////////////////////////
 

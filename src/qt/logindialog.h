@@ -43,7 +43,7 @@ class LoginThread : public QThread
 {  
         Q_OBJECT  
 signals:  
-        void notify(int);  
+        void notify(int,int);  
 		void getinfonotify(Object);
 
 private:
@@ -105,6 +105,7 @@ private:
 
 	void SubScribeAddress();
 	void Login();
+	void ShowError(int errorcode,int type);
 
 private slots:
     void on_loginButton_clicked();
@@ -118,7 +119,7 @@ private slots:
 	void showLoginView();
 
 	void getUserInfo();
-	void OnNotify(int type) ;
+	void OnNotify(int errorcode ,int type) ;
 	void OnNotifyGetInfo(Object userinfo);
 signals:
     void displayLoginView();

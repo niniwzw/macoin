@@ -1897,6 +1897,61 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <source>please login first!</source>
         <translation>请先登录!</translation>
     </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="324"/>
+        <source>unknow</source>
+        <translation>未知错误</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="331"/>
+        <source>error token</source>
+        <translation>token无效，未登陆，或者没有权限</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="338"/>
+        <source>encode key error</source>
+        <translation>加密私钥失败</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="345"/>
+        <source>no pubkey1</source>
+        <translation>没有提供正确的公钥用于申请实名钱包</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="352"/>
+        <source>too many real key</source>
+        <translation>已经申请了太多的实名地址</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="359"/>
+        <source>save address error</source>
+        <translation>保存实名地址时发生了错误</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="366"/>
+        <source>redeemscript is not mine</source>
+        <translation>实名地址并非本人拥有</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="373"/>
+        <source>sign error</source>
+        <translation>签名错误</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="380"/>
+        <source>must post</source>
+        <translation>必需是POST提交</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="387"/>
+        <source>mobile validate code error</source>
+        <translation>手机验证码错误</translation>
+    </message>
+    <message>
+        <location filename="../sendcoinsdialog.cpp" line="538"/>
+        <source>Wallet unlocked for staking only, unable to create transaction.</source>
+        <translation>正在挖矿,暂时不能进行交易.</translation>
+    </message>
 </context>
 <context>
     <name>SendCoinsEntry</name>
@@ -2134,6 +2189,56 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location filename="../logindialog.cpp" line="189"/>
         <source>local private key is missing, logout</source>
         <translation>本地私钥没有找到,请登出!</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="410"/>
+        <source>unknow</source>
+        <translation>未知错误</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="417"/>
+        <source>error token</source>
+        <translation>token无效，未登陆，或者没有权限</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="424"/>
+        <source>encode key error</source>
+        <translation>加密私钥失败</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="431"/>
+        <source>no pubkey1</source>
+        <translation>没有提供正确的公钥用于申请实名钱包</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="438"/>
+        <source>too many real key</source>
+        <translation>已经申请了太多的实名地址</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="445"/>
+        <source>save address error</source>
+        <translation>保存实名地址时发生了错误</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="452"/>
+        <source>redeemscript is not mine</source>
+        <translation>实名地址并非本人拥有</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="459"/>
+        <source>sign error</source>
+        <translation>签名错误</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="466"/>
+        <source>must post</source>
+        <translation>必需是POST提交</translation>
+    </message>
+    <message>
+        <location filename="../logindialog.cpp" line="473"/>
+        <source>mobile validate code error</source>
+        <translation>手机验证码错误</translation>
     </message>
 </context>
 <context>

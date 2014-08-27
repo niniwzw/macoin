@@ -64,7 +64,17 @@ void LoginThread::startwork()
 int LoginThread::Login()
 {
 		try{
-			OAuth2::login(strusername.toStdString() ,strpassword.toStdString());
+			const Object obj = OAuth2::login(strusername.toStdString() ,strpassword.toStdString());
+			Value errorvalue = find_value(obj , "error");
+			if (errorvalue.type() != null_type)
+			{
+				Value codevalue = find_value(obj , "code");
+				if(codevalue.type() == int_type ){
+					return codevalue.get_int();
+				}
+				return 1;
+			}
+
 		}catch(...){
 			return 1;
 		}
@@ -105,14 +115,22 @@ int LoginThread::SubScribeAddress()
 		Object multiinfo ;
 		try{
 			multiinfo = Macoin::addmultisigaddress(pubkey, hash1.GetHex());
+			Value errorvalue = find_value(multiinfo , "error");
+			if (errorvalue.type() != null_type)
+			{
+				Value codevalue = find_value(multiinfo , "code");
+				if(codevalue.type() == int_type ){
+					delete m_ctx;
+					return codevalue.get_int();
+				}
+				delete m_ctx;
+				return 11;
+			}
 		}catch(...){
 			  delete m_ctx;
               return 11;
 		}
-		if (find_value(multiinfo,  "error").type() != null_type) {
-			  delete m_ctx;
-              return 12;
-        }
+
 		const string pubkey1 = "\"" + find_value(multiinfo, "pubkey1").get_str() + "\"";
 		const string pubkey2 = "\"" + find_value(multiinfo, "pubkey2").get_str() + "\"";
 		const string multiaddr = find_value(multiinfo, "addr").get_str();
@@ -132,26 +150,26 @@ void LoginThread::run()
 		case 1:
 		{
 			ret = Login();
-			emit notify(ret);  
+			emit notify(ret,1);  
 			break;
 		}
 		case 2:
 		{
-		   map<string, string> params;
-		   Object userinfo = Macoin::api("user/info", params, "GET");
+		    map<string, string> params;
+		    Object userinfo = Macoin::api("user/info", params, "GET");
 			emit getinfonotify(userinfo);  
 			break;
 		}
 		case 3:
 		{
 			ret = SubScribeAddress();
-			emit notify(ret);  
+			emit notify(ret,3);  
 			break;
 		}
 		case 4:
 		{
 			CallRPC("rescanwallet");
-			emit notify(15);  
+			emit notify(15,4);  
 			break;
 		}
 	}
@@ -263,7 +281,7 @@ void LoginDialog::on_logoutButton_clicked()
     pwalletMain->DeleteRealNameAddress();
 
 	render3 = new LoginThread(4);
-	connect(render3,SIGNAL(notify(int)),this,SLOT(OnNotify(int))); 
+	connect(render3,SIGNAL(notify(int,int)),this,SLOT(OnNotify(int,int))); 
 	ui->SubscriptButton->setEnabled(false);
 	ui->LogoutButton->setEnabled(false);
 	render3->startwork(); 	
@@ -281,11 +299,14 @@ void LoginDialog::on_subscriptButton_clicked()
 		{
 			// Unlock wallet was cancelled
 			//fNewRecipientAllowed = true;
+			delete ctx ;
 			return;
 		}
+
+
 		render2 = new LoginThread(3);
 		render2->setUnlockContext(ctx);
-		connect(render2,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
+		connect(render2,SIGNAL(notify(int,int)),this,SLOT(OnNotify(int,int)));  
 		ui->SubscriptButton->setEnabled(false);
 		render2->startwork(); 	
 		
@@ -340,7 +361,7 @@ void LoginDialog::getUserInfo()
 					QMessageBox::warning(this, "macoin",
 							tr("local private key is missing, logout"),
 							QMessageBox::Ok, QMessageBox::Ok);
-					on_logoutButton_clicked();
+					//on_logoutButton_clicked();
 					return ;
 			   }
 			   if (i==0)
@@ -355,7 +376,7 @@ void LoginDialog::getUserInfo()
 	   }
 
 		render3 = new LoginThread(4);
-		connect(render3,SIGNAL(notify(int)),this,SLOT(OnNotify(int))); 
+		connect(render3,SIGNAL(notify(int,int)),this,SLOT(OnNotify(int,int))); 
 		ui->SubscriptButton->setEnabled(false);
 		ui->LogoutButton->setEnabled(false);
 		render3->startwork(); 	
@@ -367,13 +388,112 @@ void LoginDialog::getUserInfo()
 	ui->emailLabel->setText(QString::fromStdString(email));
 
 }
-void LoginDialog::OnNotify(int  type)  
+
+
+void LoginDialog::ShowError(int errorcode ,int type)
+{
+	switch(type){
+		case 1:
+			ui->LoginButton->setEnabled(true);
+			delete render ;
+			break;
+		case 2:
+			delete render1 ;
+			break;
+		case 3:
+			ui->SubscriptButton->setEnabled(true);
+			delete render2 ;
+			break;
+		case 4:
+			ui->SubscriptButton->setEnabled(true);
+			ui->LogoutButton->setEnabled(true);
+			delete render3;
+			break;
+	}
+
+		switch(errorcode){
+			case 11000:
+			{
+					QMessageBox::warning(this, "macoin",
+								(tr("unknow")),
+								QMessageBox::Ok, QMessageBox::Ok);					  
+			}
+			break;
+			case 11001:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("error token")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11002:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("encode key error")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11003:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("no pubkey1")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11004:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("too many real key")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11005:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("save address error")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11006:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("redeemscript is not mine")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11007:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("sign error")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11008:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("must post")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+			case 11009:
+			{
+					  QMessageBox::warning(this, "macoin",
+								(tr("mobile validate code error")),
+								QMessageBox::Ok, QMessageBox::Ok);								
+			}
+			break;
+		}
+}
+
+
+
+void LoginDialog::OnNotify(int errorcode ,int  type)  
 { 
-	switch (type)
+	switch (errorcode)
 	{
 		case 0:
 		{
-		   delete render ;
+		   //delete render ;
 		   ui->frame2->setVisible(false);
 		   ui->LogoutButton->setVisible(true);
 		   ui->frame->setVisible(true);
@@ -384,7 +504,7 @@ void LoginDialog::OnNotify(int  type)
 		}
 		case 1:
 		{
-			delete render ;
+			//delete render ;
 				QMessageBox::warning(this, "macoin",
 						tr("login server fail!"),
 						QMessageBox::Ok, QMessageBox::Ok);
@@ -394,7 +514,7 @@ void LoginDialog::OnNotify(int  type)
 		}
 		case 2:
 		{
-			delete render ;
+			//delete render ;
 			//getUserInfo();
 				QMessageBox::warning(this, "macoin",
 						tr("login server fail!"),
@@ -404,7 +524,7 @@ void LoginDialog::OnNotify(int  type)
 		}
 		case 11:
 		{
-			delete render2 ;
+			//delete render2 ;
 			  QMessageBox::warning(this, "macoin",
 					(tr("please login first or checking network!")),
 					QMessageBox::Ok, QMessageBox::Ok);
@@ -417,7 +537,7 @@ void LoginDialog::OnNotify(int  type)
 		}
 		case 12:
 		{
-			delete render2 ;
+			//delete render2 ;
   			  QMessageBox::warning(this, "macoin",
 					(tr("no more than one address or not login")),
 					QMessageBox::Ok, QMessageBox::Ok);
@@ -426,7 +546,7 @@ void LoginDialog::OnNotify(int  type)
 		}
 		case 13:
 		{
-			delete render2 ;
+			//delete render2 ;
   			  QMessageBox::warning(this, "macoin",
 					(tr("add multisigaddress error ")),
 					QMessageBox::Ok, QMessageBox::Ok);
@@ -435,7 +555,7 @@ void LoginDialog::OnNotify(int  type)
 		}
 		case 14:
 		{
-			delete render2 ;
+			//delete render2 ;
 		   //render1 = new LoginThread(2);
 		   //connect(render1,SIGNAL(getinfonotify(Object)),this,SLOT(OnNotifyGetInfo(Object)));  
 		   //render1->startwork(); 
@@ -448,13 +568,14 @@ void LoginDialog::OnNotify(int  type)
 		}
 		case 15:
 		{
-			delete render3;
+			//delete render3;
 			ui->SubscriptButton->setEnabled(true);
 			ui->LogoutButton->setEnabled(true);
 
 			break;
 		}
 	}
+	ShowError(errorcode,type);
 
 }
 
@@ -487,7 +608,7 @@ void LoginDialog::OnNotifyGetInfo(Object userinfo)
 					QMessageBox::warning(this, "macoin",
 							tr("local private key is missing, logout"),
 							QMessageBox::Ok, QMessageBox::Ok);
-					on_logoutButton_clicked();
+					//on_logoutButton_clicked();
 					return ;
 			   }
 			   if (i==0)
@@ -528,7 +649,7 @@ void LoginDialog::on_loginButton_clicked()
 	}
 	
 	render = new LoginThread(1);
-     connect(render,SIGNAL(notify(int)),this,SLOT(OnNotify(int)));  
+     connect(render,SIGNAL(notify(int,int)),this,SLOT(OnNotify(int,int)));  
 	 ui->LoginButton->setEnabled(false);
 	 render->setpassword(strpassword);
 	 render->setusername(strusername);

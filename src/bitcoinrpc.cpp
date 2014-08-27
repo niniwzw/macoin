@@ -1579,6 +1579,8 @@ Object Macoin::api(const string& command, map<string,string> params, const strin
 		if (oauth2debug) {
 			cout << "call api exception." << e.what() << endl;
 		}
+		r.push_back(Pair("error", "unknow"));
+		r.push_back(Pair("code", 11000));
 	}
     //调试信息
     if (oauth2debug) {

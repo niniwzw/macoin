@@ -102,6 +102,7 @@ private slots:
     void coinControlClipboardLowOutput();
     void coinControlClipboardChange();
 	void OnNotify(int type)  ;
+	void ShowError(int type);
 };
 
 #endif // SENDCOINSDIALOG_H
