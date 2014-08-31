@@ -1345,7 +1345,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-160"/>
         <source>Stake:</source>
-        <translation>用于权益累积：</translation>
+        <translation>挖矿确认：</translation>
     </message>
     <message>
         <location line="+29"/>
