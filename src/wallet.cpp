@@ -1943,8 +1943,6 @@ bool& complete, map<uint160, CScript>& redeemScript)
                 vwtxPrev.push_back(pcoin.first);
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-                if (GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime) < GetStakeSplitAge())
-                    txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
                 if (fDebug && GetBoolArg("-printcoinstake"))
                     printf("CreateCoinStake : added kernel type=%d\n", whichType);
                 fKernelFound = true;
@@ -1988,6 +1986,11 @@ bool& complete, map<uint160, CScript>& redeemScript)
             nCredit += pcoin.first->vout[pcoin.second].nValue;
             vwtxPrev.push_back(pcoin.first);
         }
+    }
+
+    //只在nCredit 比较大的时候才进行分离，否则切分过细不利于挖矿
+    if (nCredit >= GetStakeCombineThreshold() && GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime) < GetStakeSplitAge()) {
+        txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
     }
 
     // Calculate coin age reward

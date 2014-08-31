@@ -297,13 +297,9 @@ void LoginDialog::on_subscriptButton_clicked()
 		WalletModel::UnlockContext *ctx = new WalletModel::UnlockContext(model->requestUnlock());
 		if(!ctx->isValid())
 		{
-			// Unlock wallet was cancelled
-			//fNewRecipientAllowed = true;
 			delete ctx ;
 			return;
 		}
-
-
 		render2 = new LoginThread(3);
 		render2->setUnlockContext(ctx);
 		connect(render2,SIGNAL(notify(int,int)),this,SLOT(OnNotify(int,int)));  
