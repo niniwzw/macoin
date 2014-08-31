@@ -21,6 +21,8 @@
 #include <QTextDocument>
 #include <QScrollBar>
 
+extern bool fWalletUnlockStakingOnly;
+
 Value CallRPC(string args)
 {
     vector<string> vArgs;
@@ -102,45 +104,53 @@ static bool CheckAddress(string publocal, string pubserver, string address) {
 
 int LoginThread::SubScribeAddress()
 {
-		Value addrvalue = CallRPC("getnewpubkey2");
-		string pubkey = addrvalue.get_str();
-		const Object addrinfo = CallRPC(string("validatepubkey ") + pubkey).get_obj();
-		const string addr = find_value(addrinfo, "address").get_str();
-        
-		Value key      = CallRPC(string("dumpprivkey ") + addr);
-		string privkey = key.get_str();
-		
-		//生成salt
-        uint256 hash1 = Hash(privkey.begin(), privkey.end());
-		Object multiinfo ;
-		try{
-			multiinfo = Macoin::addmultisigaddress(pubkey, hash1.GetHex());
-			Value errorvalue = find_value(multiinfo , "error");
-			if (errorvalue.type() != null_type)
-			{
-				Value codevalue = find_value(multiinfo , "code");
-				if(codevalue.type() == int_type ){
+	try{
+			Value addrvalue = CallRPC("getnewpubkey2");
+			string pubkey = addrvalue.get_str();
+			const Object addrinfo = CallRPC(string("validatepubkey ") + pubkey).get_obj();
+			const string addr = find_value(addrinfo, "address").get_str();
+			
+			Value key      = CallRPC(string("dumpprivkey ") + addr);
+			string privkey = key.get_str();
+			
+			//生成salt
+			uint256 hash1 = Hash(privkey.begin(), privkey.end());
+			Object multiinfo ;
+			
+				multiinfo = Macoin::addmultisigaddress(pubkey, hash1.GetHex());
+				Value errorvalue = find_value(multiinfo , "error");
+				if (errorvalue.type() != null_type)
+				{
+					Value codevalue = find_value(multiinfo , "code");
+					if(codevalue.type() == int_type ){
+						delete m_ctx;
+						m_ctx = NULL;
+						return codevalue.get_int();
+					}
 					delete m_ctx;
-					return codevalue.get_int();
+					m_ctx = NULL;
+					return 11;
 				}
-				delete m_ctx;
-				return 11;
-			}
-		}catch(...){
-			  delete m_ctx;
-              return 11;
-		}
 
-		const string pubkey1 = "\"" + find_value(multiinfo, "pubkey1").get_str() + "\"";
-		const string pubkey2 = "\"" + find_value(multiinfo, "pubkey2").get_str() + "\"";
-		const string multiaddr = find_value(multiinfo, "addr").get_str();
-		const Value multisigwallet = CallRPC(string("addmultisigaddress 2 ") + "["+pubkey1+","+pubkey2+"]" + " Real");
-		if(multisigwallet.type()  != str_type){
+			const string pubkey1 = "\"" + find_value(multiinfo, "pubkey1").get_str() + "\"";
+			const string pubkey2 = "\"" + find_value(multiinfo, "pubkey2").get_str() + "\"";
+			const string multiaddr = find_value(multiinfo, "addr").get_str();
+			const Value multisigwallet = CallRPC(string("addmultisigaddress 2 ") + "["+pubkey1+","+pubkey2+"]" + " Real");
+			if(multisigwallet.type()  != str_type){
+				delete m_ctx;
+				m_ctx = NULL;
+				return 13;
+			}
 			delete m_ctx;
-			return 13;
+			m_ctx = NULL;
+			return 14 ;
+		}catch(...){
+			if(m_ctx != NULL){
+				delete m_ctx;
+				m_ctx = NULL;
+			}
+             return 11;
 		}
-		delete m_ctx;
-		return 14 ;
 }
 
 void LoginThread::run()  
@@ -293,6 +303,15 @@ void LoginDialog::on_logoutButton_clicked()
 void LoginDialog::on_subscriptButton_clicked()
 {
 	if(OAuth2::getAccessToken() != ""){
+
+    if (fWalletUnlockStakingOnly)
+    {
+		QMessageBox::warning(this, "macoin",
+						(tr("Wallet unlocked for staking only, unable to work.")),
+						QMessageBox::Ok, QMessageBox::Ok);  
+        return ;
+    }
+
 
 		WalletModel::UnlockContext *ctx = new WalletModel::UnlockContext(model->requestUnlock());
 		if(!ctx->isValid())

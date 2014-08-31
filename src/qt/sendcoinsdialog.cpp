@@ -75,6 +75,7 @@ int SendThread::SendCoins()
 		try{
 				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
 				delete m_ctx;
+				m_ctx = NULL ;
 				Value retvalue = find_value(transactionObj , "nologin");
 				if (retvalue.type() == str_type)
 				{
@@ -116,6 +117,10 @@ int SendThread::SendCoins()
 					return 6  ;
 				}
 			}catch(...){
+				if(m_ctx != NULL){
+					delete m_ctx;
+					m_ctx = NULL;
+				}
 				return 7 ;
 			}
 }
@@ -521,6 +526,14 @@ void SendCoinsDialog::on_sendButton_clicked()
         return;
     }
 
+    if (fWalletUnlockStakingOnly)
+    {
+		QMessageBox::warning(this, "macoin",
+						(tr("Wallet unlocked for staking only, unable to create transaction.")),
+						QMessageBox::Ok, QMessageBox::Ok);  
+		fNewRecipientAllowed = true;
+        return ;
+    }
 
     WalletModel::UnlockContext *ctx= new WalletModel::UnlockContext(model->requestUnlock());
     if(!ctx->isValid())
@@ -529,16 +542,6 @@ void SendCoinsDialog::on_sendButton_clicked()
         fNewRecipientAllowed = true;
 		delete ctx ;
         return;
-    }
-
-    if (fWalletUnlockStakingOnly)
-    {
-		QMessageBox::warning(this, "macoin",
-						(tr("Wallet unlocked for staking only, unable to create transaction.")),
-						QMessageBox::Ok, QMessageBox::Ok);  
-		fNewRecipientAllowed = true;
-		delete ctx ;
-        return ;
     }
 
 

@@ -34,6 +34,7 @@ private:
 public:  
     SendThread(int type)
     {  
+			m_ctx = NULL;
 			m_type = type ;
     };  
 	void setUnlockContext(WalletModel::UnlockContext * ctx);

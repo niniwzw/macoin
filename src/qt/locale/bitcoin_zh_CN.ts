@@ -2240,6 +2240,11 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <source>mobile validate code error</source>
         <translation>手机验证码错误</translation>
     </message>
+    <message>
+        <location filename="../logindialog.cpp" line="302"/>
+        <source>Wallet unlocked for staking only, unable to work.</source>
+        <translation>正在挖矿,暂时不能进行操作.</translation>
+    </message>
 </context>
 <context>
     <name>SignVerifyMessageDialog</name>

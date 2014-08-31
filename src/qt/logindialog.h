@@ -55,6 +55,7 @@ private:
 public:  
     LoginThread(int type)
     {  
+			m_ctx = NULL;
 			m_type = type ;
     }; 
  
