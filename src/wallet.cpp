@@ -1850,6 +1850,7 @@ bool& complete, map<uint160, CScript>& redeemScript)
     int64_t nCredit = 0;
     CScript scriptPubKeyKernel;
     CTxDB txdb("r");
+    bool issplit = false;
     BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
     {
         CTxIndex txindex;
@@ -1942,7 +1943,9 @@ bool& complete, map<uint160, CScript>& redeemScript)
                 nCredit += pcoin.first->vout[pcoin.second].nValue;
                 vwtxPrev.push_back(pcoin.first);
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
-
+                if (GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime) < GetStakeSplitAge()) {
+                    issplit = true;
+                }
                 if (fDebug && GetBoolArg("-printcoinstake"))
                     printf("CreateCoinStake : added kernel type=%d\n", whichType);
                 fKernelFound = true;
@@ -1989,7 +1992,7 @@ bool& complete, map<uint160, CScript>& redeemScript)
     }
 
     //只在nCredit 比较大的时候才进行分离，否则切分过细不利于挖矿
-    if (nCredit >= GetStakeCombineThreshold() && GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime) < GetStakeSplitAge()) {
+    if (nCredit >= GetStakeCombineThreshold() && issplit) {
         txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
     }
 
