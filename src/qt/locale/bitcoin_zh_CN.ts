@@ -1152,8 +1152,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>开机自动启动马币客户端</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>&amp;Start Macoin on system login</source>
+        <location line="131"/>
+        <source>&amp;Start MaCoin on system login</source>
         <translation>开机时自动启动马币客户端(&amp;S)</translation>
     </message>
     <message>
@@ -1905,7 +1905,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../sendcoinsdialog.cpp" line="331"/>
         <source>error token</source>
-        <translation>token无效，未登陆，或者没有权限</translation>
+        <translation>token无效，未登录，或者没有权限</translation>
     </message>
     <message>
         <location filename="../sendcoinsdialog.cpp" line="338"/>
@@ -2061,7 +2061,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+12"/>
         <source>&amp;Login</source>
-        <translation>登陆</translation>
+        <translation>登录</translation>
     </message>
 	
     <message>
@@ -2148,7 +2148,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../logindialog.cpp" line="183"/>
         <source>please login first or checking network!</source>
-        <translation>请先登陆或检查网络连接!</translation>
+        <translation>请先登录或检查网络连接!</translation>
     </message>
     <message>
         <location filename="../logindialog.cpp" line="189"/>
@@ -2168,7 +2168,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../logindialog.cpp" line="211"/>
         <source>please login first!</source>
-        <translation>请先登陆!</translation>
+        <translation>请先登录!</translation>
     </message>
     <message>
         <location filename="../logindialog.cpp" line="245"/>
@@ -2198,7 +2198,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../logindialog.cpp" line="417"/>
         <source>error token</source>
-        <translation>token无效，未登陆，或者没有权限</translation>
+        <translation>token无效，未登录，或者没有权限</translation>
     </message>
     <message>
         <location filename="../logindialog.cpp" line="424"/>
