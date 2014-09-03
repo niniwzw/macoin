@@ -2714,9 +2714,9 @@ bool LoadBlockIndex(bool fAllowNew)
         //    CTxOut(empty)
         //  vMerkleTree: 12630d16a9
 
-        const char* pszTimestamp = "2014/08/26 Macoin New Wallet Come back.";
+        const char* pszTimestamp = "2014/09/03 Macoin New Wallet Come back.";
         CTransaction txNew;
-        txNew.nTime = 1409049471;
+        txNew.nTime = 1409722935;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 0 << CBigNum(42) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
@@ -2726,9 +2726,9 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1409049471;
+        block.nTime    = 1409722935;
         block.nBits    = bnProofOfWorkLimit.GetCompact();
-        block.nNonce   = !fTestNet ? 1680281 : 216178;
+        block.nNonce   = !fTestNet ? 0 : 216178;
 
         //find genesisblock
         
@@ -3004,7 +3004,7 @@ bool static AlreadyHave(CTxDB& txdb, const CInv& inv)
 // The message start string is designed to be unlikely to occur in normal data.
 // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
 // a large 4-byte int at any alignment.
-unsigned char pchMessageStart[4] = { 0x20, 0x08, 0x06, 0x13 };
+unsigned char pchMessageStart[4] = {0x20, 0x14, 0x09, 0x03 };
 
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
 {
