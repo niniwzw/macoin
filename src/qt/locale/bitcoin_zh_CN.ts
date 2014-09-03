@@ -18,7 +18,7 @@ Copyright © 2012-2014 The NovaCoin developers
 Copyright © 2014 The Macoin developers</source>
         <translation>版权所有 © 2009-2014 比特币Bitcoin开发组
 版权所有 © 2012-2014 新星币Novacoin开发组
-版权所有 © 2014 马币MaCoin开发组</translation>
+版权所有 © 2014 马币Macoin开发组</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -29,7 +29,6 @@ Distributed under the MIT/X11 software license, see the accompanying file COPYIN
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/) and cryptographic software written by Eric Young (eay@cryptsoft.com) and UPnP software written by Thomas Bernard.</source>
         <translation>
-测试版软件
 
 经MIT/X11软件授权发布, 具体参见http://www.opensource.org/licenses/mit-license.php.
 
@@ -483,7 +482,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="-200"/>
         <source>Macoin</source>
-        <translation>马币测试</translation>
+        <translation>马币正式版</translation>
     </message>
     <message>
         <location line="+0"/>
