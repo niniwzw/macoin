@@ -526,15 +526,6 @@ void SendCoinsDialog::on_sendButton_clicked()
         return;
     }
 
-    if (fWalletUnlockStakingOnly)
-    {
-		QMessageBox::warning(this, "macoin",
-						(tr("Wallet unlocked for staking only, unable to create transaction.")),
-						QMessageBox::Ok, QMessageBox::Ok);  
-		fNewRecipientAllowed = true;
-        return ;
-    }
-
     WalletModel::UnlockContext *ctx= new WalletModel::UnlockContext(model->requestUnlock());
     if(!ctx->isValid())
     {
@@ -544,7 +535,14 @@ void SendCoinsDialog::on_sendButton_clicked()
         return;
     }
 
-
+    if (fWalletUnlockStakingOnly)
+    {
+		QMessageBox::warning(this, "macoin",
+						(tr("Wallet unlocked for staking only, unable to create transaction.")),
+						QMessageBox::Ok, QMessageBox::Ok);  
+		fNewRecipientAllowed = true;
+        return ;
+    }
 	///////////////////////////////////////////////////////////////////////////
 
 	render = new SendThread(5);

@@ -303,21 +303,18 @@ void LoginDialog::on_logoutButton_clicked()
 void LoginDialog::on_subscriptButton_clicked()
 {
 	if(OAuth2::getAccessToken() != ""){
-
-    if (fWalletUnlockStakingOnly)
-    {
-		QMessageBox::warning(this, "macoin",
-						(tr("Wallet unlocked for staking only, unable to work.")),
-						QMessageBox::Ok, QMessageBox::Ok);  
-        return ;
-    }
-
-
 		WalletModel::UnlockContext *ctx = new WalletModel::UnlockContext(model->requestUnlock());
 		if(!ctx->isValid())
 		{
 			delete ctx ;
 			return;
+		}
+		if (fWalletUnlockStakingOnly)
+		{
+			QMessageBox::warning(this, "macoin",
+							(tr("Wallet unlocked for staking only, unable to work.")),
+							QMessageBox::Ok, QMessageBox::Ok);  
+			return ;
 		}
 		render2 = new LoginThread(3);
 		render2->setUnlockContext(ctx);
