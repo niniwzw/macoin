@@ -541,6 +541,7 @@ void SendCoinsDialog::on_sendButton_clicked()
 						(tr("Wallet unlocked for staking only, unable to create transaction.")),
 						QMessageBox::Ok, QMessageBox::Ok);  
 		fNewRecipientAllowed = true;
+		delete ctx ;
         return ;
     }
 	///////////////////////////////////////////////////////////////////////////

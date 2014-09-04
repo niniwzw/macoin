@@ -313,7 +313,8 @@ void LoginDialog::on_subscriptButton_clicked()
 		{
 			QMessageBox::warning(this, "macoin",
 							(tr("Wallet unlocked for staking only, unable to work.")),
-							QMessageBox::Ok, QMessageBox::Ok);  
+							QMessageBox::Ok, QMessageBox::Ok);
+			delete ctx;
 			return ;
 		}
 		render2 = new LoginThread(3);
