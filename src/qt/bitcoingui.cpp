@@ -923,6 +923,7 @@ void BitcoinGUI::lockWallet()
         return;
 
     walletModel->setWalletLocked(true);
+	fWalletUnlockStakingOnly = false;
 }
 
 void BitcoinGUI::showNormalIfMinimized(bool fToggleHidden)
