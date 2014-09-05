@@ -1993,7 +1993,7 @@ bool& complete, map<uint160, CScript>& redeemScript)
 
     //只在nCredit 比较大的时候才进行分离，否则切分过细不利于挖矿
     if (nCredit >= GetStakeCombineThreshold() && issplit) {
-        txNew.vout.push_back(txNew.vout[0]); //split stake
+        txNew.vout.push_back(txNew.vout[1]); //split stake
     }
 
     // Calculate coin age reward
