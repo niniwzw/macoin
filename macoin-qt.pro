@@ -19,7 +19,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 # Dependency library locations can be customized with:
 #    BOOST_INCLUDE_PATH, BOOST_LIB_PATH, BDB_INCLUDE_PATH,
 #    BDB_LIB_PATH, OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
-!macx:!linux {
+!macx:!unix {
 BOOST_LIB_SUFFIX=-mgw48-mt-s-1_54
 }
 BOOST_INCLUDE_PATH=D:/litecoin/libs/boost
