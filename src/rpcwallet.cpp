@@ -946,6 +946,132 @@ Value sendmany(const Array& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
+Value addbackaddress(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 5 || params.size() > 6)
+    {
+        string msg = "addbackaddress <nrequired> <'[\"key\",\"key\"]'> <'[\"backkey\",\"backkey\"]'> "
+            "<'[backtime,backtime]'> <'[backlimit,backlimit]'> [account]\n"
+            "Add a nrequired-to-sign multisignature address and n backkey to the wallet\"\n"
+            "each key is a Macoin address or hex-encoded public key\n"
+            "If [account] is specified, assign address to [account].";
+        throw runtime_error(msg);
+    }
+
+    int nRequired = params[0].get_int();
+    const Array& keys      = params[1].get_array();
+    const Array& backkeys  = params[2].get_array();
+    const Array& backtime  = params[3].get_array();
+    const Array& backlimit = params[4].get_array();
+    if (backkeys.size() != backtime.size()) {
+        throw runtime_error("a backtime size not match backkeys size.");
+    }
+    if (backlimit.size() != backkeys.size()) {
+        throw runtime_error("a backlimit size not match backkeys size.");
+    }
+    string strAccount;
+    if (params.size() > 5) {
+        strAccount = AccountFromValue(params[5]);
+    }
+    // Gather public keys
+    if (nRequired < 1)
+        throw runtime_error("a multisignature address must require at least one key to redeem");
+    if ((int)keys.size() < nRequired)
+        throw runtime_error(
+            strprintf("not enough keys supplied "
+                      "(got %"PRIszu" keys, but need at least %d to redeem)", keys.size(), nRequired));
+    std::vector<CKey> pubkeys;
+    pubkeys.resize(keys.size());
+    for (unsigned int i = 0; i < keys.size(); i++)
+    {
+        const std::string& ks = keys[i].get_str();
+
+        // Case 1: Bitcoin address and we have full public key:
+        CBitcoinAddress address(ks);
+        if (address.IsValid())
+        {
+            CKeyID keyID;
+            if (!address.GetKeyID(keyID))
+                throw runtime_error(
+                    strprintf("%s does not refer to a key",ks.c_str()));
+            CPubKey vchPubKey;
+            if (!pwalletMain->GetPubKey(keyID, vchPubKey))
+                throw runtime_error(
+                    strprintf("no full public key for address %s",ks.c_str()));
+            if (!vchPubKey.IsValid() || !pubkeys[i].SetPubKey(vchPubKey))
+                throw runtime_error(" Invalid public key: "+ks);
+        }
+
+        // Case 2: hex public key
+        else if (IsHex(ks))
+        {
+            CPubKey vchPubKey(ParseHex(ks));
+            if (!vchPubKey.IsValid() || !pubkeys[i].SetPubKey(vchPubKey))
+                throw runtime_error(" Invalid public key: "+ks);
+        }
+        else
+        {
+            throw runtime_error(" Invalid public key: "+ks);
+        }
+    }
+
+    std::vector<CKey> pubbackkeys;
+    pubbackkeys.resize(keys.size());
+    for (unsigned int i = 0; i < backkeys.size(); i++)
+    {
+        const std::string& ks = backkeys[i].get_str();
+
+        // Case 1: Bitcoin address and we have full public key:
+        CBitcoinAddress address(ks);
+        if (address.IsValid())
+        {
+            CKeyID keyID;
+            if (!address.GetKeyID(keyID))
+                throw runtime_error(
+                    strprintf("%s does not refer to a key",ks.c_str()));
+            CPubKey vchPubKey;
+            if (!pwalletMain->GetPubKey(keyID, vchPubKey))
+                throw runtime_error(
+                    strprintf("no full public key for address %s",ks.c_str()));
+            if (!vchPubKey.IsValid() || !pubbackkeys[i].SetPubKey(vchPubKey))
+                throw runtime_error(" Invalid public key: "+ks);
+        }
+        // Case 2: hex public key
+        else if (IsHex(ks))
+        {
+            CPubKey vchPubKey(ParseHex(ks));
+            if (!vchPubKey.IsValid() || !pubbackkeys[i].SetPubKey(vchPubKey))
+                throw runtime_error(" Invalid public key: "+ks);
+        }
+        else
+        {
+            throw runtime_error(" Invalid public key: "+ks);
+        }
+    }
+    std::vector<int> backtimes;
+    backtimes.resize(backtime.size());
+    for (unsigned int i = 0; i < backtime.size(); i++)
+    {
+        backtimes[i] = backtime[i].get_int();
+    }
+
+    std::vector<int> backlimits;
+    backlimits.resize(backlimit.size());
+    for (unsigned int i = 0; i < backlimit.size(); i++)
+    {
+        backlimits[i] = backlimit[i].get_int();
+    }
+    // Construct using pay-to-script-hash:
+    CScript inner;
+    inner.SetBackAddress(nRequired, pubkeys, pubbackkeys, backtimes, backlimits);
+    CScriptID innerID = inner.GetID();
+    if (!pwalletMain->AddCScript(inner))
+        throw runtime_error("AddCScript() failed");
+
+    pwalletMain->SetAddressBookName(innerID, strAccount);
+    return CBitcoinAddress(innerID).ToString();
+}
+
 Value addmultisigaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 3)

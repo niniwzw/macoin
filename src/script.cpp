@@ -101,6 +101,7 @@ const char* GetTxnOutputType(txnouttype t)
     {
     case TX_NONSTANDARD: return "nonstandard";
     case TX_PUBKEY: return "pubkey";
+	case TX_BACK: return "back";
     case TX_PUBKEYHASH: return "pubkeyhash";
     case TX_SCRIPTHASH: return "scripthash";
     case TX_MULTISIG: return "multisig";
@@ -1481,6 +1482,8 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
     case TX_MULTISIG:
         scriptSigRet << OP_0; // workaround CHECKMULTISIG bug
         return (SignN(vSolutions, keystore, hash, nHashType, scriptSigRet));
+    case TX_BACK:
+        return false;
     }
     return false;
 }
@@ -1501,6 +1504,8 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
             return -1;
         return vSolutions[0][0] + 1;
     case TX_SCRIPTHASH:
+        return 1; // doesn't include args needed by the script
+    case TX_BACK:
         return 1; // doesn't include args needed by the script
     }
     return -1;
@@ -1583,6 +1588,19 @@ bool IsMine(const CKeyStore &keystore, const CScript& scriptPubKey)
         return IsMine(keystore, subscript);
     }
     case TX_MULTISIG:
+    {
+        // Only consider transactions "mine" if we own ALL the
+        // keys involved. multi-signature transactions that are
+        // partially owned (somebody else has a key that can spend
+        // them) enable spend-out-from-under-you attacks, especially
+        // in shared-wallet situations.
+
+        //when user login to server， we will an public key to an map，
+        //this is a key for user in the server
+        vector<valtype> keys(vSolutions.begin()+1, vSolutions.begin()+vSolutions.size()-1);
+        return HaveKeys(keys, keystore) == keys.size();
+    }
+    case TX_BACK:
     {
         // Only consider transactions "mine" if we own ALL the
         // keys involved. multi-signature transactions that are
@@ -1896,6 +1914,8 @@ static CScript CombineSignatures(CScript scriptPubKey, const CTransaction& txTo,
         }
     case TX_MULTISIG:
         return CombineMultisig(scriptPubKey, txTo, nIn, vSolutions, sigs1, sigs2);
+    case TX_BACK:
+        return CombineMultisig(scriptPubKey, txTo, nIn, vSolutions, sigs1, sigs2);
     }
 
     return CScript();
@@ -2038,4 +2058,20 @@ void CScript::SetMultisig(int nRequired, const std::vector<CKey>& keys)
     BOOST_FOREACH(const CKey& key, keys)
         *this << key.GetPubKey();
     *this << EncodeOP_N(keys.size()) << OP_CHECKMULTISIG;
+}
+
+void CScript::SetBackAddress(int nRequired, const std::vector<CKey>& keys,  const std::vector<CKey>& backkeys, const std::vector<int>& 
+        backtimes, const std::vector<int> backlimits) {
+    this->clear();
+
+    *this << EncodeOP_N(nRequired);
+    BOOST_FOREACH(const CKey& key, keys)
+        *this << key.GetPubKey();
+    BOOST_FOREACH(const CKey& backkey, backkeys)
+        *this << backkey.GetPubKey();
+    BOOST_FOREACH(const int& backtime, backtimes)
+        *this << backtime;
+    BOOST_FOREACH(const int& backlimit, backlimits)
+        *this << backlimit;
+    *this << EncodeOP_N(keys.size()) << OP_CHECKBACKSIG;
 }

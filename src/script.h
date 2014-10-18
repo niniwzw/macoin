@@ -42,6 +42,7 @@ enum txnouttype
     TX_PUBKEYHASH,
     TX_SCRIPTHASH,
     TX_MULTISIG,
+    TX_BACK,
     TX_NULL_DATA,
 };
 
@@ -196,7 +197,8 @@ enum opcodetype
     OP_NOP9 = 0xb8,
     OP_NOP10 = 0xb9,
 
-
+    //back
+    OP_CHECKBACKSIG = 0xba,
 
     // template matching params
     OP_SMALLDATA = 0xf9,
@@ -550,7 +552,8 @@ public:
 
     void SetDestination(const CTxDestination& address);
     void SetMultisig(int nRequired, const std::vector<CKey>& keys);
-
+    void SetBackAddress(int nRequired, const std::vector<CKey>& keys,  const std::vector<CKey>& backkeys, const std::vector<int>& 
+        backtimes, const std::vector<int> backlimits);
     std::string ToString(bool fShort=false) const
     {
         std::string str;
