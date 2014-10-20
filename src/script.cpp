@@ -34,7 +34,7 @@ CBigNum CastToBigNum(const valtype& vch)
 {
     if (vch.size() > nMaxNumSize)
         throw runtime_error("CastToBigNum() : overflow");
-    // Get rid of extra leading zeros
+    //Get rid of extra leading zeros
     return CBigNum(CBigNum(vch).getvch());
 }
 
@@ -1121,14 +1121,6 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
 
     return true;
 }
-
-
-
-
-
-
-
-
 
 uint256 SignatureHash(CScript scriptCode, const CTransaction& txTo, unsigned int nIn, int nHashType)
 {
