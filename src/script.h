@@ -199,8 +199,9 @@ enum opcodetype
 
     //back
     OP_CHECKBACKSIG = 0xba,
-
+    OP_CHECKBACKSIGVERIFY = 0xbb,
     // template matching params
+    OP_INTEGERS = 0xf8,
     OP_SMALLDATA = 0xf9,
     OP_SMALLINTEGER = 0xfa,
     OP_PUBKEYS = 0xfb,
@@ -233,13 +234,6 @@ inline std::string StackString(const std::vector<std::vector<unsigned char> >& v
     }
     return str;
 }
-
-
-
-
-
-
-
 
 /** Serialized script, used inside transaction inputs and outputs */
 class CScript : public std::vector<unsigned char>

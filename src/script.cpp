@@ -243,7 +243,9 @@ const char* GetOpName(opcodetype opcode)
     case OP_NOP10                  : return "OP_NOP10";
 
     case OP_INVALIDOPCODE          : return "OP_INVALIDOPCODE";
-
+    //back
+    case OP_CHECKBACKSIG           : return "OP_CHECKBACKSIG";
+    case OP_CHECKBACKSIGVERIFY     : return "OP_CHECKBACKSIGVERIFY";
     // Note:
     //  The template matching params OP_SMALLDATA/etc are defined in opcodetype enum
     //  as kind of implementation hack, they are *NOT* real opcodes.  If found in real
@@ -1083,8 +1085,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
 
                         // If there are more signatures left than keys left,
                         // then too many signatures have failed
-                        if (nSigsCount > nKeysCount)
+                        if (nSigsCount > nKeysCount) {
                             fSuccess = false;
+                        }
                     }
 
                     while (i-- > 0)
@@ -1100,14 +1103,104 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     }
                 }
                 break;
+                case OP_CHECKBACKSIG:
+                case OP_CHECKBACKSIGVERIFY:
+                {
+                    // ([sig ...] num_of_signatures [pubkey ...] num_of_pubkeys -- bool)
+                    int i = 1;
+                    if ((int)stack.size() < i) {
+                        cout << "stack.size() < i" << endl;
+                        return false;
+                    }
+
+                    int nKeysCount = CastToBigNum(stacktop(-i)).getint();
+                    if (nKeysCount < 0 || nKeysCount > 20) {
+                        cout << "nKeysCount < 0 || nKeysCount > 20" << endl;
+                        return false;
+                    }
+                    nOpCount += nKeysCount;
+                    if (nOpCount > 201) {
+                        cout << "nOpCount > 201" << endl;
+                        return false;
+                    }
+                    int ikey = ++i;
+                    i += nKeysCount;
+                    if ((int)stack.size() < i) {
+                        cout << "(int)stack.size() < i -- 1" << endl;
+                        return false;
+                    }
+
+                    int nSigsCount = CastToBigNum(stacktop(-i)).getint();
+                    if (nSigsCount < 0 || nSigsCount > nKeysCount) {
+                        cout << "nSigsCount < 0 || nSigsCount > nKeysCount" << endl;
+                        return false;
+                    }
+                    int isig = ++i;
+                    i += nSigsCount;
+                    if ((int)stack.size() < i) {
+                        cout << "(int)stack.size() < i -- 2" << endl;
+                        return false;
+                    }
+
+                    // Subset of script starting at the most recent codeseparator
+                    CScript scriptCode(pbegincodehash, pend);
+
+                    // Drop the signatures, since there's no way for a signature to sign itself
+                    for (int k = 0; k < nSigsCount; k++)
+                    {
+                        valtype& vchSig = stacktop(-isig-k);
+                        scriptCode.FindAndDelete(CScript(vchSig));
+                    }
+
+                    bool fSuccess = true;
+                    while (fSuccess && nSigsCount > 0)
+                    {
+                        valtype& vchSig    = stacktop(-isig);
+                        valtype& vchPubKey = stacktop(-ikey);
+
+                        // Check signature
+                        bool fOk = IsCanonicalSignature(vchSig) && IsCanonicalPubKey(vchPubKey) &&
+                            CheckSig(vchSig, vchPubKey, scriptCode, txTo, nIn, nHashType);
+
+                        if (fOk)
+                        {
+                            isig++;
+                            nSigsCount--;
+                        }
+                        ikey++;
+                        nKeysCount--;
+
+                        // If there are more signatures left than keys left,
+                        // then too many signatures have failed
+                        if (nSigsCount > nKeysCount) {
+                            fSuccess = false;
+                            cout << "nSigsCount > nKeysCount" << endl;
+                        }
+                    }
+
+                    while (i-- > 0)
+                        popstack(stack);
+                    stack.push_back(fSuccess ? vchTrue : vchFalse);
+
+                    if (opcode == OP_CHECKBACKSIGVERIFY)
+                    {
+                        if (fSuccess) {
+                            popstack(stack);
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+                break;
 
                 default:
                     return false;
             }
 
             // Size limits
-            if (stack.size() + altstack.size() > 1000)
+            if (stack.size() + altstack.size() > 1000) {
                 return false;
+            }
         }
     }
     catch (...)
@@ -1296,6 +1389,9 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
 
         // Sender provides N pubkeys, receivers provides M signatures
         mTemplates.insert(make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
+        
+		//backaddress
+        mTemplates.insert(make_pair(TX_BACK, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_INTEGERS << OP_CHECKBACKSIG));
 
         // Empty, provably prunable, data-carrying output
         mTemplates.insert(make_pair(TX_NULL_DATA, CScript() << OP_RETURN << OP_SMALLDATA));
@@ -1339,6 +1435,15 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                     if (m < 1 || n < 1 || m > n || vSolutionsRet.size()-2 != n)
                         return false;
                 }
+                if (typeRet == TX_BACK)
+                {
+                    // Additional checks for TX_BACK:
+                    unsigned char m = vSolutionsRet.front()[0];
+                    unsigned char n = vSolutionsRet.back()[0];
+                    //cout << vSolutionsRet.size() << int(n) << int(m) << "end::" << script2.ToString() << endl;
+                    if (m < 1 || n < 1 || m > n || vSolutionsRet.size()-3 != 3 * n)
+                        return false;
+                }
                 return true;
             }
             if (!script1.GetOp(pc1, opcode1, vch1))
@@ -1360,6 +1465,25 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                 // Normal situation is to fall through
                 // to other if/else statements
             }
+
+			if (opcode2 == OP_INTEGERS)
+            {
+                while (opcode1 == OP_0 || (opcode1 >= OP_1 && opcode1 <= OP_16))
+                {
+                    char n = (char)CScript::DecodeOP_N(opcode1);
+                    vSolutionsRet.push_back(valtype(1, n));
+                    if (!script1.GetOp(pc1, opcode1, vch1))
+                        break;
+                }
+				while (opcode1 != OP_CHECKBACKSIG && vch1.size() <= 4) 
+                {
+                    vSolutionsRet.push_back(valtype(4, CBigNum(vch1).getint()));
+                    if (!script1.GetOp(pc1, opcode1, vch1))
+                        break;
+                }
+                if (!script2.GetOp(pc2, opcode2, vch2))
+                    break;
+			}
 
             if (opcode2 == OP_PUBKEY)
             {
@@ -1433,6 +1557,22 @@ bool SignN(const vector<valtype>& multisigdata, const CKeyStore& keystore, uint2
     return nSigned==nRequired;
 }
 
+bool SignBackN(const vector<valtype>& multisigdata, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet)
+{
+    int nSigned = 0;
+    int nRequired = multisigdata.front()[0];
+    int n         = (multisigdata.size() - 3) / 3;
+    for (unsigned int i = 1; i < (1 + n) && nSigned < nRequired; i++)
+    {
+        const valtype& pubkey = multisigdata[i];
+        CKeyID keyID = CPubKey(pubkey).GetID();
+        if (Sign1(keyID, keystore, hash, nHashType, scriptSigRet))
+            ++nSigned;
+    }
+    //cout << nRequired << " " << n << " " << nSigned << endl;
+    return nSigned==nRequired;
+}
+
 //
 // Sign scriptPubKey with private keys stored in keystore, given transaction hash and hash type.
 // Signatures are returned in scriptSigRet (or returns false if scriptPubKey can't be signed),
@@ -1475,7 +1615,8 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
         scriptSigRet << OP_0; // workaround CHECKMULTISIG bug
         return (SignN(vSolutions, keystore, hash, nHashType, scriptSigRet));
     case TX_BACK:
-        return false;
+        scriptSigRet << OP_0; // workaround CHECKMULTISIG bug
+        return (SignBackN(vSolutions, keystore, hash, nHashType, scriptSigRet));
     }
     return false;
 }
@@ -1519,7 +1660,17 @@ bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
         if (m < 1 || m > n)
             return false;
     }
-
+    //暂时执行标准和多重签名相同
+    if (whichType == TX_BACK)
+    {
+        unsigned char m = vSolutions.front()[0];
+        unsigned char n = vSolutions.back()[0];
+        // Support up to x-of-3 multisig txns as standard
+        if (n < 1 || n > 3)
+            return false;
+        if (m < 1 || m > n)
+            return false;
+    }
     return whichType != TX_NONSTANDARD;
 }
 
@@ -1602,7 +1753,8 @@ bool IsMine(const CKeyStore &keystore, const CScript& scriptPubKey)
 
         //when user login to server， we will an public key to an map，
         //this is a key for user in the server
-        vector<valtype> keys(vSolutions.begin()+1, vSolutions.begin()+vSolutions.size()-1);
+        int n = (vSolutions.size() - 3) / 3;
+        vector<valtype> keys(vSolutions.begin()+1, vSolutions.begin()+1+n);
         return HaveKeys(keys, keystore) == keys.size();
     }
     }
@@ -1692,6 +1844,14 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
             CTxDestination address = CPubKey(vSolutions[i]).GetID();
             addressRet.push_back(address);
         }
+    } else if (typeRet == TX_BACK) {
+        nRequiredRet = vSolutions.front()[0];
+		unsigned int n = vSolutions.size() / 3 - 1;
+        for (unsigned int i = 1; i < n+1; i++)
+        {
+            CTxDestination address = CPubKey(vSolutions[i]).GetID();
+            addressRet.push_back(address);
+        }
     }
     else
     {
@@ -1725,17 +1885,24 @@ bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, const C
     // Additional validation for spend-to-script-hash transactions:
     if (scriptPubKey.IsPayToScriptHash())
     {
-        if (!scriptSig.IsPushOnly()) // scriptSig must be literals-only
+        if (!scriptSig.IsPushOnly()) { // scriptSig must be literals-only
+            //cout << "not push only " << scriptSig.ToString() << endl;
             return false;            // or validation fails
-
+        }
         const valtype& pubKeySerialized = stackCopy.back();
         CScript pubKey2(pubKeySerialized.begin(), pubKeySerialized.end());
         popstack(stackCopy);
 
-        if (!EvalScript(stackCopy, pubKey2, txTo, nIn, nHashType))
+        cout << "IsPayToScriptHash = true" << " scriptSig " << scriptSig.ToString() << endl;
+        cout << "pubKey2 " << pubKey2.ToString() << endl;
+        if (!EvalScript(stackCopy, pubKey2, txTo, nIn, nHashType)) {
+            cout << "EvalScript error." << endl;
             return false;
-        if (stackCopy.empty())
+        }
+        if (stackCopy.empty()) {
+            cout << "stackCopy not empty error." << endl;
             return false;
+        }
         return CastToBool(stackCopy.back());
     }
 
@@ -1758,6 +1925,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CTransa
 
     if (whichType == TX_SCRIPTHASH)
     {
+        cout << "TX_SCRIPTHASH" << endl;
         // Solver returns the subscript that need to be evaluated;
         // the final scriptSig is the signatures from that
         // and then the serialized subscript:
