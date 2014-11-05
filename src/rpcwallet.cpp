@@ -1016,7 +1016,7 @@ Value addbackaddress(const Array& params, bool fHelp)
     }
 
     std::vector<CKey> pubbackkeys;
-    pubbackkeys.resize(keys.size());
+    pubbackkeys.resize(backkeys.size());
     for (unsigned int i = 0; i < backkeys.size(); i++)
     {
         const std::string& ks = backkeys[i].get_str();

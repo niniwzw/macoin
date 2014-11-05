@@ -1112,8 +1112,12 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                         cout << "stack.size() < i" << endl;
                         return false;
                     }
-
+                    //key 的数目，最后一个元素代表key的数目
                     int nKeysCount = CastToBigNum(stacktop(-i)).getint();
+                    i++;
+                    int nBackKeysCount = CastToBigNum(stacktop(-i)).getint();
+                    cout << "nKeysCount = "  << nKeysCount  << " nBackKeysCount = "; 
+                    cout << nBackKeysCount << " totalsize = " << stack.size() << endl;
                     if (nKeysCount < 0 || nKeysCount > 20) {
                         cout << "nKeysCount < 0 || nKeysCount > 20" << endl;
                         return false;
@@ -1123,14 +1127,15 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                         cout << "nOpCount > 201" << endl;
                         return false;
                     }
-                    int ikey = ++i;
-                    i += nKeysCount;
+                    int ikey = ++i + nBackKeysCount * 3;
+                    i += nKeysCount + nBackKeysCount * 3;
                     if ((int)stack.size() < i) {
                         cout << "(int)stack.size() < i -- 1" << endl;
                         return false;
                     }
 
                     int nSigsCount = CastToBigNum(stacktop(-i)).getint();
+                    cout << "nSigsCount = "  << nSigsCount << endl;
                     if (nSigsCount < 0 || nSigsCount > nKeysCount) {
                         cout << "nSigsCount < 0 || nSigsCount > nKeysCount" << endl;
                         return false;
@@ -1205,12 +1210,15 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
     }
     catch (...)
     {
+        cout << "exception" << endl;
         return false;
     }
 
 
-    if (!vfExec.empty())
+    if (!vfExec.empty()) {
+        cout << "vfExec.empty" << endl;
         return false;
+    }
 
     return true;
 }
@@ -1438,10 +1446,11 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                 if (typeRet == TX_BACK)
                 {
                     // Additional checks for TX_BACK:
-                    unsigned char m = vSolutionsRet.front()[0];
-                    unsigned char n = vSolutionsRet.back()[0];
-                    //cout << vSolutionsRet.size() << int(n) << int(m) << "end::" << script2.ToString() << endl;
-                    if (m < 1 || n < 1 || m > n || vSolutionsRet.size()-3 != 3 * n)
+                    unsigned char m  = vSolutionsRet.front()[0];
+                    unsigned char n  = vSolutionsRet.back()[0];
+					unsigned char bn = vSolutionsRet[vSolutionsRet.size() - 2][0];
+                    cout << vSolutionsRet.size() << int(n) << int(m) << int(bn) << "end::" << script2.ToString() << endl;
+                    if (m < 1 || n < 1 || m > n || vSolutionsRet.size() -3 - 3 * bn - n != 0)
                         return false;
                 }
                 return true;
@@ -1561,7 +1570,7 @@ bool SignBackN(const vector<valtype>& multisigdata, const CKeyStore& keystore, u
 {
     int nSigned = 0;
     int nRequired = multisigdata.front()[0];
-    int n         = (multisigdata.size() - 3) / 3;
+    int n = multisigdata.back()[0];
     for (unsigned int i = 1; i < (1 + n) && nSigned < nRequired; i++)
     {
         const valtype& pubkey = multisigdata[i];
@@ -1753,7 +1762,7 @@ bool IsMine(const CKeyStore &keystore, const CScript& scriptPubKey)
 
         //when user login to server， we will an public key to an map，
         //this is a key for user in the server
-        int n = (vSolutions.size() - 3) / 3;
+        int n = vSolutions.back()[0];
         vector<valtype> keys(vSolutions.begin()+1, vSolutions.begin()+1+n);
         return HaveKeys(keys, keystore) == keys.size();
     }
@@ -1846,7 +1855,7 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
         }
     } else if (typeRet == TX_BACK) {
         nRequiredRet = vSolutions.front()[0];
-		unsigned int n = vSolutions.size() / 3 - 1;
+		unsigned int n = vSolutions.back()[0];
         for (unsigned int i = 1; i < n+1; i++)
         {
             CTxDestination address = CPubKey(vSolutions[i]).GetID();
@@ -2233,5 +2242,6 @@ void CScript::SetBackAddress(int nRequired, const std::vector<CKey>& keys,  cons
         *this << backtime;
     BOOST_FOREACH(const int& backlimit, backlimits)
         *this << backlimit;
+    *this << EncodeOP_N(backkeys.size());
     *this << EncodeOP_N(keys.size()) << OP_CHECKBACKSIG;
 }
