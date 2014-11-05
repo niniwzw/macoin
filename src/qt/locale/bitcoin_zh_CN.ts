@@ -482,7 +482,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="-200"/>
         <source>Macoin</source>
-        <translation>马币正式版</translation>
+        <translation>马币钱包找回正式版(1.2.1.1)</translation>
     </message>
     <message>
         <location line="+0"/>
