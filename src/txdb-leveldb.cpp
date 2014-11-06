@@ -227,6 +227,37 @@ bool CTxDB::ContainsTx(uint256 hash)
     return Exists(make_pair(string("tx"), hash));
 }
 
+bool CTxDB::ReadTxBackIndex(uint256 hash, CTxIndex& txindex)
+{
+    txindex.SetNull();
+    return Read(make_pair(string("txback"), hash), txindex);
+}
+
+bool CTxDB::UpdateTxBackIndex(uint256 hash, const CTxIndex& txindex)
+{
+    return Write(make_pair(string("txback"), hash), txindex);
+}
+
+bool CTxDB::AddTxBackIndex(const CTransaction& tx, const CDiskTxPos& pos, int nHeight)
+{
+    // Add to tx index
+    uint256 hash = tx.GetHash();
+    CTxIndex txindex(pos, tx.vout.size());
+    return Write(make_pair(string("txback"), hash), txindex);
+}
+
+bool CTxDB::EraseTxBackIndex(const CTransaction& tx)
+{
+    uint256 hash = tx.GetHash();
+
+    return Erase(make_pair(string("txback"), hash));
+}
+
+bool CTxDB::ContainsTxBack(uint256 hash)
+{
+    return Exists(make_pair(string("txback"), hash));
+}
+
 bool CTxDB::ReadDiskTx(uint256 hash, CTransaction& tx, CTxIndex& txindex)
 {
     tx.SetNull();
@@ -250,6 +281,31 @@ bool CTxDB::ReadDiskTx(COutPoint outpoint, CTransaction& tx)
 {
     CTxIndex txindex;
     return ReadDiskTx(outpoint.hash, tx, txindex);
+}
+
+bool CTxDB::ReadDiskTxBack(uint256 hash, CTransaction& tx, CTxIndex& txindex)
+{
+    tx.SetNull();
+    if (!ReadTxBackIndex(hash, txindex))
+        return false;
+    return (tx.ReadFromDisk(txindex.pos));
+}
+
+bool CTxDB::ReadDiskTxBack(uint256 hash, CTransaction& tx)
+{
+    CTxIndex txindex;
+    return ReadDiskTxBack(hash, tx, txindex);
+}
+
+bool CTxDB::ReadDiskTxBack(COutPoint outpoint, CTransaction& tx, CTxIndex& txindex)
+{
+    return ReadDiskTxBack(outpoint.hash, tx, txindex);
+}
+
+bool CTxDB::ReadDiskTxBack(COutPoint outpoint, CTransaction& tx)
+{
+    CTxIndex txindex;
+    return ReadDiskTxBack(outpoint.hash, tx, txindex);
 }
 
 bool CTxDB::WriteBlockIndex(const CDiskBlockIndex& blockindex)

@@ -183,6 +183,7 @@ public:
         return Write(std::string("version"), nVersion);
     }
 
+	//tx
     bool ReadTxIndex(uint256 hash, CTxIndex& txindex);
     bool UpdateTxIndex(uint256 hash, const CTxIndex& txindex);
     bool AddTxIndex(const CTransaction& tx, const CDiskTxPos& pos, int nHeight);
@@ -192,6 +193,18 @@ public:
     bool ReadDiskTx(uint256 hash, CTransaction& tx);
     bool ReadDiskTx(COutPoint outpoint, CTransaction& tx, CTxIndex& txindex);
     bool ReadDiskTx(COutPoint outpoint, CTransaction& tx);
+
+	//txback
+    bool ReadTxBackIndex(uint256 hash, CTxIndex& txindex);
+    bool UpdateTxBackIndex(uint256 hash, const CTxIndex& txindex);
+    bool AddTxBackIndex(const CTransaction& tx, const CDiskTxPos& pos, int nHeight);
+    bool EraseTxBackIndex(const CTransaction& tx);
+    bool ContainsTxBack(uint256 hash);
+    bool ReadDiskTxBack(uint256 hash, CTransaction& tx, CTxIndex& txindex);
+    bool ReadDiskTxBack(uint256 hash, CTransaction& tx);
+    bool ReadDiskTxBack(COutPoint outpoint, CTransaction& tx, CTxIndex& txindex);
+    bool ReadDiskTxBack(COutPoint outpoint, CTransaction& tx);
+	//other
     bool WriteBlockIndex(const CDiskBlockIndex& blockindex);
     bool ReadHashBestChain(uint256& hashBestChain);
     bool WriteHashBestChain(uint256 hashBestChain);

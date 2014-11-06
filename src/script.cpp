@@ -1109,41 +1109,41 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     // ([sig ...] num_of_signatures [pubkey ...] num_of_pubkeys -- bool)
                     int i = 1;
                     if ((int)stack.size() < i) {
-                        cout << "stack.size() < i" << endl;
+                        //cout << "stack.size() < i" << endl;
                         return false;
                     }
                     //key 的数目，最后一个元素代表key的数目
                     int nKeysCount = CastToBigNum(stacktop(-i)).getint();
                     i++;
                     int nBackKeysCount = CastToBigNum(stacktop(-i)).getint();
-                    cout << "nKeysCount = "  << nKeysCount  << " nBackKeysCount = "; 
-                    cout << nBackKeysCount << " totalsize = " << stack.size() << endl;
+                    //cout << "nKeysCount = "  << nKeysCount  << " nBackKeysCount = "; 
+                    //cout << nBackKeysCount << " totalsize = " << stack.size() << endl;
                     if (nKeysCount < 0 || nKeysCount > 20) {
-                        cout << "nKeysCount < 0 || nKeysCount > 20" << endl;
+                        //cout << "nKeysCount < 0 || nKeysCount > 20" << endl;
                         return false;
                     }
                     nOpCount += nKeysCount;
                     if (nOpCount > 201) {
-                        cout << "nOpCount > 201" << endl;
+                        //cout << "nOpCount > 201" << endl;
                         return false;
                     }
                     int ikey = ++i + nBackKeysCount * 3;
                     i += nKeysCount + nBackKeysCount * 3;
                     if ((int)stack.size() < i) {
-                        cout << "(int)stack.size() < i -- 1" << endl;
+                        //cout << "(int)stack.size() < i -- 1" << endl;
                         return false;
                     }
 
                     int nSigsCount = CastToBigNum(stacktop(-i)).getint();
-                    cout << "nSigsCount = "  << nSigsCount << endl;
+                    //cout << "nSigsCount = "  << nSigsCount << endl;
                     if (nSigsCount < 0 || nSigsCount > nKeysCount) {
-                        cout << "nSigsCount < 0 || nSigsCount > nKeysCount" << endl;
+                        //cout << "nSigsCount < 0 || nSigsCount > nKeysCount" << endl;
                         return false;
                     }
                     int isig = ++i;
                     i += nSigsCount;
                     if ((int)stack.size() < i) {
-                        cout << "(int)stack.size() < i -- 2" << endl;
+                        //cout << "(int)stack.size() < i -- 2" << endl;
                         return false;
                     }
 
@@ -1179,7 +1179,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                         // then too many signatures have failed
                         if (nSigsCount > nKeysCount) {
                             fSuccess = false;
-                            cout << "nSigsCount > nKeysCount" << endl;
+                            //cout << "nSigsCount > nKeysCount" << endl;
                         }
                     }
 
@@ -1210,13 +1210,13 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
     }
     catch (...)
     {
-        cout << "exception" << endl;
+        //cout << "exception" << endl;
         return false;
     }
 
 
     if (!vfExec.empty()) {
-        cout << "vfExec.empty" << endl;
+        //cout << "vfExec.empty" << endl;
         return false;
     }
 

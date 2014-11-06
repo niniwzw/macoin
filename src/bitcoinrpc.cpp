@@ -1258,6 +1258,8 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "stop"                   && n > 0) ConvertTo<bool>(params[0]);
     if (strMethod == "sendtoaddress"          && n > 1) ConvertTo<double>(params[1]);
 	if (strMethod == "sendtoaddress2"         && n > 1) ConvertTo<double>(params[1]);
+    if (strMethod == "sendtoaddress"          && n > 2) ConvertTo<bool>(params[2]);
+	if (strMethod == "sendtoaddress2"         && n > 2) ConvertTo<bool>(params[2]);
 	if (strMethod == "createrawtransaction2"  && n > 1) ConvertTo<double>(params[1]);
     if (strMethod == "settxfee"               && n > 0) ConvertTo<double>(params[0]);
     if (strMethod == "getreceivedbyaddress"   && n > 1) ConvertTo<int64_t>(params[1]);

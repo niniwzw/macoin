@@ -346,7 +346,7 @@ bool CTransaction::IsStandard() const
 
 bool IsStandardTx(const CTransaction& tx)
 {
-    if (tx.nVersion > CTransaction::CURRENT_VERSION)
+    if (tx.nVersion != CTransaction::BACK_VERSION && tx.nVersion > CTransaction::CURRENT_VERSION)
         return false;
 
     // Treat non-final transactions as non-standard to prevent a specific type
@@ -1546,6 +1546,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         nTxPos = pindex->nBlockPos + ::GetSerializeSize(CBlock(), SER_DISK, CLIENT_VERSION) - (2 * GetSizeOfCompactSize(0)) + GetSizeOfCompactSize(vtx.size());
 
     map<uint256, CTxIndex> mapQueuedChanges;
+    map<uint256, CTxIndex> mapBackQueuedChanges;
     int64_t nFees = 0;
     int64_t nValueIn = 0;
     int64_t nValueOut = 0;
@@ -1568,7 +1569,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         // two in the chain that violate it. This prevents exploiting the issue against nodes in their
         // initial block download.
         CTxIndex txindexOld;
-        if (txdb.ReadTxIndex(hashTx, txindexOld)) {
+        if (!tx.IsBack() && txdb.ReadTxIndex(hashTx, txindexOld)) {
+            BOOST_FOREACH(CDiskTxPos &pos, txindexOld.vSpent)
+                if (pos.IsNull())
+                    return false;
+        } else if (txdb.ReadTxBackIndex(hashTx, txindexOld)) {
             BOOST_FOREACH(CDiskTxPos &pos, txindexOld.vSpent)
                 if (pos.IsNull())
                     return false;
@@ -1600,18 +1605,22 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
             int64_t nTxValueIn = tx.GetValueIn(mapInputs);
             int64_t nTxValueOut = tx.GetValueOut();
-            nValueIn += nTxValueIn;
-            nValueOut += nTxValueOut;
-            if (!tx.IsCoinStake())
-                nFees += nTxValueIn - nTxValueOut;
-            if (tx.IsCoinStake())
-                nStakeReward = nTxValueOut - nTxValueIn;
-
+            if (!tx.IsBack()) {
+                nValueIn += nTxValueIn;
+                nValueOut += nTxValueOut;
+                if (!tx.IsCoinStake())
+                    nFees += nTxValueIn - nTxValueOut;
+                if (tx.IsCoinStake())
+                    nStakeReward = nTxValueOut - nTxValueIn;
+            }
             if (!tx.ConnectInputs(txdb, mapInputs, mapQueuedChanges, posThisTx, pindex, true, false))
                 return false;
         }
-
-        mapQueuedChanges[hashTx] = CTxIndex(posThisTx, tx.vout.size());
+        if (tx.IsBack()) {
+            mapBackQueuedChanges[hashTx] = CTxIndex(posThisTx, tx.vout.size());
+        } else {
+            mapQueuedChanges[hashTx] = CTxIndex(posThisTx, tx.vout.size());
+        }
     }
 
     if (IsProofOfWork())
@@ -1652,6 +1661,12 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             return error("ConnectBlock() : UpdateTxIndex failed");
     }
 
+    // Write queued txindex changes
+    for (map<uint256, CTxIndex>::iterator mi = mapBackQueuedChanges.begin(); mi != mapBackQueuedChanges.end(); ++mi)
+    {
+        if (!txdb.UpdateTxBackIndex((*mi).first, (*mi).second))
+            return error("ConnectBlock() : UpdateTxBackIndex failed");
+    }
     // Update block index on disk without changing it in memory.
     // The memory index structure will be changed after the db commits.
     if (pindex->pprev)
@@ -1663,9 +1678,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     }
 
     // Watch for transactions paying to me
-    BOOST_FOREACH(CTransaction& tx, vtx)
-        SyncWithWallets(tx, this, true);
-
+    BOOST_FOREACH(CTransaction& tx, vtx) {
+        if (!tx.IsBack()) {
+            SyncWithWallets(tx, this, true);
+        }
+    }
     return true;
 }
 

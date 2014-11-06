@@ -440,6 +440,7 @@ class CTransaction
 {
 public:
     static const int CURRENT_VERSION=1;
+    static const int BACK_VERSION=0x7FFFFFFF;
     int nVersion;
     unsigned int nTime;
     std::vector<CTxIn> vin;
@@ -480,9 +481,33 @@ public:
         return (vin.empty() && vout.empty());
     }
 
+	bool IsBack() const {
+		return this->nVersion == CTransaction::BACK_VERSION;
+	}
+
+    void SetBack() {
+        this->nVersion = CTransaction::BACK_VERSION;
+    }
+
     uint256 GetHash() const
     {
         return SerializeHash(*this);
+    }
+
+	//对于back类型的计算原始的hash
+    uint256 GetHash2() const
+    {
+        CTransaction copy = *this;
+		copy.nVersion = CTransaction::CURRENT_VERSION;
+		return SerializeHash(copy);
+    }
+
+    //计算交易的back hash
+    uint256 GetHashBack() const
+    {
+        CTransaction copy = *this;
+		copy.nVersion = CTransaction::BACK_VERSION;
+		return SerializeHash(copy);
     }
 
     bool IsCoinBase() const
