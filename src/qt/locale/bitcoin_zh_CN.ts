@@ -2706,6 +2706,11 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+2"/>
+        <source>Back Notify</source>
+        <translation>钱包找回通知</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Payment to yourself</source>
         <translation>付款给自己</translation>
     </message>

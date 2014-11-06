@@ -674,8 +674,9 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
 
     // is it already in the memory pool?
     uint256 hash = tx.GetHash();
-    if (pool.exists(hash))
-        return false;
+    if (pool.exists(hash)) {
+        return error("pool.exists(hash)");;
+	}
 
     // Check for conflicts with in-memory transactions
     {
@@ -695,8 +696,9 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
         CTxDB txdb("r");
 
         // do we already have it?
-        if (txdb.ContainsTx(hash))
-            return false;
+        if (txdb.ContainsTx(hash)) {
+            return error("txdb.ContainsTx(hash)");
+		}
 
         MapPrevTx mapInputs;
         map<uint256, CTxIndex> mapUnused;
@@ -762,10 +764,11 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
     }
 
     // Store transaction in memory
-    pool.addUnchecked(hash, tx);
-
-    SyncWithWallets(tx, NULL, true);
-
+	if (!tx.IsBack())
+	{
+        pool.addUnchecked(hash, tx);
+        SyncWithWallets(tx, NULL, true);
+	}
     printf("AcceptToMemoryPool : accepted %s (poolsz %"PRIszu")\n",
            hash.ToString().substr(0,10).c_str(),
            pool.mapTx.size());

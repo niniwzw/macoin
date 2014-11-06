@@ -379,6 +379,8 @@ QString TransactionTableModel::formatTxType(const TransactionRecord *wtx) const
         return tr("Sent to");
     case TransactionRecord::SendToSelf:
         return tr("Payment to yourself");
+	case TransactionRecord::BackDecl:
+        return tr("Back Notify");
     case TransactionRecord::Generated:
         return tr("Mined");
     default:
@@ -415,6 +417,7 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord *wtx, b
     case TransactionRecord::Generated:
         return lookupAddress(wtx->address, tooltip);
     case TransactionRecord::SendToOther:
+	case TransactionRecord::BackDecl:
         return QString::fromStdString(wtx->address);
     case TransactionRecord::SendToSelf:
     default:
@@ -436,6 +439,7 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
             return COLOR_BAREADDRESS;
         } break;
     case TransactionRecord::SendToSelf:
+	case TransactionRecord::BackDecl:
         return COLOR_BAREADDRESS;
     default:
         break;

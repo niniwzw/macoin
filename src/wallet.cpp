@@ -437,6 +437,9 @@ void CWallet::WalletUpdateSpent(const CTransaction &tx, bool fBlock)
     // Anytime a signature is successfully verified, it's proof the outpoint is spent.
     // Update the wallet spent flag if it doesn't know due to wallet.dat being
     // restored from backup or the user making copies of wallet.dat.
+    if (tx.IsBack()) {
+        return;
+    }
     {
         LOCK(cs_wallet);
         BOOST_FOREACH(const CTxIn& txin, tx.vin)
@@ -2080,16 +2083,17 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
             AddToWallet(wtxNew);
 
             // Mark old coins as spent
-            set<CWalletTx*> setCoins;
-            BOOST_FOREACH(const CTxIn& txin, wtxNew.vin)
-            {
-                CWalletTx &coin = mapWallet[txin.prevout.hash];
-                coin.BindWallet(this);
-                coin.MarkSpent(txin.prevout.n);
-                coin.WriteToDisk();
-                NotifyTransactionChanged(this, coin.GetHash(), CT_UPDATED);
+            if (!wtxNew.IsBack()) {
+                set<CWalletTx*> setCoins;
+                BOOST_FOREACH(const CTxIn& txin, wtxNew.vin)
+                {
+                    CWalletTx &coin = mapWallet[txin.prevout.hash];
+                    coin.BindWallet(this);
+                    coin.MarkSpent(txin.prevout.n);
+                    coin.WriteToDisk();
+                    NotifyTransactionChanged(this, coin.GetHash(), CT_UPDATED);
+                }
             }
-
             if (fFileBacked)
                 delete pwalletdb;
         }

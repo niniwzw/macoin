@@ -72,7 +72,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     sub.credit = nNet > 0 ? nNet : wtx.GetValueOut() - nDebit;
                     hashPrev = hash;
                 }
-
                 parts.append(sub);
             }
         }
@@ -91,8 +90,12 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         {
             // Payment to self
             int64_t nChange = wtx.GetChange();
-
-            parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendToSelf, "",
+			TransactionRecord::Type ty = TransactionRecord::SendToSelf;
+			if (wtx.IsBack())
+			{
+				ty = TransactionRecord::BackDecl;
+			}
+            parts.append(TransactionRecord(hash, nTime, ty, "",
                             -(nDebit - nChange), nCredit - nChange));
         }
         else if (fAllFromMe)
@@ -137,7 +140,10 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     nTxFee = 0;
                 }
                 sub.debit = -nValue;
-
+				if (wtx.IsBack())
+				{
+					sub.type = TransactionRecord::BackDecl;
+				}
                 parts.append(sub);
             }
         }
