@@ -649,7 +649,6 @@ int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mod
     return nMinFee;
 }
 
-
 bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
                         bool* pfMissingInputs)
 {
@@ -680,16 +679,16 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
 
     // Check for conflicts with in-memory transactions
     {
-    LOCK(pool.cs); // protect pool.mapNextTx
-    for (unsigned int i = 0; i < tx.vin.size(); i++)
-    {
-        COutPoint outpoint = tx.vin[i].prevout;
-        if (pool.mapNextTx.count(outpoint))
+        LOCK(pool.cs); // protect pool.mapNextTx
+        for (unsigned int i = 0; i < tx.vin.size(); i++)
         {
-            // Disable replacement feature for now
-            return false;
+            COutPoint outpoint = tx.vin[i].prevout;
+            if (pool.mapNextTx.count(outpoint))
+            {
+                // Disable replacement feature for now
+                return false;
+            }
         }
-    }
     }
 
     {
@@ -762,13 +761,12 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
             return error("AcceptToMemoryPool : ConnectInputs failed %s", hash.ToString().substr(0,10).c_str());
         }
     }
-
+    pool.addUnchecked(hash, tx);
     // Store transaction in memory
-	if (!tx.IsBack())
-	{
-        pool.addUnchecked(hash, tx);
+	//if (!tx.IsBack())
+	//{
         SyncWithWallets(tx, NULL, true);
-	}
+	//}
     printf("AcceptToMemoryPool : accepted %s (poolsz %"PRIszu")\n",
            hash.ToString().substr(0,10).c_str(),
            pool.mapTx.size());
@@ -1608,14 +1606,14 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
             int64_t nTxValueIn = tx.GetValueIn(mapInputs);
             int64_t nTxValueOut = tx.GetValueOut();
-            if (!tx.IsBack()) {
+            //if (!tx.IsBack()) {
                 nValueIn += nTxValueIn;
                 nValueOut += nTxValueOut;
                 if (!tx.IsCoinStake())
                     nFees += nTxValueIn - nTxValueOut;
                 if (tx.IsCoinStake())
                     nStakeReward = nTxValueOut - nTxValueIn;
-            }
+            //}
             if (!tx.ConnectInputs(txdb, mapInputs, mapQueuedChanges, posThisTx, pindex, true, false))
                 return false;
         }
@@ -1682,9 +1680,9 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     // Watch for transactions paying to me
     BOOST_FOREACH(CTransaction& tx, vtx) {
-        if (!tx.IsBack()) {
+        //if (!tx.IsBack()) {
             SyncWithWallets(tx, this, true);
-        }
+        //}
     }
     return true;
 }

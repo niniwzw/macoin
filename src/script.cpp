@@ -1911,9 +1911,10 @@ bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, const C
             cout << "stackCopy not empty error." << endl;
             return false;
         }
-        return CastToBool(stackCopy.back());
+        bool result = CastToBool(stackCopy.back());
+        cout << "VerifyScript result = " << result << endl;
+        return result;
     }
-
     return true;
 }
 
