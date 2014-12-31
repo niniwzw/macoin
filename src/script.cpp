@@ -1449,7 +1449,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                     unsigned char m  = vSolutionsRet.front()[0];
                     unsigned char n  = vSolutionsRet.back()[0];
 					unsigned char bn = vSolutionsRet[vSolutionsRet.size() - 2][0];
-                    cout << vSolutionsRet.size() << int(n) << int(m) << int(bn) << "end::" << script2.ToString() << endl;
+                    cout << vSolutionsRet.size() << "|" << int(n) << "|" << int(m) << "|" << int(bn) << "end::" << script2.ToString() << endl;
                     if (m < 1 || n < 1 || m > n || vSolutionsRet.size() -3 - 3 * bn - n != 0)
                         return false;
                 }
@@ -1477,16 +1477,15 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
 
 			if (opcode2 == OP_INTEGERS)
             {
-                while (opcode1 == OP_0 || (opcode1 >= OP_1 && opcode1 <= OP_16))
-                {
-                    char n = (char)CScript::DecodeOP_N(opcode1);
-                    vSolutionsRet.push_back(valtype(1, n));
-                    if (!script1.GetOp(pc1, opcode1, vch1))
-                        break;
-                }
 				while (opcode1 != OP_CHECKBACKSIG && vch1.size() <= 4) 
                 {
-                    vSolutionsRet.push_back(valtype(4, CBigNum(vch1).getint()));
+                    if (opcode1 == OP_0 || (opcode1 >= OP_1 && opcode1 <= OP_16)) {
+                        char n = (char)CScript::DecodeOP_N(opcode1);
+                        vSolutionsRet.push_back(valtype(1, n));
+                    } else {
+                        int n = CBigNum(vch1).getint();
+                        vSolutionsRet.push_back(valtype(4, n));
+                    }
                     if (!script1.GetOp(pc1, opcode1, vch1))
                         break;
                 }
@@ -1571,7 +1570,7 @@ bool SignBackN(const vector<valtype>& multisigdata, const CKeyStore& keystore, u
     int nSigned = 0;
     int nRequired = multisigdata.front()[0];
     int n = multisigdata.back()[0];
-    for (unsigned int i = 1; i < (1 + n) && nSigned < nRequired; i++)
+    for (int i = 1; i < (1 + n) && nSigned < nRequired; i++)
     {
         const valtype& pubkey = multisigdata[i];
         CKeyID keyID = CPubKey(pubkey).GetID();
@@ -1962,7 +1961,6 @@ bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CTrans
     assert(txin.prevout.n < txFrom.vout.size());
     assert(txin.prevout.hash == txFrom.GetHash());
     const CTxOut& txout = txFrom.vout[txin.prevout.n];
-
     return SignSignature(keystore, txout.scriptPubKey, txTo, nIn, nHashType);
 }
 
@@ -2242,6 +2240,6 @@ void CScript::SetBackAddress(int nRequired, const std::vector<CKey>& keys,  cons
         *this << backtime;
     BOOST_FOREACH(const int& backlimit, backlimits)
         *this << backlimit;
-    *this << EncodeOP_N(backkeys.size());
-    *this << EncodeOP_N(keys.size()) << OP_CHECKBACKSIG;
+    *this << int(backkeys.size());
+    *this << int(keys.size()) << OP_CHECKBACKSIG;
 }
