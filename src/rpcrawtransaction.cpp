@@ -224,6 +224,57 @@ Value listunspent(const Array& params, bool fHelp)
     return results;
 }
 
+Value createbacktransaction(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 3)
+        throw runtime_error(
+            "createbacktransaction address backaddress limitamount\n"
+            "Create a back transaction\n"
+            "address is a multisign back wallet address. backaddress is a address of back wallet address\n"
+            "limitamount is the limit amount of back transaction\n"
+            "Returns hex-encoded raw transaction.\n"
+            "Note that the transaction's inputs are not signed, and\n"
+            "it is not stored in the wallet or transmitted to the network.");
+
+    RPCTypeCheck(params, list_of(str_type)(str_type));
+    cout << "address:" << params[0].get_str();
+    cout << "backaddress:" << params[1].get_str();
+    CBitcoinAddress address(params[0].get_str());
+    CBitcoinAddress backaddress(params[1].get_str());
+    CTransaction rawTx;
+    //input 有两个空值，这个代表是找回交易
+    rawTx.vin.resize(2);
+    rawTx.vin[0].prevout.SetNull();
+    rawTx.vin[1].prevout.SetNull();
+
+    if (!address.IsValid()) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Macoin address: ")+params[0].get_str());
+    }
+    if (!address.IsScript()) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Macoin address must script: ")+params[0].get_str());
+    }
+    if (!backaddress.IsValid()) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Macoin address: ")+params[1].get_str());
+    }
+	int64_t nAmount = AmountFromValue(params[2]);
+    CScript scriptPubKey;
+    scriptPubKey.SetDestination(backaddress.Get());
+
+    CTxOut out(0, scriptPubKey);
+    rawTx.vout.push_back(out);
+
+    CScript script;
+
+    script << OP_RETURN;
+    script << boost::get<CScriptID>(address.Get());
+    CTxOut out2(nAmount, script);
+    rawTx.vout.push_back(out2);
+
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+    ss << rawTx;
+    return HexStr(ss.begin(), ss.end());
+}
+
 Value createrawtransaction(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)
