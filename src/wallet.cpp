@@ -2120,7 +2120,8 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
 
 string CWallet::SendMoney(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, bool fAskFee, bool isback)
 {
-    CReserveKey reservekey(this);
+    isback = false;
+	CReserveKey reservekey(this);
     int64_t nFeeRequired;
 
     if (IsLocked())
@@ -2160,15 +2161,54 @@ string CWallet::SendMoney(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNe
 string CWallet::SendMoneyToDestination(const CTxDestination& address, int64_t nValue, CWalletTx& wtxNew, bool fAskFee, bool isback)
 {
     // Check amount
-    if (nValue <= 0)
+    if (nValue <= 0) {
         return _("Invalid amount");
-    if (nValue + nTransactionFee > GetBalance())
+	}
+    if (nValue + nTransactionFee > GetBalance()) {
         return _("Insufficient funds");
-
+	}
+    isback = false;
     // Parse Bitcoin address
     CScript scriptPubKey;
     scriptPubKey.SetDestination(address);
 
+    return SendMoney(scriptPubKey, nValue, wtxNew, fAskFee, isback);
+}
+
+string CWallet::SendMoneyToBackDestination(const CTxDestination& fromaddress, int64_t nValue, CWalletTx& wtxNew, bool fAskFee, CTransaction& tx)
+{
+    // Check amount
+    if (nValue <= 0) {
+        return _("Invalid amount");
+	}
+    vector<COutput> vecOutputs, vecUnspent;
+    pwalletMain->AvailableCoins(vecOutputs, false);
+    int64_t total = 0; 
+    BOOST_FOREACH(const COutput& out, vecOutputs)
+    {
+        CTxDestination address;
+        if(!ExtractDestination(out.tx->vout[out.i].scriptPubKey, address)) {
+            continue;
+        }
+        if (address != fromaddress) {
+            continue;
+        }
+        vecUnspent.push_back(out);
+        total += out.tx->vout[out.i].nValue;
+    }
+    if (nValue + nTransactionFee > total) {
+        return _("Insufficient funds");
+	}
+    int64_t maxamount = tx.vout[1].nValue;
+    if (nValue > maxamount) {
+        return _("Insufficient funds big than back amount"); 
+    }
+    this->fetchRedeemScript(txout.scriptPubKey, hash, script)
+    //getredeemscrpit
+    //创建交易
+    // Parse Bitcoin address
+    CScript scriptPubKey;
+    scriptPubKey.SetDestination(address);
     return SendMoney(scriptPubKey, nValue, wtxNew, fAskFee, isback);
 }
 
