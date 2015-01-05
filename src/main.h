@@ -481,10 +481,6 @@ public:
         return (vin.empty() && vout.empty());
     }
 
-	bool IsBack() const {
-		return this->nVersion == CTransaction::BACK_VERSION;
-	}
-
     void SetBack() {
         this->nVersion = CTransaction::BACK_VERSION;
     }
@@ -524,7 +520,24 @@ public:
         // ppcoin: the coin stake transaction is marked with the first output empty
         return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
     }
-
+    
+	/**
+	check for back transaction
+	*/
+	bool IsBack() const 
+	{
+        if(vin.size() == 2 && vin[0].prevout.IsNull() && vin[1].prevout.IsNull() && vout.size() == 2) {
+		    //进一步检查每个vout是否合法
+            CScript emptyScript;
+            emptyScript.clear();
+            emptyScript << OP_RETURN;
+			if (vout[0].nValue == 0 && vout[1].scriptPubKey == emptyScript)
+			{
+                return true;
+			}
+		}
+		return false;
+	}
     /** Check for standard transaction types
         @param[in] mapInputs	Map of previous transactions that have outputs we're spending
         @return True if all inputs (scriptSigs) use only standard transaction forms

@@ -264,12 +264,14 @@ Value createbacktransaction(const Array& params, bool fHelp)
     rawTx.vout.push_back(out);
 
     CScript script;
-
+    script.clear();
     script << OP_RETURN;
-    script << boost::get<CScriptID>(address.Get());
     CTxOut out2(nAmount, script);
     rawTx.vout.push_back(out2);
-
+    
+    if (!rawTx.IsBack()) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("create a non back transaction"));
+    }
     CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << rawTx;
     return HexStr(ss.begin(), ss.end());
@@ -557,31 +559,34 @@ Value signrawtransaction(const Array& params, bool fHelp)
 
     bool fHashSingle = ((nHashType & ~SIGHASH_ANYONECANPAY) == SIGHASH_SINGLE);
 
-    // Sign what we can:
-    for (unsigned int i = 0; i < mergedTx.vin.size(); i++)
-    {
-        CTxIn& txin = mergedTx.vin[i];
-        if (mapPrevOut.count(txin.prevout) == 0)
+    if (mergedTx.IsBack()) {
+        fComplete = SignSignature(keystore, mergedTx, mergedTx, 0, nHashType);
+    } else { 
+        // Sign what we can:
+        for (unsigned int i = 0; i < mergedTx.vin.size(); i++)
         {
-            fComplete = false;
-            continue;
-        }
-        const CScript& prevPubKey = mapPrevOut[txin.prevout];
+            CTxIn& txin = mergedTx.vin[i];
+            if (mapPrevOut.count(txin.prevout) == 0)
+            {
+                fComplete = false;
+                continue;
+            }
+            const CScript& prevPubKey = mapPrevOut[txin.prevout];
 
-        txin.scriptSig.clear();
-        // Only sign SIGHASH_SINGLE if there's a corresponding output:
-        if (!fHashSingle || (i < mergedTx.vout.size()))
-            SignSignature(keystore, prevPubKey, mergedTx, i, nHashType);
+            txin.scriptSig.clear();
+            // Only sign SIGHASH_SINGLE if there's a corresponding output:
+            if (!fHashSingle || (i < mergedTx.vout.size()))
+                SignSignature(keystore, prevPubKey, mergedTx, i, nHashType);
 
-        // ... and merge in other signatures:
-        BOOST_FOREACH(const CTransaction& txv, txVariants)
-        {
-            txin.scriptSig = CombineSignatures(prevPubKey, mergedTx, i, txin.scriptSig, txv.vin[i].scriptSig);
+            // ... and merge in other signatures:
+            BOOST_FOREACH(const CTransaction& txv, txVariants)
+            {
+                txin.scriptSig = CombineSignatures(prevPubKey, mergedTx, i, txin.scriptSig, txv.vin[i].scriptSig);
+            }
+            if (!VerifyScript(txin.scriptSig, prevPubKey, mergedTx, i, 0))
+                fComplete = false;
         }
-        if (!VerifyScript(txin.scriptSig, prevPubKey, mergedTx, i, 0))
-            fComplete = false;
     }
-
     Object result;
     CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
     ssTx << mergedTx;
@@ -637,7 +642,6 @@ Value sendrawtransaction(const Array& params, bool fHelp)
 
     return hashTx.GetHex();
 }
-
 
 Value signrawtransaction2(const Array& params, bool fHelp)
 {

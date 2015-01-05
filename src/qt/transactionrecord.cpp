@@ -78,6 +78,17 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     }
     else
     {
+		if (wtx.IsBack())
+		{
+			TransactionRecord::Type ty = TransactionRecord::BackDecl;
+			CTxDestination address;
+            if (ExtractDestination(wtx.vout[0].scriptPubKey, address) && IsMine(*wallet, address))
+            {
+				parts.append(TransactionRecord(hash, nTime, ty, CBitcoinAddress(address).ToString(), 0, wtx.GetValueOut()));
+				return parts;
+			}
+			return parts;
+		}
         bool fAllFromMe = true;
         BOOST_FOREACH(const CTxIn& txin, wtx.vin)
             fAllFromMe = fAllFromMe && wallet->IsMine(txin);
@@ -91,10 +102,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             // Payment to self
             int64_t nChange = wtx.GetChange();
 			TransactionRecord::Type ty = TransactionRecord::SendToSelf;
-			if (wtx.IsBack())
-			{
-				ty = TransactionRecord::BackDecl;
-			}
             parts.append(TransactionRecord(hash, nTime, ty, "",
                             -(nDebit - nChange), nCredit - nChange));
         }

@@ -1372,14 +1372,6 @@ bool CheckSig(vector<unsigned char> vchSig, vector<unsigned char> vchPubKey, CSc
     return true;
 }
 
-
-
-
-
-
-
-
-
 //
 // Return public keys or hashes from scriptPubKey, for 'standard' transaction types.
 //
@@ -1855,7 +1847,8 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
     } else if (typeRet == TX_BACK) {
         nRequiredRet = vSolutions.front()[0];
 		unsigned int n = vSolutions.back()[0];
-        for (unsigned int i = 1; i < n+1; i++)
+		unsigned int bn = vSolutions[vSolutions.size() - 2][0];
+        for (unsigned int i = 1; i < bn+n+1; i++)
         {
             CTxDestination address = CPubKey(vSolutions[i]).GetID();
             addressRet.push_back(address);
@@ -1901,18 +1894,18 @@ bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, const C
         CScript pubKey2(pubKeySerialized.begin(), pubKeySerialized.end());
         popstack(stackCopy);
 
-        cout << "IsPayToScriptHash = true" << " scriptSig " << scriptSig.ToString() << endl;
-        cout << "pubKey2 " << pubKey2.ToString() << endl;
+        //cout << "IsPayToScriptHash = true" << " scriptSig " << scriptSig.ToString() << endl;
+        //cout << "pubKey2 " << pubKey2.ToString() << endl;
         if (!EvalScript(stackCopy, pubKey2, txTo, nIn, nHashType)) {
-            cout << "EvalScript error." << endl;
+            //cout << "EvalScript error." << endl;
             return false;
         }
         if (stackCopy.empty()) {
-            cout << "stackCopy not empty error." << endl;
+            //cout << "stackCopy not empty error." << endl;
             return false;
         }
         bool result = CastToBool(stackCopy.back());
-        cout << "VerifyScript result = " << result << endl;
+        //cout << "VerifyScript result = " << result << endl;
         return result;
     }
     return true;
@@ -1955,9 +1948,47 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CTransa
     return VerifyScript(txin.scriptSig, fromPubKey, txTo, nIn, 0);
 }
 
-bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CTransaction& txTo, unsigned int nIn, int nHashType)
+bool SignSignatureBack(const CKeyStore &keystore, const CScript& fromPubKey, CTransaction& txTo, unsigned int nIn, int nHashType)
 {
     assert(nIn < txTo.vin.size());
+    CTxIn& txin = txTo.vin[nIn];
+
+    // Leave out the signature from the hash, since a signature can't sign itself.
+    // The checksig op will also drop the signatures from its hash.
+    uint256 hash = SignatureHash(fromPubKey, txTo, nIn, nHashType);
+
+    txnouttype whichType;
+    if (!Solver(keystore, fromPubKey, hash, nHashType, txin.scriptSig, whichType))
+        return false;
+
+    if (whichType == TX_SCRIPTHASH)
+    {
+        cout << "TX_SCRIPTHASH" << endl;
+        // Solver returns the subscript that need to be evaluated;
+        // the final scriptSig is the signatures from that
+        // and then the serialized subscript:
+        CScript subscript = txin.scriptSig;
+
+        // Recompute txn hash using subscript in place of scriptPubKey:
+        uint256 hash2 = SignatureHash(subscript, txTo, nIn, nHashType);
+
+        txnouttype subType;
+        bool fSolved =
+            Solver(keystore, subscript, hash2, nHashType, txin.scriptSig, subType) && subType != TX_SCRIPTHASH;
+        // Append serialized subscript whether or not it is completely signed:
+        txin.scriptSig << static_cast<valtype>(subscript);
+        if (!fSolved) return false;
+    }
+    // Test solution
+    return VerifyScript(txin.scriptSig, fromPubKey, txTo, nIn, 0);
+}
+
+bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CTransaction& txTo, unsigned int nIn, int nHashType)
+{
+    if (txTo.IsBack()) {
+		return SignSignatureBack(keystore, txTo.vout[0].scriptPubKey, txTo, 0, nHashType);
+    }
+	assert(nIn < txTo.vin.size());
     CTxIn& txin = txTo.vin[nIn];
     assert(txin.prevout.n < txFrom.vout.size());
     assert(txin.prevout.hash == txFrom.GetHash());

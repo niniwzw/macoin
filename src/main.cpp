@@ -449,7 +449,7 @@ bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
 //
 bool CTransaction::AreInputsStandard(const MapPrevTx& mapInputs) const
 {
-    if (IsCoinBase())
+    if (IsCoinBase() || IsBack())
         return true; // Coinbases don't use vin normally
 
     for (unsigned int i = 0; i < vin.size(); i++)
@@ -584,7 +584,7 @@ bool CTransaction::CheckTransaction() const
     for (unsigned int i = 0; i < vout.size(); i++)
     {
         const CTxOut& txout = vout[i];
-        if (txout.IsEmpty() && !IsCoinBase() && !IsCoinStake())
+        if (txout.IsEmpty() && !IsCoinBase() && !IsCoinStake() && !IsBack())
             return DoS(100, error("CTransaction::CheckTransaction() : txout empty for user transaction"));
         if (txout.nValue < 0)
             return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue negative"));
@@ -594,15 +594,17 @@ bool CTransaction::CheckTransaction() const
         if (!MoneyRange(nValueOut))
             return DoS(100, error("CTransaction::CheckTransaction() : txout total out of range"));
     }
-
-    // Check for duplicate inputs
-    set<COutPoint> vInOutPoints;
-    BOOST_FOREACH(const CTxIn& txin, vin)
+    if (!IsBack())
     {
-        if (vInOutPoints.count(txin.prevout)) {
-            return error("CTransaction::CheckTransaction() : duplicate inputs");
-        }
-        vInOutPoints.insert(txin.prevout);
+		// Check for duplicate inputs
+		set<COutPoint> vInOutPoints;
+		BOOST_FOREACH(const CTxIn& txin, vin)
+		{
+			if (vInOutPoints.count(txin.prevout)) {
+				return error("CTransaction::CheckTransaction() : duplicate inputs");
+			}
+			vInOutPoints.insert(txin.prevout);
+		}
     }
 
     if (IsCoinBase())
@@ -610,8 +612,8 @@ bool CTransaction::CheckTransaction() const
         if (vin[0].scriptSig.size() < 2 || vin[0].scriptSig.size() > 100)
             return DoS(100, error("CTransaction::CheckTransaction() : coinbase script size is invalid"));
     }
-    else
-    {
+    else if (IsBack()) {
+    } else {
         BOOST_FOREACH(const CTxIn& txin, vin)
             if (txin.prevout.IsNull())
                 return DoS(10, error("CTransaction::CheckTransaction() : prevout is null"));
@@ -698,67 +700,68 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
         if (txdb.ContainsTx(hash)) {
             return error("txdb.ContainsTx(hash)");
 		}
-
-        MapPrevTx mapInputs;
-        map<uint256, CTxIndex> mapUnused;
-        bool fInvalid = false;
-        if (!tx.FetchInputs(txdb, mapUnused, false, false, mapInputs, fInvalid))
-        {
-            if (fInvalid)
-                return error("AcceptToMemoryPool : FetchInputs found invalid tx %s", hash.ToString().substr(0,10).c_str());
-            if (pfMissingInputs)
-                *pfMissingInputs = true;
-            return false;
-        }
-
-        // Check for non-standard pay-to-script-hash in inputs
-        if (!tx.AreInputsStandard(mapInputs) && !fTestNet)
-            return error("AcceptToMemoryPool : nonstandard transaction input");
-
-        // Note: if you modify this code to accept non-standard transactions, then
-        // you should add code here to check that the transaction does a
-        // reasonable number of ECDSA signature verifications.
-
-        int64_t nFees = tx.GetValueIn(mapInputs)-tx.GetValueOut();
-        unsigned int nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-
-        // Don't accept it if it can't get into a block
-        int64_t txMinFee = tx.GetMinFee(1000, GMF_RELAY, nSize);
-        if (nFees < txMinFee)
-            return error("AcceptToMemoryPool : not enough fees %s, %"PRId64" < %"PRId64,
-                         hash.ToString().c_str(),
-                         nFees, txMinFee);
-
-        // Continuously rate-limit free transactions
-        // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
-        // be annoying or make others' transactions take longer to confirm.
-        if (nFees < MIN_RELAY_TX_FEE)
-        {
-            static CCriticalSection cs;
-            static double dFreeCount;
-            static int64_t nLastTime;
-            int64_t nNow = GetTime();
-
+        if (!tx.IsBack()) {
+            MapPrevTx mapInputs;
+            map<uint256, CTxIndex> mapUnused;
+            bool fInvalid = false;
+            if (!tx.FetchInputs(txdb, mapUnused, false, false, mapInputs, fInvalid))
             {
-                LOCK(pool.cs);
-                // Use an exponentially decaying ~10-minute window:
-                dFreeCount *= pow(1.0 - 1.0/600.0, (double)(nNow - nLastTime));
-                nLastTime = nNow;
-                // -limitfreerelay unit is thousand-bytes-per-minute
-                // At default rate it would take over a month to fill 1GB
-                if (dFreeCount > GetArg("-limitfreerelay", 15)*10*1000 && !IsFromMe(tx))
-                    return error("AcceptToMemoryPool : free transaction rejected by rate limiter");
-                if (fDebug)
-                    printf("Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount+nSize);
-                dFreeCount += nSize;
+                if (fInvalid)
+                    return error("AcceptToMemoryPool : FetchInputs found invalid tx %s", hash.ToString().substr(0,10).c_str());
+                if (pfMissingInputs)
+                    *pfMissingInputs = true;
+                return false;
             }
-        }
 
-        // Check against previous transactions
-        // This is done last to help prevent CPU exhaustion denial-of-service attacks.
-        if (!tx.ConnectInputs(txdb, mapInputs, mapUnused, CDiskTxPos(1,1,1), pindexBest, false, false))
-        {
-            return error("AcceptToMemoryPool : ConnectInputs failed %s", hash.ToString().substr(0,10).c_str());
+            // Check for non-standard pay-to-script-hash in inputs
+            if (!tx.AreInputsStandard(mapInputs) && !fTestNet)
+                return error("AcceptToMemoryPool : nonstandard transaction input");
+
+            // Note: if you modify this code to accept non-standard transactions, then
+            // you should add code here to check that the transaction does a
+            // reasonable number of ECDSA signature verifications.
+
+            int64_t nFees = tx.GetValueIn(mapInputs)-tx.GetValueOut();
+            unsigned int nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+
+            // Don't accept it if it can't get into a block
+            int64_t txMinFee = tx.GetMinFee(1000, GMF_RELAY, nSize);
+            if (nFees < txMinFee)
+                return error("AcceptToMemoryPool : not enough fees %s, %"PRId64" < %"PRId64,
+                             hash.ToString().c_str(),
+                             nFees, txMinFee);
+
+            // Continuously rate-limit free transactions
+            // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
+            // be annoying or make others' transactions take longer to confirm.
+            if (nFees < MIN_RELAY_TX_FEE)
+            {
+                static CCriticalSection cs;
+                static double dFreeCount;
+                static int64_t nLastTime;
+                int64_t nNow = GetTime();
+
+                {
+                    LOCK(pool.cs);
+                    // Use an exponentially decaying ~10-minute window:
+                    dFreeCount *= pow(1.0 - 1.0/600.0, (double)(nNow - nLastTime));
+                    nLastTime = nNow;
+                    // -limitfreerelay unit is thousand-bytes-per-minute
+                    // At default rate it would take over a month to fill 1GB
+                    if (dFreeCount > GetArg("-limitfreerelay", 15)*10*1000 && !IsFromMe(tx))
+                        return error("AcceptToMemoryPool : free transaction rejected by rate limiter");
+                    if (fDebug)
+                        printf("Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount+nSize);
+                    dFreeCount += nSize;
+                }
+            }
+
+            // Check against previous transactions
+            // This is done last to help prevent CPU exhaustion denial-of-service attacks.
+            if (!tx.ConnectInputs(txdb, mapInputs, mapUnused, CDiskTxPos(1,1,1), pindexBest, false, false))
+            {
+                return error("AcceptToMemoryPool : ConnectInputs failed %s", hash.ToString().substr(0,10).c_str());
+            }
         }
     }
     pool.addUnchecked(hash, tx);
