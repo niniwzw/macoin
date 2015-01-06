@@ -339,6 +339,66 @@ bool CTransaction::IsSendToSelf() const
     return  true;
 }
 
+bool CTransaction::CheckBack(CScript& script)
+{
+	int minTime = 0;
+	std::vector<int> vMinTime;
+	std::vector<CTxDestination> addresses;
+	std::vector<CTxDestination> backaddresses;
+	txnouttype whichType;
+	int nRequired;
+	ExtractDestinations2(script, whichType, addresses, backaddresses, nRequired, vMinTime);
+	//获取tx的地址
+	CTxDestination txaddress;
+	if (!ExtractDestination(vout[0].scriptPubKey, txaddress)) {
+	    return false;
+	}
+	int n = 0;
+	int i = 0;
+	BOOST_FOREACH(const CTxDestination& addr, backaddresses) {
+		if (addr == txaddress) {
+			minTime = vMinTime[i];
+			n++;
+		}
+		i++;
+	}
+	if (fTestNet)
+	{
+		//10 分钟
+		if (minTime < 600)
+		{
+			minTime = 600;
+		}
+	} else {
+		//7天
+		if (minTime < 3600 * 24 * 7)
+		{
+			minTime = 3600 * 24 * 7;
+		}
+	}
+
+	if (n == 0)
+	{
+		return false;
+	}
+	//获取transaction 所在的block
+	CTxDB txdb("r");
+	CTxIndex txindex;
+	if (ReadFromDisk(txdb, COutPoint(GetHash(), 0), txindex))
+	{
+		CBlock block;
+		if (block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false)) {
+			int nTime = block.nTime;
+            int currentTime = pindexBest->GetBlockTime();
+			if (currentTime - nTime > minTime)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 bool CTransaction::IsStandard() const
 {
     return IsStandardTx(*this);
@@ -346,7 +406,7 @@ bool CTransaction::IsStandard() const
 
 bool IsStandardTx(const CTransaction& tx)
 {
-    if (tx.nVersion != CTransaction::BACK_VERSION && tx.nVersion > CTransaction::CURRENT_VERSION)
+    if (tx.nVersion > CTransaction::CURRENT_VERSION)
         return false;
 
     // Treat non-final transactions as non-standard to prevent a specific type
@@ -611,8 +671,7 @@ bool CTransaction::CheckTransaction() const
     {
         if (vin[0].scriptSig.size() < 2 || vin[0].scriptSig.size() > 100)
             return DoS(100, error("CTransaction::CheckTransaction() : coinbase script size is invalid"));
-    }
-    else if (IsBack()) {
+    } else if (IsBack()) {
     } else {
         BOOST_FOREACH(const CTxIn& txin, vin)
             if (txin.prevout.IsNull())
@@ -1415,7 +1474,10 @@ unsigned int CTransaction::GetP2SHSigOpCount(const MapPrevTx& inputs) const
 bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTxIndex>& mapTestPool, const CDiskTxPos& posThisTx,
     const CBlockIndex* pindexBlock, bool fBlock, bool fMiner)
 {
-    // Take over previous transactions' spent pointers
+    //if inputs[0] is back transaction
+	bool isback = false;
+	CScript fromscript;
+	// Take over previous transactions' spent pointers
     // fBlock is true when this is called from AcceptBlock when a new best-block is added to the blockchain
     // fMiner is true when called from the internal bitcoin miner
     // ... both are false when called from CTransaction::AcceptToMemoryPool
@@ -1429,7 +1491,28 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
             assert(inputs.count(prevout.hash) > 0);
             CTxIndex& txindex = inputs[prevout.hash].first;
             CTransaction& txPrev = inputs[prevout.hash].second;
-
+			if (i == 0 && txPrev.IsBack())
+			{
+				isback = true;
+				//检查back的时间是否已经到了
+				if (vin.size() < 2)
+				{
+					return DoS(100, error("ConnectInputs() : back transaction vin must big than 2"));
+				}
+				fromscript = vin[1].scriptSig;
+				if (!txPrev.CheckBack(fromscript))
+				{
+					return DoS(100, error("ConnectInputs() : CheckBack back transaction error"));
+				}
+				continue;
+			}
+			if (isback)
+			{
+				if (vin[i].scriptSig != fromscript)
+				{
+					return DoS(100, error("ConnectInputs() : back transaction vin scriptSig must same"));
+				}
+			}
             if (prevout.n >= txPrev.vout.size() || prevout.n >= txindex.vSpent.size())
                 return DoS(100, error("ConnectInputs() : %s prevout.n out of range %d %"PRIszu" %"PRIszu" prev tx %s\n%s", GetHash().ToString().substr(0,10).c_str(), prevout.n, txPrev.vout.size(), txindex.vSpent.size(), prevout.hash.ToString().substr(0,10).c_str(), txPrev.ToString().c_str()));
 
@@ -1449,6 +1532,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
                 return DoS(100, error("ConnectInputs() : txin values out of range"));
 
         }
+
         // The first loop above does all the inexpensive checks.
         // Only if ALL inputs pass do we perform expensive ECDSA signature checks.
         // Helps prevent CPU exhaustion attacks.
@@ -1471,12 +1555,11 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
             if (!(fBlock && (nBestHeight < Checkpoints::GetTotalBlocksEstimate())))
             {
                 // Verify signature
-                if (!VerifySignature(txPrev, *this, i, 0))
+                if (!isback && !VerifySignature(txPrev, *this, i, 0))
                 {
                     return DoS(100,error("ConnectInputs() : %s VerifySignature failed", GetHash().ToString().substr(0,10).c_str()));
                 }
             }
-
             // Mark outpoints as spent
             txindex.vSpent[prevout.n] = posThisTx;
 

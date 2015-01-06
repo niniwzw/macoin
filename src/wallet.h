@@ -73,7 +73,7 @@ class CWallet : public CCryptoKeyStore
 private:
     bool SelectCoinsForStaking(int64_t nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
     bool SelectCoins(int64_t nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl=NULL) const;
-
+    bool SelectCoinsBack(int64_t nTargetValue, unsigned int nSpendTime, set<pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl* coinControl, const CTxDestination& fromaddress) const;
     CWalletDB *pwalletdbEncryption;
 
 	ServerAddressMap mapServerAddresses;
@@ -198,6 +198,8 @@ public:
     int64_t GetImmatureBalance() const;
     int64_t GetStake() const;
     int64_t GetNewMint() const;
+	bool CreateTransactionBack(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, const CCoinControl* coinControl, CTransaction& tx);
+	bool CreateTransactionBack(const vector<pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, const CCoinControl* coinControl, CTransaction& txback);
     bool CreateTransaction(const std::vector<std::pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, const CCoinControl *coinControl=NULL, bool isback = false);
     bool CreateTransactionV2(const std::vector<std::pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, bool& complete, map<uint160, CScript>& redeemScript, const CCoinControl *coinControl=NULL, bool isback = false);
     bool CreateTransaction(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, const CCoinControl *coinControl=NULL, bool isback = false);
@@ -206,7 +208,8 @@ public:
 
     bool GetStakeWeight(uint64_t& nWeight);
     bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key,  bool&, std::map<uint160, CScript>&);
-
+    std::string SendMoneyBack(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, bool fAskFee, CTransaction& tx);
+	std::string SendMoneyToBackDestination(const CTxDestination& fromaddress, int64_t nValue, CWalletTx& wtxNew, bool fAskFee, CTransaction& tx);
     std::string SendMoney(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, bool fAskFee=false, bool isback = false);
     std::string SendMoneyToDestination(const CTxDestination &address, int64_t nValue, CWalletTx& wtxNew, bool fAskFee=false, bool isback = false);
 

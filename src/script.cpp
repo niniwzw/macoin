@@ -1824,6 +1824,55 @@ void ExtractAffectedKeys(const CKeyStore &keystore, const CScript& scriptPubKey,
     CAffectedKeysVisitor(keystore, vKeys).Process(scriptPubKey);
 }
 
+bool ExtractDestinations2(const CScript& scriptPubKey, txnouttype& typeRet, vector<CTxDestination>& addressRet, vector<CTxDestination>& addressBack, int& nRequiredRet, vector<int>& vMinTime)
+{
+    addressRet.clear();
+    typeRet = TX_NONSTANDARD;
+    vector<valtype> vSolutions;
+    if (!Solver(scriptPubKey, typeRet, vSolutions))
+        return false;
+    if (typeRet == TX_NULL_DATA){
+        // This is data, not addresses
+        return false;
+    }
+    if (typeRet == TX_MULTISIG)
+    {
+        nRequiredRet = vSolutions.front()[0];
+        for (unsigned int i = 1; i < vSolutions.size()-1; i++)
+        {
+            CTxDestination address = CPubKey(vSolutions[i]).GetID();
+            addressRet.push_back(address);
+        }
+    } else if (typeRet == TX_BACK) {
+        nRequiredRet = vSolutions.front()[0];
+		unsigned int n = vSolutions.back()[0];
+		unsigned int bn = vSolutions[vSolutions.size() - 2][0];
+        for (unsigned int i = 1; i < n+1; i++)
+        {
+            CTxDestination address = CPubKey(vSolutions[i]).GetID();
+            addressRet.push_back(address);
+        }
+        for (unsigned int i = n+1; i < bn+n+1; i++)
+        {
+			CTxDestination address = CPubKey(vSolutions[i]).GetID();
+			addressBack.push_back(address);
+		}
+		for (unsigned int i = bn+n+1; i < 2*bn+n+1; i++)
+		{
+			vMinTime.push_back(CastToBigNum(vSolutions[i]).getint());
+		}
+    }
+    else
+    {
+        nRequiredRet = 1;
+        CTxDestination address;
+        if (!ExtractDestination(scriptPubKey, address))
+           return false;
+        addressRet.push_back(address);
+    }
+    return true;
+}
+
 bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vector<CTxDestination>& addressRet, int& nRequiredRet)
 {
     addressRet.clear();

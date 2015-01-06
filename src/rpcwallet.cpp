@@ -1931,15 +1931,20 @@ public:
         CScript subscript;
         pwalletMain->GetCScript(scriptID, subscript);
         std::vector<CTxDestination> addresses;
+		std::vector<CTxDestination> backaddresses;
+		std::vector<int> vMaxTime;
         txnouttype whichType;
         int nRequired;
-        ExtractDestinations(subscript, whichType, addresses, nRequired);
+        ExtractDestinations2(subscript, whichType, addresses, backaddresses, nRequired, vMaxTime);
         obj.push_back(Pair("script", GetTxnOutputType(whichType)));
         obj.push_back(Pair("hex", HexStr(subscript.begin(), subscript.end())));
         Array a;
         BOOST_FOREACH(const CTxDestination& addr, addresses)
             a.push_back(CBitcoinAddress(addr).ToString());
         obj.push_back(Pair("addresses", a));
+        BOOST_FOREACH(const CTxDestination& addr, backaddresses)
+            a.push_back(CBitcoinAddress(addr).ToString());
+        obj.push_back(Pair("backaddresses", a));
         if (whichType == TX_MULTISIG || whichType == TX_BACK)
             obj.push_back(Pair("sigsrequired", nRequired));
         return obj;

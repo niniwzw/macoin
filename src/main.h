@@ -440,7 +440,6 @@ class CTransaction
 {
 public:
     static const int CURRENT_VERSION=1;
-    static const int BACK_VERSION=0x7FFFFFFF;
     int nVersion;
     unsigned int nTime;
     std::vector<CTxIn> vin;
@@ -481,10 +480,6 @@ public:
         return (vin.empty() && vout.empty());
     }
 
-    void SetBack() {
-        this->nVersion = CTransaction::BACK_VERSION;
-    }
-
     uint256 GetHash() const
     {
         return SerializeHash(*this);
@@ -498,19 +493,12 @@ public:
 		return SerializeHash(copy);
     }
 
-    //计算交易的back hash
-    uint256 GetHashBack() const
-    {
-        CTransaction copy = *this;
-		copy.nVersion = CTransaction::BACK_VERSION;
-		return SerializeHash(copy);
-    }
-
     bool IsCoinBase() const
     {
         return (vin.size() == 1 && vin[0].prevout.IsNull() && vout.size() >= 1);
     }
 
+	bool CheckBack(CScript& script);
     /** Check for standard transaction types
         @return True if all outputs (scriptPubKeys) use only standard transaction forms
     */
