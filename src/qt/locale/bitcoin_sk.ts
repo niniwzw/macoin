@@ -3,22 +3,22 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
-        <source>About Macoin</source>
-        <translation>O Macoine</translation>
+        <source>About bityuan</source>
+        <translation>O bityuane</translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>&lt;b&gt;Macoin&lt;/b&gt; version</source>
-        <translation>verzia &lt;b&gt;MaCoinu&lt;/b&gt;</translation>
+        <source>&lt;b&gt;bityuan&lt;/b&gt; version</source>
+        <translation>verzia &lt;b&gt;bityuanu&lt;/b&gt;</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Copyright © 2009-2014 The Bitcoin developers
 Copyright © 2012-2014 The NovaCoin developers
-Copyright © 2014 The Macoin developers</source>
+Copyright © 2014 The bityuan developers</source>
         <translation>Copyright © 2009-2014 The Bitcoin developers
 Copyright © 2012-2014 The NovaCoin developers
-Copyright © 2014 The Macoin developers</translation>
+Copyright © 2014 The bityuan developers</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -65,8 +65,8 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     </message>
     <message>
         <location line="-46"/>
-        <source>These are your Macoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>Toto sú vaše Macoin adresy pre príjem platieb. Možno budete chcieť dať inú každému odosielateľovi, aby ste mohli sledovať, kto Vám platí.</translation>
+        <source>These are your bityuan addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
+        <translation>Toto sú vaše bityuan adresy pre príjem platieb. Možno budete chcieť dať inú každému odosielateľovi, aby ste mohli sledovať, kto Vám platí.</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -80,8 +80,8 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     </message>
     <message>
         <location line="+11"/>
-        <source>Sign a message to prove you own a Macoin address</source>
-        <translation>Podpísať správu ako dôkaz, že vlastníte túto Macoin adresu</translation>
+        <source>Sign a message to prove you own a bityuan address</source>
+        <translation>Podpísať správu ako dôkaz, že vlastníte túto bityuan adresu</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -95,8 +95,8 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     </message>
     <message>
         <location line="-14"/>
-        <source>Verify a message to ensure it was signed with a specified Macoin address</source>
-        <translation>Overte správu, aby ste zabezpečili, že bola podpísaná s určitou Macoin adresou</translation>
+        <source>Verify a message to ensure it was signed with a specified bityuan address</source>
+        <translation>Overte správu, aby ste zabezpečili, že bola podpísaná s určitou bityuan adresou</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -263,8 +263,8 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     </message>
     <message>
         <location line="-58"/>
-        <source>Macoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-        <translation>Macoin sa teraz zavrie aby dokončil proces zašifrovania. Nezabudnite, že zašifrovanie vašej peňaženky nemôže plne chrániť vaše mince pred krádežou malwarom napadnutím vašeho počítača.</translation>
+        <source>bityuan will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
+        <translation>bityuan sa teraz zavrie aby dokončil proces zašifrovania. Nezabudnite, že zašifrovanie vašej peňaženky nemôže plne chrániť vaše mince pred krádežou malwarom napadnutím vašeho počítača.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -377,8 +377,8 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     </message>
     <message>
         <location line="+4"/>
-        <source>Show information about Macoin</source>
-        <translation>Zobraziť informácie o Macoin</translation>
+        <source>Show information about bityuan</source>
+        <translation>Zobraziť informácie o bityuan</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -427,13 +427,13 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     </message>
     <message>
         <location line="-62"/>
-        <source>Send coins to a Macoin address</source>
-        <translation>Poslať mince na Macoin adresu</translation>
+        <source>Send coins to a bityuan address</source>
+        <translation>Poslať mince na bityuan adresu</translation>
     </message>
     <message>
         <location line="+45"/>
-        <source>Modify configuration options for Macoin</source>
-        <translation>Upraviť možnosti konfigurácie pre Macoin</translation>
+        <source>Modify configuration options for bityuan</source>
+        <translation>Upraviť možnosti konfigurácie pre bityuan</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -472,8 +472,8 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     </message>
     <message>
         <location line="-200"/>
-        <source>Macoin</source>
-        <translation>Macoin</translation>
+        <source>bityuan</source>
+        <translation>bityuan</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -482,8 +482,8 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     </message>
     <message>
         <location line="+178"/>
-        <source>&amp;About Macoin</source>
-        <translation>&amp;O Macoin</translation>
+        <source>&amp;About bityuan</source>
+        <translation>&amp;O bityuan</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -539,13 +539,13 @@ Tento produkt obsahuje softvér vyvinutý projektom OpenSSL Project pre použiti
     <message>
         <location line="+0"/>
         <location line="+60"/>
-        <source>Macoin client</source>
-        <translation>Macoin klient</translation>
+        <source>bityuan client</source>
+        <translation>bityuan klient</translation>
     </message>
     <message numerus="yes">
         <location line="+70"/>
-        <source>%n active connection(s) to Macoin network</source>
-        <translation><numerusform>%n aktívne spojenie s Macoin sieťov</numerusform><numerusform>%n aktívnych spojení s Macoin sieťov</numerusform><numerusform>%n aktívnych spojení s Macoin sieťou</numerusform></translation>
+        <source>%n active connection(s) to bityuan network</source>
+        <translation><numerusform>%n aktívne spojenie s bityuan sieťov</numerusform><numerusform>%n aktívnych spojení s bityuan sieťov</numerusform><numerusform>%n aktívnych spojení s bityuan sieťou</numerusform></translation>
     </message>
     <message>
         <location line="+40"/>
@@ -658,8 +658,8 @@ Adresa: %4</translation>
     <message>
         <location line="-15"/>
         <location line="+15"/>
-        <source>URI can not be parsed! This can be caused by an invalid Macoin address or malformed URI parameters.</source>
-        <translation>URI nemožno analyzovať! Toto môže byť spôsobené neplatnou Macoin adresu alebo chybnými URI parametrami.</translation>
+        <source>URI can not be parsed! This can be caused by an invalid bityuan address or malformed URI parameters.</source>
+        <translation>URI nemožno analyzovať! Toto môže byť spôsobené neplatnou bityuan adresu alebo chybnými URI parametrami.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -718,8 +718,8 @@ Adresa: %4</translation>
     </message>
     <message>
         <location filename="../bitcoin.cpp" line="+109"/>
-        <source>A fatal error occurred. Macoin can no longer continue safely and will quit.</source>
-        <translation>Došlo k závažnej chybe. Macoin už nemôže pokračovať bezpečne a bude ukončený.</translation>
+        <source>A fatal error occurred. bityuan can no longer continue safely and will quit.</source>
+        <translation>Došlo k závažnej chybe. bityuan už nemôže pokračovať bezpečne a bude ukončený.</translation>
     </message>
 </context>
 <context>
@@ -1052,8 +1052,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="-5"/>
-        <source>The entered address &quot;%1&quot; is not a valid Macoin address.</source>
-        <translation>Zadaná adresa &quot;%1&quot; nie je platnou Macoin adresou.</translation>
+        <source>The entered address &quot;%1&quot; is not a valid bityuan address.</source>
+        <translation>Zadaná adresa &quot;%1&quot; nie je platnou bityuan adresou.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1071,8 +1071,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     <message>
         <location filename="../guiutil.cpp" line="+420"/>
         <location line="+12"/>
-        <source>Macoin-Qt</source>
-        <translation>Macoin-Qt</translation>
+        <source>bityuan-Qt</source>
+        <translation>bityuan-Qt</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -1144,13 +1144,13 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+31"/>
-        <source>Automatically start Macoin after logging in to the system.</source>
-        <translation>Automaticky spustiť Macoin po prihlásení sa do systému.</translation>
+        <source>Automatically start bityuan after logging in to the system.</source>
+        <translation>Automaticky spustiť bityuan po prihlásení sa do systému.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>&amp;Start Macoin on system login</source>
-        <translation>&amp;Spustiť Macoin pri prihlásení do systému</translation>
+        <source>&amp;Start bityuan on system login</source>
+        <translation>&amp;Spustiť bityuan pri prihlásení do systému</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1169,8 +1169,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Automatically open the Macoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automaticky otvoriť port klienta Macoin na routeri. To funguje iba vtedy, ak váš router podporuje UPnP a je povolené.</translation>
+        <source>Automatically open the bityuan client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Automaticky otvoriť port klienta bityuan na routeri. To funguje iba vtedy, ak váš router podporuje UPnP a je povolené.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1179,8 +1179,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Connect to the Macoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>Pripojenie k sieti Macoin cez SOCKS proxy server (napr. pri pripojení cez Tor).</translation>
+        <source>Connect to the bityuan network through a SOCKS proxy (e.g. when connecting through Tor).</source>
+        <translation>Pripojenie k sieti bityuan cez SOCKS proxy server (napr. pri pripojení cez Tor).</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1254,8 +1254,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting Macoin.</source>
-        <translation>Tu môžete nastaviť jazyk používateľského rozhrania. Toto nastavenie sa prejaví až po reštartovaní Macoin.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting bityuan.</source>
+        <translation>Tu môžete nastaviť jazyk používateľského rozhrania. Toto nastavenie sa prejaví až po reštartovaní bityuan.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1269,8 +1269,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <source>Whether to show Macoin addresses in the transaction list or not.</source>
-        <translation>Či chcete zobraziť Macoin adresy v zozname transakcií alebo nie.</translation>
+        <source>Whether to show bityuan addresses in the transaction list or not.</source>
+        <translation>Či chcete zobraziť bityuan adresy v zozname transakcií alebo nie.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1316,8 +1316,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     <message>
         <location line="-9"/>
         <location line="+9"/>
-        <source>This setting will take effect after restarting Macoin.</source>
-        <translation>Toto nastavenie sa prejaví až po reštartovaní Macoin.</translation>
+        <source>This setting will take effect after restarting bityuan.</source>
+        <translation>Toto nastavenie sa prejaví až po reštartovaní bityuan.</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -1335,8 +1335,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     <message>
         <location line="+33"/>
         <location line="+231"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Macoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>Zobrazené informácie môžu byť zastaralé. Vaša peňaženka sa automaticky synchronizuje so sieťou Macoin po nadviazaní spojenia, ale tento proces nie je ešte dokončený.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the bityuan network after a connection is established, but this process has not completed yet.</source>
+        <translation>Zobrazené informácie môžu byť zastaralé. Vaša peňaženka sa automaticky synchronizuje so sieťou bityuan po nadviazaní spojenia, ale tento proces nie je ešte dokončený.</translation>
     </message>
     <message>
         <location line="-160"/>
@@ -1551,8 +1551,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Show the Macoin-Qt help message to get a list with possible Macoin command-line options.</source>
-        <translation>Zobraziť Macoin-Qt nápovedu k získaniu zoznamu pre možnosti  príkazového riadku Macoin.</translation>
+        <source>Show the bityuan-Qt help message to get a list with possible bityuan command-line options.</source>
+        <translation>Zobraziť bityuan-Qt nápovedu k získaniu zoznamu pre možnosti  príkazového riadku bityuan.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1571,13 +1571,13 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="-104"/>
-        <source>Macoin - Debug window</source>
-        <translation>Macoin - Ladiace okno</translation>
+        <source>bityuan - Debug window</source>
+        <translation>bityuan - Ladiace okno</translation>
     </message>
     <message>
         <location line="+25"/>
-        <source>Macoin Core</source>
-        <translation>Jadro Macoin</translation>
+        <source>bityuan Core</source>
+        <translation>Jadro bityuan</translation>
     </message>
     <message>
         <location line="+279"/>
@@ -1586,8 +1586,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Open the Macoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Otvorte Macoin súbor denníku ladenia z aktuálneho adresára dát. To môže trvať niekoľko sekúnd pre veľké súbory denníka.</translation>
+        <source>Open the bityuan debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Otvorte bityuan súbor denníku ladenia z aktuálneho adresára dát. To môže trvať niekoľko sekúnd pre veľké súbory denníka.</translation>
     </message>
     <message>
         <location line="+102"/>
@@ -1596,8 +1596,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-33"/>
-        <source>Welcome to the Macoin RPC console.</source>
-        <translation>Vitajte v konzole Macoin RPC.</translation>
+        <source>Welcome to the bityuan RPC console.</source>
+        <translation>Vitajte v konzole bityuan RPC.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1755,8 +1755,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location filename="../sendcoinsdialog.cpp" line="-173"/>
-        <source>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>Zadajte Macoin adresu (napr. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
+        <translation>Zadajte bityuan adresu (napr. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1855,8 +1855,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+251"/>
-        <source>WARNING: Invalid Macoin address</source>
-        <translation>UPOZORNENIE: Neplatná Macoin adresa</translation>
+        <source>WARNING: Invalid bityuan address</source>
+        <translation>UPOZORNENIE: Neplatná bityuan adresa</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -1929,8 +1929,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>Zadajte Macoin adresu (napr. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
+        <translation>Zadajte bityuan adresu (napr. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
     </message>
 </context>
 <context>
@@ -1990,8 +1990,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+21"/>
-        <source>Sign the message to prove you own this Macoin address</source>
-        <translation>Podpísať správu ako dôkaz, že vlastníte túto Macoin adresu</translation>
+        <source>Sign the message to prove you own this bityuan address</source>
+        <translation>Podpísať správu ako dôkaz, že vlastníte túto bityuan adresu</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2022,8 +2022,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified Macoin address</source>
-        <translation>Overte správu, aby ste sa ubezpečili, že bola podpísaná s danou Macoin adresou</translation>
+        <source>Verify the message to ensure it was signed with the specified bityuan address</source>
+        <translation>Overte správu, aby ste sa ubezpečili, že bola podpísaná s danou bityuan adresou</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2033,8 +2033,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>Zadajte Macoin adresu (napr. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
+        <translation>Zadajte bityuan adresu (napr. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -2043,8 +2043,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Enter Macoin signature</source>
-        <translation>Zadajte Macoin podpis</translation>
+        <source>Enter bityuan signature</source>
+        <translation>Zadajte bityuan podpis</translation>
     </message>
     <message>
         <location line="+82"/>
@@ -2614,8 +2614,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     <name>bitcoin-core</name>
     <message>
         <location filename="../bitcoinstrings.cpp" line="+33"/>
-        <source>Macoin version</source>
-        <translation>Macoin verzia</translation>
+        <source>bityuan version</source>
+        <translation>bityuan verzia</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2624,8 +2624,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Send command to -server or macoind</source>
-        <translation>Pošli príkaz na -server alebo macoind</translation>
+        <source>Send command to -server or bityuand</source>
+        <translation>Pošli príkaz na -server alebo bityuand</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2644,13 +2644,13 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: macoin.conf)</source>
-        <translation>Zadajte konfiguračný súbor (predvolené: macoin.conf)</translation>
+        <source>Specify configuration file (default: bityuan.conf)</source>
+        <translation>Zadajte konfiguračný súbor (predvolené: bityuan.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: macoind.pid)</source>
-        <translation>Zadajte pid súbor (predvolené: macoind.pid)</translation>
+        <source>Specify pid file (default: bityuand.pid)</source>
+        <translation>Zadajte pid súbor (predvolené: bityuand.pid)</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2799,8 +2799,8 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
     </message>
     <message>
         <location line="+61"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Macoin will not work properly.</source>
-        <translation>Upozornenie: Skontrolujte, že dátum a čas počítača sú správne! Ak je Váš čas nesprávny Macoin nebude pracovať správne.</translation>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong bityuan will not work properly.</source>
+        <translation>Upozornenie: Skontrolujte, že dátum a čas počítača sú správne! Ak je Váš čas nesprávny bityuan nebude pracovať správne.</translation>
     </message>
     <message>
         <location line="-31"/>
@@ -2989,24 +2989,24 @@ To znamená, že je potrebný poplatok aspoň %2.</translation>
         <source>%s, you must set a rpcpassword in the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=macoinrpc
+rpcuser=bityuanrpc
 rpcpassword=%s
 (you do not need to remember this password)
 The username and password MUST NOT be the same.
 If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.com
+for example: alertnotify=echo %%s | mail -s &quot;bityuan Alert&quot; admin@foo.com
 </source>
         <translation>%s, musíte nastaviť rpcpassword v konfiguračnom súbore:
  %s
 Je odporúčané použiť nasledujúce náhodné heslo:
-rpcuser=macoinrpc
+rpcuser=bityuanrpc
 rpcpassword=%s
 (Nemusíte si pamätať toto heslo)
 Užívateľské meno a heslo nesmú byť rovnaké. 
 Ak súbor neexistuje, vytvorte ho s oprávneniami súborov vlastníkov iba na čítatanie.
 Odporúča sa tiež nastaviť alertnotify, takže budete upozornení na problémy;
-napríklad: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.com</translation>
+napríklad: alertnotify=echo %%s | mail -s &quot;bityuan Alert&quot; admin@foo.com</translation>
     </message>
     <message>
         <location line="+51"/>
@@ -3130,13 +3130,13 @@ napríklad: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.co
     </message>
     <message>
         <location line="+1"/>
-        <source>Cannot obtain a lock on data directory %s.  Macoin is probably already running.</source>
-        <translation>Nemožno získať zámok na dátový adresár %s. Macoin už pravdepodobne beží.</translation>
+        <source>Cannot obtain a lock on data directory %s.  bityuan is probably already running.</source>
+        <translation>Nemožno získať zámok na dátový adresár %s. bityuan už pravdepodobne beží.</translation>
     </message>
     <message>
         <location line="-98"/>
-        <source>Macoin</source>
-        <translation>Macoin</translation>
+        <source>bityuan</source>
+        <translation>bityuan</translation>
     </message>
     <message>
         <location line="+140"/>
@@ -3170,13 +3170,13 @@ napríklad: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.co
     </message>
     <message>
         <location line="+4"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of Macoin</source>
-        <translation>Chyba pri načítaní wallet.dat: Peňaženka vyžaduje novšiu verziu Macoin</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of bityuan</source>
+        <translation>Chyba pri načítaní wallet.dat: Peňaženka vyžaduje novšiu verziu bityuan</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Wallet needed to be rewritten: restart Macoin to complete</source>
-        <translation>Peňaženka potrebuje byť prepísaná: reštartujte Macoin k dokončeniu</translation>
+        <source>Wallet needed to be rewritten: restart bityuan to complete</source>
+        <translation>Peňaženka potrebuje byť prepísaná: reštartujte bityuan k dokončeniu</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3245,8 +3245,8 @@ napríklad: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.co
     </message>
     <message>
         <location line="+122"/>
-        <source>Unable to bind to %s on this computer. Macoin is probably already running.</source>
-        <translation>Nemôžem sa pripojiť na %s na tomto počítači. Macoin je pravdepodobne už beží.</translation>
+        <source>Unable to bind to %s on this computer. bityuan is probably already running.</source>
+        <translation>Nemôžem sa pripojiť na %s na tomto počítači. bityuan je pravdepodobne už beží.</translation>
     </message>
     <message>
         <location line="-97"/>

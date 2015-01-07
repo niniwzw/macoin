@@ -5,19 +5,19 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
-        <source>About Macoin</source>
-        <translation>About Macoin</translation>
+        <source>About bityuan</source>
+        <translation>About bityuan</translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>&lt;b&gt;Macoin&lt;/b&gt; version</source>
-        <translation>&lt;b&gt;Macoin&lt;/b&gt; version</translation>
+        <source>&lt;b&gt;bityuan&lt;/b&gt; version</source>
+        <translation>&lt;b&gt;bityuan&lt;/b&gt; version</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Copyright © 2009-2014 The Bitcoin developers
 Copyright © 2012-2014 The NovaCoin developers
-Copyright © 2014 The Macoin developers</source>
+Copyright © 2014 The bityuan developers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -60,8 +60,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-46"/>
-        <source>These are your Macoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>These are your Macoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</translation>
+        <source>These are your bityuan addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
+        <translation>These are your bityuan addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -75,8 +75,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+11"/>
-        <source>Sign a message to prove you own a Macoin address</source>
-        <translation>Sign a message to prove you own a Macoin address</translation>
+        <source>Sign a message to prove you own a bityuan address</source>
+        <translation>Sign a message to prove you own a bityuan address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -90,8 +90,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-14"/>
-        <source>Verify a message to ensure it was signed with a specified Macoin address</source>
-        <translation>Verify a message to ensure it was signed with a specified Macoin address</translation>
+        <source>Verify a message to ensure it was signed with a specified bityuan address</source>
+        <translation>Verify a message to ensure it was signed with a specified bityuan address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -258,8 +258,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+82"/>
-        <source>Macoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-        <translation>Macoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</translation>
+        <source>bityuan will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
+        <translation>bityuan will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -382,8 +382,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+4"/>
-        <source>Show information about Macoin</source>
-        <translation>Show information about Macoin</translation>
+        <source>Show information about bityuan</source>
+        <translation>Show information about bityuan</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -435,13 +435,13 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-62"/>
-        <source>Send coins to a Macoin address</source>
-        <translation>Send coins to a Macoin address</translation>
+        <source>Send coins to a bityuan address</source>
+        <translation>Send coins to a bityuan address</translation>
     </message>
     <message>
         <location line="+45"/>
-        <source>Modify configuration options for Macoin</source>
-        <translation>Modify configuration options for Macoin</translation>
+        <source>Modify configuration options for bityuan</source>
+        <translation>Modify configuration options for bityuan</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -480,8 +480,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-200"/>
-        <source>Macoin</source>
-        <translation>Macoin</translation>
+        <source>bityuan</source>
+        <translation>bityuan</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -490,8 +490,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+178"/>
-        <source>&amp;About Macoin</source>
-        <translation>&amp;About Macoin</translation>
+        <source>&amp;About bityuan</source>
+        <translation>&amp;About bityuan</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -547,15 +547,15 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+0"/>
         <location line="+60"/>
-        <source>Macoin client</source>
-        <translation>Macoin client</translation>
+        <source>bityuan client</source>
+        <translation>bityuan client</translation>
     </message>
     <message numerus="yes">
         <location line="+70"/>
-        <source>%n active connection(s) to Macoin network</source>
+        <source>%n active connection(s) to bityuan network</source>
         <translation>
-            <numerusform>%n active connection to Macoin network</numerusform>
-            <numerusform>%n active connections to Macoin network</numerusform>
+            <numerusform>%n active connection to bityuan network</numerusform>
+            <numerusform>%n active connections to bityuan network</numerusform>
         </translation>
     </message>
     <message>
@@ -682,8 +682,8 @@ Address: %4
     <message>
         <location line="-15"/>
         <location line="+15"/>
-        <source>URI can not be parsed! This can be caused by an invalid Macoin address or malformed URI parameters.</source>
-        <translation>URI can not be parsed! This can be caused by an invalid Macoin address or malformed URI parameters.</translation>
+        <source>URI can not be parsed! This can be caused by an invalid bityuan address or malformed URI parameters.</source>
+        <translation>URI can not be parsed! This can be caused by an invalid bityuan address or malformed URI parameters.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -754,8 +754,8 @@ Address: %4
     </message>
     <message>
         <location filename="../bitcoin.cpp" line="+109"/>
-        <source>A fatal error occurred. Macoin can no longer continue safely and will quit.</source>
-        <translation>A fatal error occurred. Macoin can no longer continue safely and will quit.</translation>
+        <source>A fatal error occurred. bityuan can no longer continue safely and will quit.</source>
+        <translation>A fatal error occurred. bityuan can no longer continue safely and will quit.</translation>
     </message>
 </context>
 <context>
@@ -1074,8 +1074,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="-5"/>
-        <source>The entered address &quot;%1&quot; is not a valid Macoin address.</source>
-        <translation>The entered address &quot;%1&quot; is not a valid Macoin address.</translation>
+        <source>The entered address &quot;%1&quot; is not a valid bityuan address.</source>
+        <translation>The entered address &quot;%1&quot; is not a valid bityuan address.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1093,8 +1093,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../guiutil.cpp" line="+424"/>
         <location line="+12"/>
-        <source>Macoin-Qt</source>
-        <translation>Macoin-Qt</translation>
+        <source>bityuan-Qt</source>
+        <translation>bityuan-Qt</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -1166,13 +1166,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+31"/>
-        <source>Automatically start Macoin after logging in to the system.</source>
-        <translation>Automatically start Macoin after logging in to the system.</translation>
+        <source>Automatically start bityuan after logging in to the system.</source>
+        <translation>Automatically start bityuan after logging in to the system.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>&amp;Start Macoin on system login</source>
-        <translation>&amp;Start Macoin on system login</translation>
+        <source>&amp;Start bityuan on system login</source>
+        <translation>&amp;Start bityuan on system login</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -1181,8 +1181,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+6"/>
-        <source>Automatically open the Macoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automatically open the Macoin client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
+        <source>Automatically open the bityuan client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Automatically open the bityuan client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1191,8 +1191,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Connect to the Macoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>Connect to the Macoin network through a SOCKS proxy (e.g. when connecting through Tor).</translation>
+        <source>Connect to the bityuan network through a SOCKS proxy (e.g. when connecting through Tor).</source>
+        <translation>Connect to the bityuan network through a SOCKS proxy (e.g. when connecting through Tor).</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1266,8 +1266,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting Macoin.</source>
-        <translation>The user interface language can be set here. This setting will take effect after restarting Macoin.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting bityuan.</source>
+        <translation>The user interface language can be set here. This setting will take effect after restarting bityuan.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1281,8 +1281,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+9"/>
-        <source>Whether to show Macoin addresses in the transaction list or not.</source>
-        <translation>Whether to show Macoin addresses in the transaction list or not.</translation>
+        <source>Whether to show bityuan addresses in the transaction list or not.</source>
+        <translation>Whether to show bityuan addresses in the transaction list or not.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1328,8 +1328,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-9"/>
         <location line="+9"/>
-        <source>This setting will take effect after restarting Macoin.</source>
-        <translation>This setting will take effect after restarting Macoin.</translation>
+        <source>This setting will take effect after restarting bityuan.</source>
+        <translation>This setting will take effect after restarting bityuan.</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -1347,8 +1347,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+33"/>
         <location line="+231"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Macoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the Macoin network after a connection is established, but this process has not completed yet.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the bityuan network after a connection is established, but this process has not completed yet.</source>
+        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the bityuan network after a connection is established, but this process has not completed yet.</translation>
     </message>
     <message>
         <location line="-160"/>
@@ -1563,8 +1563,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Show the Macoin-Qt help message to get a list with possible Macoin command-line options.</source>
-        <translation>Show the Macoin-Qt help message to get a list with possible Macoin command-line options.</translation>
+        <source>Show the bityuan-Qt help message to get a list with possible bityuan command-line options.</source>
+        <translation>Show the bityuan-Qt help message to get a list with possible bityuan command-line options.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1583,13 +1583,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="-104"/>
-        <source>Macoin - Debug window</source>
-        <translation>Macoin - Debug window</translation>
+        <source>bityuan - Debug window</source>
+        <translation>bityuan - Debug window</translation>
     </message>
     <message>
         <location line="+25"/>
-        <source>Macoin Core</source>
-        <translation>Macoin Core</translation>
+        <source>bityuan Core</source>
+        <translation>bityuan Core</translation>
     </message>
     <message>
         <location line="+279"/>
@@ -1598,8 +1598,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Open the Macoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Open the Macoin debug log file from the current data directory. This can take a few seconds for large log files.</translation>
+        <source>Open the bityuan debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Open the bityuan debug log file from the current data directory. This can take a few seconds for large log files.</translation>
     </message>
     <message>
         <location line="+102"/>
@@ -1608,8 +1608,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-33"/>
-        <source>Welcome to the Macoin RPC console.</source>
-        <translation>Welcome to the Macoin RPC console.</translation>
+        <source>Welcome to the bityuan RPC console.</source>
+        <translation>Welcome to the bityuan RPC console.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1767,8 +1767,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../sendcoinsdialog.cpp" line="-173"/>
-        <source>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
+        <translation>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1867,7 +1867,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+251"/>
-        <source>WARNING: Invalid Macoin address</source>
+        <source>WARNING: Invalid bityuan address</source>
         <translation></translation>
     </message>
     <message>
@@ -1941,8 +1941,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
+        <translation>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
     </message>
 </context>
 <context>
@@ -2002,8 +2002,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+21"/>
-        <source>Sign the message to prove you own this Macoin address</source>
-        <translation>Sign the message to prove you own this Macoin address</translation>
+        <source>Sign the message to prove you own this bityuan address</source>
+        <translation>Sign the message to prove you own this bityuan address</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2034,8 +2034,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified Macoin address</source>
-        <translation>Verify the message to ensure it was signed with the specified Macoin address</translation>
+        <source>Verify the message to ensure it was signed with the specified bityuan address</source>
+        <translation>Verify the message to ensure it was signed with the specified bityuan address</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2045,8 +2045,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
-        <translation>Enter a Macoin address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
+        <source>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</source>
+        <translation>Enter a bityuan address (e.g. B8gZqgY4r2RoEdqYk3QsAqFckyf9pRHN6i)</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -2055,8 +2055,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+3"/>
-        <source>Enter Macoin signature</source>
-        <translation>Enter Macoin signature</translation>
+        <source>Enter bityuan signature</source>
+        <translation>Enter bityuan signature</translation>
     </message>
     <message>
         <location line="+82"/>
@@ -2638,8 +2638,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <name>bitcoin-core</name>
     <message>
         <location filename="../bitcoinstrings.cpp" line="+33"/>
-        <source>Macoin version</source>
-        <translation>Macoin version</translation>
+        <source>bityuan version</source>
+        <translation>bityuan version</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2648,8 +2648,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+1"/>
-        <source>Send command to -server or macoind</source>
-        <translation>Send command to -server or macoind</translation>
+        <source>Send command to -server or bityuand</source>
+        <translation>Send command to -server or bityuand</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2668,13 +2668,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: macoin.conf)</source>
-        <translation>Specify configuration file (default: macoin.conf)</translation>
+        <source>Specify configuration file (default: bityuan.conf)</source>
+        <translation>Specify configuration file (default: bityuan.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: macoind.pid)</source>
-        <translation>Specify pid file (default: macoind.pid)</translation>
+        <source>Specify pid file (default: bityuand.pid)</source>
+        <translation>Specify pid file (default: bityuand.pid)</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2813,8 +2813,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+61"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Macoin will not work properly.</source>
-        <translation>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Macoin will not work properly.</translation>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong bityuan will not work properly.</source>
+        <translation>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong bityuan will not work properly.</translation>
     </message>
     <message>
         <location line="-30"/>
@@ -3002,13 +3002,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <source>%s, you must set a rpcpassword in the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=macoinrpc
+rpcuser=bityuanrpc
 rpcpassword=%s
 (you do not need to remember this password)
 The username and password MUST NOT be the same.
 If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.com
+for example: alertnotify=echo %%s | mail -s &quot;bityuan Alert&quot; admin@foo.com
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -3114,7 +3114,7 @@ for example: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.c
     </message>
     <message>
         <location line="+8"/>
-        <source>Initialization sanity check failed. Macoin is shutting down.</source>
+        <source>Initialization sanity check failed. bityuan is shutting down.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3139,13 +3139,13 @@ for example: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.c
     </message>
     <message>
         <location line="+1"/>
-        <source>Cannot obtain a lock on data directory %s.  Macoin is probably already running.</source>
-        <translation>Cannot obtain a lock on data directory %s.  Macoin is probably already running.</translation>
+        <source>Cannot obtain a lock on data directory %s.  bityuan is probably already running.</source>
+        <translation>Cannot obtain a lock on data directory %s.  bityuan is probably already running.</translation>
     </message>
     <message>
         <location line="-96"/>
-        <source>Macoin</source>
-        <translation>Macoin</translation>
+        <source>bityuan</source>
+        <translation>bityuan</translation>
     </message>
     <message>
         <location line="+137"/>
@@ -3179,13 +3179,13 @@ for example: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.c
     </message>
     <message>
         <location line="+4"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of Macoin</source>
-        <translation>Error loading wallet.dat: Wallet requires newer version of Macoin</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of bityuan</source>
+        <translation>Error loading wallet.dat: Wallet requires newer version of bityuan</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Wallet needed to be rewritten: restart Macoin to complete</source>
-        <translation>Wallet needed to be rewritten: restart Macoin to complete</translation>
+        <source>Wallet needed to be rewritten: restart bityuan to complete</source>
+        <translation>Wallet needed to be rewritten: restart bityuan to complete</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3254,8 +3254,8 @@ for example: alertnotify=echo %%s | mail -s &quot;Macoin Alert&quot; admin@foo.c
     </message>
     <message>
         <location line="+119"/>
-        <source>Unable to bind to %s on this computer. Macoin is probably already running.</source>
-        <translation>Unable to bind to %s on this computer. Macoin is probably already running.</translation>
+        <source>Unable to bind to %s on this computer. bityuan is probably already running.</source>
+        <translation>Unable to bind to %s on this computer. bityuan is probably already running.</translation>
     </message>
     <message>
         <location line="-97"/>
