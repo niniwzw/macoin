@@ -84,7 +84,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 			CTxDestination address;
             if (ExtractDestination(wtx.vout[0].scriptPubKey, address) && IsMine(*wallet, address))
             {
-				parts.append(TransactionRecord(hash, nTime, ty, CBitcoinAddress(address).ToString(), 0, wtx.GetValueOut()));
+				parts.append(TransactionRecord(hash, nTime, ty, CBitcoinAddress(address).ToString(), 0, wtx.vout[1].nValue));
 				return parts;
 			}
 			return parts;

@@ -735,7 +735,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
     // is it already in the memory pool?
     uint256 hash = tx.GetHash();
     if (pool.exists(hash)) {
-        return error("pool.exists(hash)");;
+        return error("pool.exists(hash)");
 	}
 
     // Check for conflicts with in-memory transactions
@@ -747,7 +747,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
             if (pool.mapNextTx.count(outpoint))
             {
                 // Disable replacement feature for now
-                return false;
+                return error("Check for conflicts with in-memory transactions");
             }
         }
     }
@@ -1400,7 +1400,7 @@ bool CTransaction::FetchInputs(CTxDB& txdb, const map<uint256, CTxIndex>& mapTes
         {
             // Get prev tx from single transactions in memory
             if (!mempool.lookup(prevout.hash, txPrev))
-                return error("FetchInputs() : %s mempool Tx prev not found %s", GetHash().ToString().substr(0,10).c_str(),  prevout.hash.ToString().substr(0,10).c_str());
+                return error("FetchInputs() : hash = %s , %s mempool Tx prev not found %s", GetHash().ToString().c_str(), ToString().c_str(),  prevout.hash.ToString().substr(0,10).c_str());
             if (!fFound)
                 txindex.vSpent.resize(txPrev.vout.size());
         }
