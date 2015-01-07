@@ -188,15 +188,17 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
         for (map<uint256, CTransaction>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi)
         {
             CTransaction& tx = (*mi).second;
-            if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight))
+            if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)) {
+				printf("CreateNewBlock tx IsCoinBase or IsCoinStake or IsFinalTx\n");
                 continue;
-
+			}
             COrphan* porphan = NULL;
             double dPriority = 0;
             int64_t nTotalIn = 0;
             bool fMissingInputs = false;
 			if (tx.IsBack())
 			{
+				printf("CreateNewBlock tx IsBack hash = %s\n", tx.GetHash().ToString().c_str());
 				dPriority = 1000;
 			} else {
 				BOOST_FOREACH(const CTxIn& txin, tx.vin)
@@ -257,8 +259,10 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                 porphan->dPriority = dPriority;
                 porphan->dFeePerKb = dFeePerKb;
             }
-            else
+            else {
+				printf("CreateNewBlock push tx into vecPriority, hash = %s\n", tx.GetHash().ToString().c_str());
                 vecPriority.push_back(TxPriority(dPriority, dFeePerKb, &(*mi).second));
+			}
         }
 
         // Collect transactions into block
@@ -277,30 +281,38 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             double dPriority = vecPriority.front().get<0>();
             double dFeePerKb = vecPriority.front().get<1>();
             CTransaction& tx = *(vecPriority.front().get<2>());
-
+			printf("CreateNewBlock check tx in vecPriority, hash = %s\n", tx.GetHash().ToString().c_str());
             std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
             vecPriority.pop_back();
 
             // Size limits
             unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-            if (nBlockSize + nTxSize >= nBlockMaxSize)
+            if (nBlockSize + nTxSize >= nBlockMaxSize) {
+				printf("CreateNewBlock nBlockSize + nTxSize >= nBlockMaxSize\n");
                 continue;
+			}
 
             // Legacy limits on sigOps:
             unsigned int nTxSigOps = tx.GetLegacySigOpCount();
-            if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
+            if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS) {
+				printf("CreateNewBlock nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS\n");
                 continue;
+			}
 
             // Timestamp limit
-            if (tx.nTime > GetAdjustedTime() || (fProofOfStake && tx.nTime > pblock->vtx[0].nTime))
+            if (tx.nTime > GetAdjustedTime() || (fProofOfStake && tx.nTime > pblock->vtx[0].nTime)) {
+				printf("CreateNewBlock tx.nTime > GetAdjustedTime() || (fProofOfStake && tx.nTime > pblock->vtx[0].nTime\n");
                 continue;
+			}
 
             // Transaction fee
             int64_t nMinFee = tx.GetMinFee(nBlockSize, GMF_BLOCK);
 
             // Skip free transactions if we're past the minimum block size:
-            if (fSortedByFee && (dFeePerKb < nMinTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
+            if (fSortedByFee && (dFeePerKb < nMinTxFee) && (nBlockSize + nTxSize >= nBlockMinSize)) {
+				printf("CreateNewBlock dFeePerKb < nMinTxFee\n");
                 continue;
+			}
 
             // Prioritize by fee once past the priority size or we run out of high-priority
             // transactions:
@@ -317,19 +329,27 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             map<uint256, CTxIndex> mapTestPoolTmp(mapTestPool);
             MapPrevTx mapInputs;
             bool fInvalid;
-            if (!tx.IsBack() && !tx.FetchInputs(txdb, mapTestPoolTmp, false, true, mapInputs, fInvalid))
+            if (!tx.IsBack() && !tx.FetchInputs(txdb, mapTestPoolTmp, false, true, mapInputs, fInvalid)) {
+				printf("CreateNewBlock FetchInputs\n");
                 continue;
+			}
 
             int64_t nTxFees = tx.GetValueIn(mapInputs)-tx.GetValueOut();
-            if (nTxFees < nMinFee)
+            if (!tx.IsBack() && nTxFees < nMinFee) {
+				printf("CreateNewBlock nTxFees < nMinFee\n");
                 continue;
+			}
 
             nTxSigOps += tx.GetP2SHSigOpCount(mapInputs);
-            if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
+            if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS) {
+				printf("CreateNewBlock nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS\n");
                 continue;
+			}
 
-            if (!tx.IsBack() && !tx.ConnectInputs(txdb, mapInputs, mapTestPoolTmp, CDiskTxPos(1,1,1), pindexPrev, false, true))
+            if (!tx.IsBack() && !tx.ConnectInputs(txdb, mapInputs, mapTestPoolTmp, CDiskTxPos(1,1,1), pindexPrev, false, true)) {
+				printf("CreateNewBlock ConnectInputs\n");
                 continue;
+			}
             mapTestPoolTmp[tx.GetHash()] = CTxIndex(CDiskTxPos(1,1,1), tx.vout.size());
             swap(mapTestPool, mapTestPoolTmp);
 

@@ -735,7 +735,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
     // is it already in the memory pool?
     uint256 hash = tx.GetHash();
     if (pool.exists(hash)) {
-        return error("pool.exists(hash)");;
+        return error("pool.exists(hash)");
 	}
 
     // Check for conflicts with in-memory transactions
@@ -747,7 +747,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
             if (pool.mapNextTx.count(outpoint))
             {
                 // Disable replacement feature for now
-                return false;
+                return error("Check for conflicts with in-memory transactions");
             }
         }
     }
