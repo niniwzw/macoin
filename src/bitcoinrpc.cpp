@@ -1522,7 +1522,7 @@ Object OAuth2::refreshToken()
 bool OAuth2::checkOAuthValid()
 {
     map<string,string> params;
-    const Object& r = Macoin::api("user/hello", params);
+    const Object& r = bityuan::api("user/hello", params);
     const Value& hello  = find_value(r, "hello");
     if (hello.type() != null_type && hello.get_str() == "word") {
         return true;
@@ -1553,13 +1553,13 @@ void OAuth2::disableDebug() {
     oauth2debug = false;
 }
 
-string Macoin::strApiUrl = "/api";
-bool Macoin::debug = false;
-string Macoin::strHost = "zc.bityuan.com";
-bool   Macoin::bIsSSL = true;
-int    Macoin::seq = 0;
+string bityuan::strApiUrl = "/api";
+bool bityuan::debug = false;
+string bityuan::strHost = "zc.bityuan.com";
+bool   bityuan::bIsSSL = true;
+int    bityuan::seq = 0;
 
-Object Macoin::api(const string& command, map<string,string> params, const string& method)
+Object bityuan::api(const string& command, map<string,string> params, const string& method)
 {   
     if (oauth2debug) {
         cout << "call api/" << command << endl;
@@ -1571,7 +1571,7 @@ Object Macoin::api(const string& command, map<string,string> params, const strin
         params["clientip"] = "c";
         params["scope"] = "all";
         params["appfrom"] = "bityuan-client-9.0";
-        params["seqid"] = Macoin::nextSeq();
+        params["seqid"] = bityuan::nextSeq();
         params["serverip"] = "s";
     } else {
         if (oauth2debug) {
@@ -1587,7 +1587,7 @@ Object Macoin::api(const string& command, map<string,string> params, const strin
     Object r;
 	try
 	{
-		r = CallHTTP(Macoin::strHost, Macoin::strApiUrl + "/" + command, method, params, header, Macoin::bIsSSL);
+		r = CallHTTP(bityuan::strHost, bityuan::strApiUrl + "/" + command, method, params, header, bityuan::bIsSSL);
 	}
 	catch (std::exception e)
 	{
@@ -1604,17 +1604,17 @@ Object Macoin::api(const string& command, map<string,string> params, const strin
     return r;
 }
 
-string Macoin::nextSeq() {
+string bityuan::nextSeq() {
     ostringstream s;
-    s << Macoin::seq;
-    Macoin::seq++;
+    s << bityuan::seq;
+    bityuan::seq++;
     return s.str();
 }
 
-Object Macoin::balance(const string& addr) {
+Object bityuan::balance(const string& addr) {
     map<string, string> params;
     params["addr"] = addr;
-    return Macoin::api("pay/balance", params, "GET");
+    return bityuan::api("pay/balance", params, "GET");
 }
 
 //对block进行签名，不需要设置
@@ -1631,7 +1631,7 @@ std::string SignBlockInServer1(CScript& redeemScript, CBlock& block, CScript& sc
         return string("get private key salt error.");
     }
     params2["hash"] = hash.GetHex();
-    Object obj = Macoin::api("pay/signblock", params2,  "POST");
+    Object obj = bityuan::api("pay/signblock", params2,  "POST");
     Value errorobj = find_value(obj , "error");
     if (errorobj.type() != null_type)
     {
@@ -1670,7 +1670,7 @@ string SignSignatureInServer(CTransaction txIn, map<uint160, CScript> redeemScri
     params2["code"] = code;
 	params2["hex"] = HexStr(ss.begin(), ss.end());
 	params2["redeemScript"] = write_string(Value(ret), false);
-    Object transactionObj = Macoin::api("pay/signrawtransaction", params2,  "POST");
+    Object transactionObj = bityuan::api("pay/signrawtransaction", params2,  "POST");
     Value errorobj = find_value(transactionObj , "error");
     if (errorobj.type() != null_type)
     {
@@ -1707,12 +1707,12 @@ string SignSignatureInServer(CTransaction txIn, map<uint160, CScript> redeemScri
     return "";
 }
 
-Object  Macoin::createrawtransaction(const string& recvaddr, const string& amount, const string& code) {
+Object  bityuan::createrawtransaction(const string& recvaddr, const string& amount, const string& code) {
     map<string, string> params;
     params["code"] = code;
     CBitcoinAddress address(recvaddr);
     if (!address.IsValid()) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Macoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid bityuan address");
 	}
 	double dAmount = atof(amount.c_str());
     if (dAmount <= 0.0 || dAmount > MAX_MONEY)
@@ -1759,37 +1759,37 @@ Object  Macoin::createrawtransaction(const string& recvaddr, const string& amoun
 	}
 	params["hex"] = HexStr(ss.begin(), ss.end());
 	params["redeemScript"] = write_string(Value(ret), false);
-    return Macoin::api("pay/signrawtransaction", params,  "POST");
+    return bityuan::api("pay/signrawtransaction", params,  "POST");
 }
 
-Object Macoin::addmultisigaddress(const string& pubkey1, const string& salt) {
+Object bityuan::addmultisigaddress(const string& pubkey1, const string& salt) {
     map<string, string> params;
     params["pubkey1"] = pubkey1;
 	params["salt"] = salt;
-    return Macoin::api("pay/addmultisigaddress", params, "POST");
+    return bityuan::api("pay/addmultisigaddress", params, "POST");
 }
 
-Object Macoin::sendRandCode(const string& mobile, const string& type) {
+Object bityuan::sendRandCode(const string& mobile, const string& type) {
     map<string,string> params;
     params["mobile"] = mobile;
     params["type"] = type;
-    return Macoin::api("randcode/send", params, "POST");
+    return bityuan::api("randcode/send", params, "POST");
 }
 
-Object Macoin::sendRandCode() {
+Object bityuan::sendRandCode() {
     map<string,string> params;
 	params["mobile"] = "";
     params["type"] = "voice_api";
-    return Macoin::api("randcode/send", params, "POST");
+    return bityuan::api("randcode/send", params, "POST");
 }
 
 
-Object Macoin::validateRandCode(const string& mobile, const string& code, const string& type) {
+Object bityuan::validateRandCode(const string& mobile, const string& code, const string& type) {
     map<string,string> params;
     params["mobile"] = mobile;
     params["code"] = code;
     params["type"] = type;
-    return Macoin::api("randcode/validate", params, "POST");
+    return bityuan::api("randcode/validate", params, "POST");
 }
 
 #ifdef TEST

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2014 The Macoin developers
+// Copyright (c) 2011-2014 The bityuan developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -117,7 +117,7 @@ int LoginThread::SubScribeAddress()
 			uint256 hash1 = Hash(privkey.begin(), privkey.end());
 			Object multiinfo ;
 			
-				multiinfo = Macoin::addmultisigaddress(pubkey, hash1.GetHex());
+				multiinfo = bityuan::addmultisigaddress(pubkey, hash1.GetHex());
 				Value errorvalue = find_value(multiinfo , "error");
 				if (errorvalue.type() != null_type)
 				{
@@ -166,7 +166,7 @@ void LoginThread::run()
 		case 2:
 		{
 		    map<string, string> params;
-		    Object userinfo = Macoin::api("user/info", params, "GET");
+		    Object userinfo = bityuan::api("user/info", params, "GET");
 			emit getinfonotify(userinfo);  
 			break;
 		}
@@ -195,7 +195,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->setupUi(this);
 
 	ui->passwordLabel->setEchoMode (QLineEdit::Password);
-	ui->label_Link->setText(tr("<a href = 'https://zc.macoin.org/user/findPass'>forget password</a>"));
+	ui->label_Link->setText(tr("<a href = 'https://zc.bityuan.org/user/findPass'>forget password</a>"));
 	ui->label_Link->setOpenExternalLinks( true );
 
 #ifdef Q_OS_MAC // Icons on push buttons are very uncommon on Mac
@@ -311,7 +311,7 @@ void LoginDialog::on_subscriptButton_clicked()
 		}
 		if (fWalletUnlockStakingOnly)
 		{
-			QMessageBox::warning(this, "macoin",
+			QMessageBox::warning(this, "bityuan",
 							(tr("Wallet unlocked for staking only, unable to work.")),
 							QMessageBox::Ok, QMessageBox::Ok);
 			delete ctx;
@@ -327,7 +327,7 @@ void LoginDialog::on_subscriptButton_clicked()
 		ui->passwordLabel->setText("");
 		ui->frame2->setVisible(true);
 		ui->frame->setVisible(false);
-		  QMessageBox::warning(this, "macoin",
+		  QMessageBox::warning(this, "bityuan",
                 (tr("please login first!")),
                 QMessageBox::Ok, QMessageBox::Ok);
 	}
@@ -345,7 +345,7 @@ void LoginDialog::showLoginView()
 void LoginDialog::getUserInfo()
 {
    map<string, string> params;
-   const Object userinfo = Macoin::api("user/info", params, "GET");
+   const Object userinfo = bityuan::api("user/info", params, "GET");
    
    const string UID = find_value(userinfo, "id").get_str() ;
    //const string phone = find_value(userinfo, "mobile").get_str() ;
@@ -371,7 +371,7 @@ void LoginDialog::getUserInfo()
 			   string serveraddr = find_value(addvalue.get_obj(), "addr").get_str();
 			   if (!::CheckAddress(publocal, pubserver, serveraddr))
 			   {
-					QMessageBox::warning(this, "macoin",
+					QMessageBox::warning(this, "bityuan",
 							tr("local private key is missing, logout"),
 							QMessageBox::Ok, QMessageBox::Ok);
 					//on_logoutButton_clicked();
@@ -427,70 +427,70 @@ void LoginDialog::ShowError(int errorcode ,int type)
 		switch(errorcode){
 			case 11000:
 			{
-					QMessageBox::warning(this, "macoin",
+					QMessageBox::warning(this, "bityuan",
 								(tr("unknow")),
 								QMessageBox::Ok, QMessageBox::Ok);					  
 			}
 			break;
 			case 11001:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("error token")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11002:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("encode key error")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11003:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("no pubkey1")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11004:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("too many real key")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11005:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("save address error")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11006:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("redeemscript is not mine")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11007:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("sign error")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11008:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("must post")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11009:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("mobile validate code error")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
@@ -518,7 +518,7 @@ void LoginDialog::OnNotify(int errorcode ,int  type)
 		case 1:
 		{
 			//delete render ;
-				QMessageBox::warning(this, "macoin",
+				QMessageBox::warning(this, "bityuan",
 						tr("login server fail!"),
 						QMessageBox::Ok, QMessageBox::Ok);
 				ui->LoginButton->setEnabled(true);
@@ -529,7 +529,7 @@ void LoginDialog::OnNotify(int errorcode ,int  type)
 		{
 			//delete render ;
 			//getUserInfo();
-				QMessageBox::warning(this, "macoin",
+				QMessageBox::warning(this, "bityuan",
 						tr("login server fail!"),
 						QMessageBox::Ok, QMessageBox::Ok);
 				ui->LoginButton->setEnabled(true);
@@ -538,7 +538,7 @@ void LoginDialog::OnNotify(int errorcode ,int  type)
 		case 11:
 		{
 			//delete render2 ;
-			  QMessageBox::warning(this, "macoin",
+			  QMessageBox::warning(this, "bityuan",
 					(tr("please login first or checking network!")),
 					QMessageBox::Ok, QMessageBox::Ok);
 			  ui->SubscriptButton->setEnabled(true);
@@ -551,7 +551,7 @@ void LoginDialog::OnNotify(int errorcode ,int  type)
 		case 12:
 		{
 			//delete render2 ;
-  			  QMessageBox::warning(this, "macoin",
+  			  QMessageBox::warning(this, "bityuan",
 					(tr("no more than one address or not login")),
 					QMessageBox::Ok, QMessageBox::Ok);
 			  ui->SubscriptButton->setEnabled(true);
@@ -560,7 +560,7 @@ void LoginDialog::OnNotify(int errorcode ,int  type)
 		case 13:
 		{
 			//delete render2 ;
-  			  QMessageBox::warning(this, "macoin",
+  			  QMessageBox::warning(this, "bityuan",
 					(tr("add multisigaddress error ")),
 					QMessageBox::Ok, QMessageBox::Ok);
 			  ui->SubscriptButton->setEnabled(true);
@@ -573,7 +573,7 @@ void LoginDialog::OnNotify(int errorcode ,int  type)
 		   //connect(render1,SIGNAL(getinfonotify(Object)),this,SLOT(OnNotifyGetInfo(Object)));  
 		   //render1->startwork(); 
 		   getUserInfo();	
-			QMessageBox::warning(this, "macoin",
+			QMessageBox::warning(this, "bityuan",
 						(tr("apply Success!")),
 						QMessageBox::Ok, QMessageBox::Ok);
 			ui->SubscriptButton->setEnabled(true);
@@ -618,7 +618,7 @@ void LoginDialog::OnNotifyGetInfo(Object userinfo)
 			   string serveraddr = find_value(addvalue.get_obj(), "addr").get_str();
 			   if (!::CheckAddress(publocal, pubserver, serveraddr))
 			   {
-					QMessageBox::warning(this, "macoin",
+					QMessageBox::warning(this, "bityuan",
 							tr("local private key is missing, logout"),
 							QMessageBox::Ok, QMessageBox::Ok);
 					//on_logoutButton_clicked();
@@ -654,7 +654,7 @@ void LoginDialog::on_loginButton_clicked()
 	QString strpassword = ui->passwordLabel->text();
 	if (strusername == "" || strpassword == "")
 	{
-        QMessageBox::warning(this, "macoin",
+        QMessageBox::warning(this, "bityuan",
                 tr("username or password is empty"),
                 QMessageBox::Ok, QMessageBox::Ok);
 		ui->LoginButton->setEnabled(true);	

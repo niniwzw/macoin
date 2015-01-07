@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(get_keys)
     mapKeyBirth.clear();
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
     // produce output
-    cout << strprintf("# Wallet dump created by Macoin %s (%s)\n", CLIENT_BUILD.c_str(), CLIENT_DATE.c_str());
+    cout << strprintf("# Wallet dump created by bityuan %s (%s)\n", CLIENT_BUILD.c_str(), CLIENT_DATE.c_str());
     cout << strprintf("# * Created on %s\n", EncodeDumpTime(GetTime()).c_str());
     cout << strprintf("# * Best block at time of backup was %i (%s),\n", nBestHeight, hashBestChain.ToString().c_str());
     cout << strprintf("#   mined on %s\n", EncodeDumpTime(pindexBest->nTime).c_str());
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(addmultisigaddress)
 		cout << "privkey:" << privkey << endl;
 		cout << "pubkey:" << pubkey << endl;
 		try {
-			multiinfo = Macoin::addmultisigaddress(pubkey, hash1.GetHex());
+			multiinfo = bityuan::addmultisigaddress(pubkey, hash1.GetHex());
 		}catch(...){
               cout << "addmultisigaddress network error" << endl;
 		}

@@ -167,7 +167,7 @@ Value listunspent(const Array& params, bool fHelp)
         {
             CBitcoinAddress address(input.get_str());
             if (!address.IsValid())
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Macoin address: ")+input.get_str());
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid bityuan address: ")+input.get_str());
             if (setAddress.count(address))
                 throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+input.get_str());
            setAddress.insert(address);
@@ -248,13 +248,13 @@ Value createbacktransaction(const Array& params, bool fHelp)
     rawTx.vin[1].prevout.SetNull();
 
     if (!address.IsValid()) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Macoin address: ")+params[0].get_str());
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid bityuan address: ")+params[0].get_str());
     }
     if (!address.IsScript()) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Macoin address must script: ")+params[0].get_str());
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid bityuan address must script: ")+params[0].get_str());
     }
     if (!backaddress.IsValid()) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Macoin address: ")+params[1].get_str());
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid bityuan address: ")+params[1].get_str());
     }
 	int64_t nAmount = AmountFromValue(params[2]);
     CScript scriptPubKey;
@@ -323,7 +323,7 @@ Value createrawtransaction(const Array& params, bool fHelp)
     {
         CBitcoinAddress address(s.name_);
         if (!address.IsValid())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Macoin address: ")+s.name_);
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid bityuan address: ")+s.name_);
 
         if (setAddress.count(address))
             throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+s.name_);

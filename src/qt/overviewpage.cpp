@@ -116,13 +116,13 @@ OverviewPage::OverviewPage(QWidget *parent) :
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
 
-	ui->label_wallet_macoin->setText(tr("<a href = 'http://www.macoin.org'>macoin</a>"));
-    ui->label_wallet_macoin->setOpenExternalLinks( true );
+	ui->label_wallet_bityuan->setText(tr("<a href = 'http://www.bityuan.org'>bityuan</a>"));
+    ui->label_wallet_bityuan->setOpenExternalLinks( true );
 
-	movie = new QMovie(":/images/wallet_macoin");
-    ui->label_wallet_macoin->setMovie(movie);
+	movie = new QMovie(":/images/wallet_bityuan");
+    ui->label_wallet_bityuan->setMovie(movie);
     movie->start();
-	ui->label_wallet_macoin->show();
+	ui->label_wallet_bityuan->show();
 }
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)

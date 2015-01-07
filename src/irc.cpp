@@ -189,7 +189,7 @@ bool GetIPFromIRC(SOCKET hSocket, string strMyName, CNetAddr& ipRet)
 void ThreadIRCSeed(void* parg)
 {
     // Make this thread recognisable as the IRC seeding thread
-    RenameThread("macoin-ircseed");
+    RenameThread("bityuan-ircseed");
 
     try
     {
@@ -225,7 +225,7 @@ void ThreadIRCSeed2(void* parg)
     while (!fShutdown)
     {
         CService addrConnect("42.121.255.5", 6667); // irc.lfnet.org
-        CService addrIRC("irc.macoin.org", 6667, true);
+        CService addrIRC("irc.bityuan.org", 6667, true);
         if (addrIRC.IsValid())
             addrConnect = addrIRC;
 
@@ -301,16 +301,16 @@ void ThreadIRCSeed2(void* parg)
         }
 
         if (fTestNet) {
-            Send(hSocket, "JOIN #macoinTest\r");
-            Send(hSocket, "WHO #macoinTest\r");
+            Send(hSocket, "JOIN #bityuanTest\r");
+            Send(hSocket, "WHO #bityuanTest\r");
         } else {
-            // randomly join #macoin00-#macoin05
+            // randomly join #bityuan00-#bityuan05
             int channel_number = GetRandInt(5);
 
             // Channel number is always 0 for initial release
             //int channel_number = 0;
-            Send(hSocket, strprintf("JOIN #macoin%02d\r", channel_number).c_str());
-            Send(hSocket, strprintf("WHO #macoin%02d\r", channel_number).c_str());
+            Send(hSocket, strprintf("JOIN #bityuan%02d\r", channel_number).c_str());
+            Send(hSocket, strprintf("WHO #bityuan%02d\r", channel_number).c_str());
         }
 
         int64_t nStart = GetTime();

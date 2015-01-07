@@ -91,7 +91,7 @@ void RPCTypeCheck(const json_spirit::Object& o,
 
 typedef json_spirit::Value(*rpcfn_type)(const json_spirit::Array& params, bool fHelp);
 
-//macoin server rpc
+//bityuan server rpc
 json_spirit::Object CallHTTP(const std::string& host, const std::string& url, const std::string& method, const std::map<std::string, std::string>& params, const std::map<std::string, std::string>& header, bool fUseSSL);
 
 class OAuth2 {
@@ -131,8 +131,8 @@ public:
     static void clear();
 };
 
-//class Macoin, visit api of macoin
-class Macoin
+//class bityuan, visit api of bityuan
+class bityuan
 {
 private:
     //接口url

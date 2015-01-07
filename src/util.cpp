@@ -957,7 +957,7 @@ static std::string FormatException(std::exception* pex, const char* pszThread)
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "macoin";
+    const char* pszModule = "bityuan";
 #endif
     if (pex)
         return strprintf(
@@ -987,13 +987,13 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Macoin33
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Macoin33
-    // Mac: ~/Library/Application Support/Macoin33
-    // Unix: ~/.macoin33
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\bityuan33
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\bityuan33
+    // Mac: ~/Library/Application Support/bityuan33
+    // Unix: ~/.bityuan33
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Macoin33";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "bityuan33";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -1005,10 +1005,10 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     fs::create_directory(pathRet);
-    return pathRet / "Macoin33";
+    return pathRet / "bityuan33";
 #else
     // Unix
-    return pathRet / ".macoin33";
+    return pathRet / ".bityuan33";
 #endif
 #endif
 }
@@ -1050,7 +1050,7 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
 
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "macoin.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "bityuan.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
@@ -1081,7 +1081,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "macoind.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "bityuand.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -1229,10 +1229,10 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 if (!fMatch)
                 {
                     fDone = true;
-                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Macoin will not work properly.");
+                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong bityuan will not work properly.");
                     strMiscWarning = strMessage;
                     printf("*** %s\n", strMessage.c_str());
-                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("Macoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION);
+                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("bityuan"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION);
                 }
             }
         }

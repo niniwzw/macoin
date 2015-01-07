@@ -365,14 +365,14 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 
             if (nLookup == 1)
             {
-                CService addrIP("api.macoin.org", 80, true);
+                CService addrIP("api.bityuan.org", 80, true);
                 if (addrIP.IsValid())
                     addrConnect = addrIP;
             }
 
             pszGet = "GET / HTTP/1.1\r\n"
-                     "Host: api.macoin.org\r\n"
-                     "User-Agent: Macoin\r\n"
+                     "Host: api.bityuan.org\r\n"
+                     "User-Agent: bityuan\r\n"
                      "Connection: close\r\n"
                      "\r\n";
 
@@ -391,7 +391,7 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 
             pszGet = "GET /simple/ HTTP/1.1\r\n"
                      "Host: www.showmyip.com\r\n"
-                     "User-Agent: Macoin\r\n"
+                     "User-Agent: bityuan\r\n"
                      "Connection: close\r\n"
                      "\r\n";
 
@@ -408,7 +408,7 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 void ThreadGetMyExternalIP(void* parg)
 {
     // Make this thread recognisable as the external IP detection thread
-    RenameThread("macoin-ext-ip");
+    RenameThread("bityuan-ext-ip");
 
     CNetAddr addrLocalHost;
     if (GetMyExternalIP(addrLocalHost))
@@ -767,7 +767,7 @@ void SocketSendData(CNode *pnode)
 void ThreadSocketHandler(void* parg)
 {
     // Make this thread recognisable as the networking thread
-    RenameThread("macoin-net");
+    RenameThread("bityuan-net");
 
     try
     {
@@ -1100,7 +1100,7 @@ void ThreadSocketHandler2(void* parg)
 void ThreadMapPort(void* parg)
 {
     // Make this thread recognisable as the UPnP thread
-    RenameThread("macoin-UPnP");
+    RenameThread("bityuan-UPnP");
 
     try
     {
@@ -1161,7 +1161,7 @@ void ThreadMapPort2(void* parg)
             }
         }
 
-        string strDesc = "Macoin " + FormatFullVersion();
+        string strDesc = "bityuan " + FormatFullVersion();
 #ifndef UPNPDISCOVER_SUCCESS
         /* miniupnpc 1.5 */
         r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype,
@@ -1251,15 +1251,15 @@ void MapPort()
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
-    {"seed31", "seed31.macoin.org"},
-    {"seed32", "seed32.macoin.org"},
-    {"seed33", "seed33.macoin.org"},
+    {"seed31", "seed31.bityuan.org"},
+    {"seed32", "seed32.bityuan.org"},
+    {"seed33", "seed33.bityuan.org"},
 };
 
 void ThreadDNSAddressSeed(void* parg)
 {
     // Make this thread recognisable as the DNS seeding thread
-    RenameThread("macoin-dnsseed");
+    RenameThread("bityuan-dnsseed");
 
     try
     {
@@ -1367,7 +1367,7 @@ void ThreadDumpAddress2(void* parg)
 void ThreadDumpAddress(void* parg)
 {
     // Make this thread recognisable as the address dumping thread
-    RenameThread("macoin-adrdump");
+    RenameThread("bityuan-adrdump");
 
     try
     {
@@ -1382,7 +1382,7 @@ void ThreadDumpAddress(void* parg)
 void ThreadOpenConnections(void* parg)
 {
     // Make this thread recognisable as the connection opening thread
-    RenameThread("macoin-opencon");
+    RenameThread("bityuan-opencon");
 
     try
     {
@@ -1563,7 +1563,7 @@ void ThreadOpenConnections2(void* parg)
 void ThreadOpenAddedConnections(void* parg)
 {
     // Make this thread recognisable as the connection opening thread
-    RenameThread("macoin-opencon");
+    RenameThread("bityuan-opencon");
 
     try
     {
@@ -1694,7 +1694,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
 void ThreadMessageHandler(void* parg)
 {
     // Make this thread recognisable as the message handling thread
-    RenameThread("macoin-msghand");
+    RenameThread("bityuan-msghand");
 
     try
     {
@@ -1860,7 +1860,7 @@ bool BindListenPort(const CService &addrBind, string& strError)
     {
         int nErr = WSAGetLastError();
         if (nErr == WSAEADDRINUSE)
-            strError = strprintf(_("Unable to bind to %s on this computer. Macoin is probably already running."), addrBind.ToString().c_str());
+            strError = strprintf(_("Unable to bind to %s on this computer. bityuan is probably already running."), addrBind.ToString().c_str());
         else
             strError = strprintf(_("Unable to bind to %s on this computer (bind returned error %d, %s)"), addrBind.ToString().c_str(), nErr, strerror(nErr));
         printf("%s\n", strError.c_str());
@@ -1941,7 +1941,7 @@ void static Discover()
 void StartNode(void* parg)
 {
     // Make this thread recognisable as the startup thread
-    RenameThread("macoin-start");
+    RenameThread("bityuan-start");
 
     if (semOutbound == NULL) {
         // initialize semaphore

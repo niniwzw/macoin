@@ -73,7 +73,7 @@ void SendThread::setUnlockContext(WalletModel::UnlockContext * ctx)
 int SendThread::SendCoins()
 {
 		try{
-				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
+				const Object transactionObj  = bityuan::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
 				delete m_ctx;
 				m_ctx = NULL ;
 				Value retvalue = find_value(transactionObj , "nologin");
@@ -156,7 +156,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget *parent) :
 
 #if QT_VERSION >= 0x040700
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
-    ui->lineEditCoinControlChange->setPlaceholderText(tr("Enter a Macoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
+    ui->lineEditCoinControlChange->setPlaceholderText(tr("Enter a bityuan address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
 #endif
 
     addEntry();
@@ -235,12 +235,12 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 {
 		SendCoinsRecipient sendcoinsRecipient = (SendCoinsRecipient)recipients.takeAt(0);
 		try{
-				const Object transactionObj  = Macoin::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
+				const Object transactionObj  = bityuan::createrawtransaction(sendcoinsRecipient.address.toStdString(), sendcoinsRecipient.stramount.toStdString(), sendcoinsRecipient.smsverifycode.toStdString());
 				Value retvalue = find_value(transactionObj , "nologin");
 				if (retvalue.type() == str_type)
 				{
 					model->showLoginView();
-					QMessageBox::warning(this, "macoin",
+					QMessageBox::warning(this, "bityuan",
 							(tr("please login first!")),
 							QMessageBox::Ok, QMessageBox::Ok);
 					return ;
@@ -250,7 +250,7 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 				if (errorobj.type() != null_type)
 				{
  				  ui->sendButton->setEnabled(true);
-				  QMessageBox::warning(this, "macoin",
+				  QMessageBox::warning(this, "bityuan",
 							QString::fromStdString(errorobj.get_str()),
 							QMessageBox::Ok, QMessageBox::Ok);
 
@@ -261,7 +261,7 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 				if (rawValue.type() == null_type)
 				{
  				  ui->sendButton->setEnabled(true);
-				  QMessageBox::warning(this, "macoin",
+				  QMessageBox::warning(this, "bityuan",
 							QString::fromStdString("hex"),
 							QMessageBox::Ok, QMessageBox::Ok);
 					return ;
@@ -272,7 +272,7 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 				if (rpcobj.type() != obj_type)
 				{
  				  ui->sendButton->setEnabled(true);
-				  QMessageBox::warning(this, "macoin",
+				  QMessageBox::warning(this, "bityuan",
 							QString::fromStdString("signrawtransaction"),
 							QMessageBox::Ok, QMessageBox::Ok);
 					return ;
@@ -285,7 +285,7 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 				if (completeValue.type() !=  bool_type)
 				{
  				  ui->sendButton->setEnabled(true);
-				  QMessageBox::warning(this, "macoin",
+				  QMessageBox::warning(this, "bityuan",
 							QString::fromStdString("complete"),
 							QMessageBox::Ok, QMessageBox::Ok);
 					return;
@@ -298,7 +298,7 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 					if (rawValue.type() == null_type)
 					{
 	 				  ui->sendButton->setEnabled(true);
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								QString::fromStdString("hex1"),
 								QMessageBox::Ok, QMessageBox::Ok);
 						return ;
@@ -307,14 +307,14 @@ void SendCoinsDialog::SendCoins(QList<SendCoinsRecipient> recipients)
 					Value callrpc = CallRPC1(string("sendrawtransaction ") + hex);
 				}else{
 	 				  ui->sendButton->setEnabled(true);
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								tr("sending fail ") + QString::fromStdString(rawValue.get_str()),
 								QMessageBox::Ok, QMessageBox::Ok);
 				}
 
 			}catch(...){
  				  ui->sendButton->setEnabled(true);
-				QMessageBox::warning(this, "macoin",
+				QMessageBox::warning(this, "bityuan",
 					(tr("some exception")),
 					QMessageBox::Ok, QMessageBox::Ok);
 
@@ -328,70 +328,70 @@ void SendCoinsDialog::ShowError(int type)
 		switch(type){
 			case 11000:
 			{
-					QMessageBox::warning(this, "macoin",
+					QMessageBox::warning(this, "bityuan",
 								(tr("unknow")),
 								QMessageBox::Ok, QMessageBox::Ok);					  
 			}
 			break;
 			case 11001:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("error token")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11002:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("encode key error")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11003:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("no pubkey1")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11004:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("too many real key")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11005:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("save address error")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11006:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("redeemscript is not mine")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11007:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("sign error")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11008:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("must post")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
 			break;
 			case 11009:
 			{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								(tr("mobile validate code error")),
 								QMessageBox::Ok, QMessageBox::Ok);								
 			}
@@ -412,42 +412,42 @@ void SendCoinsDialog::OnNotify(int type)
 			break;
 		case 1:
 		{
-				  QMessageBox::warning(this, "macoin",
+				  QMessageBox::warning(this, "bityuan",
 							QString::fromStdString("createrawtransaction find error is fail"),
 							QMessageBox::Ok, QMessageBox::Ok);
 		}
 			break;
 		case 2:
 		{
-				  QMessageBox::warning(this, "macoin",
+				  QMessageBox::warning(this, "bityuan",
 							QString::fromStdString("createrawtransaction find hex is fail"),
 							QMessageBox::Ok, QMessageBox::Ok);
 		}
 			break;
 		case 3:
 		{
-				  QMessageBox::warning(this, "macoin",
+				  QMessageBox::warning(this, "bityuan",
 							QString::fromStdString("signrawtransaction is fail"),
 							QMessageBox::Ok, QMessageBox::Ok);
 		}
 			break;
 		case 4:
 		{
-				  QMessageBox::warning(this, "macoin",
+				  QMessageBox::warning(this, "bityuan",
 							QString::fromStdString("signrawtransaction find complete is fail"),
 							QMessageBox::Ok, QMessageBox::Ok);
 		}
 			break;
 		case 5:
 		{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								QString::fromStdString("signrawtransaction find hex is fail"),
 								QMessageBox::Ok, QMessageBox::Ok);
 		}
 			break;
 		case 6:
 		{
-					  QMessageBox::warning(this, "macoin",
+					  QMessageBox::warning(this, "bityuan",
 								tr("sending fail "),
 								QMessageBox::Ok, QMessageBox::Ok);
 
@@ -456,7 +456,7 @@ void SendCoinsDialog::OnNotify(int type)
 		case 7:
 		{
 
-				QMessageBox::warning(this, "macoin",
+				QMessageBox::warning(this, "bityuan",
 					(tr("some exception")),
 					QMessageBox::Ok, QMessageBox::Ok);
 		}
@@ -465,7 +465,7 @@ void SendCoinsDialog::OnNotify(int type)
 		{
 
 				model->showLoginView();
-				QMessageBox::warning(this, "macoin",
+				QMessageBox::warning(this, "bityuan",
 						(tr("please login first!")),
 						QMessageBox::Ok, QMessageBox::Ok);
 		}
@@ -537,7 +537,7 @@ void SendCoinsDialog::on_sendButton_clicked()
 
     if (fWalletUnlockStakingOnly)
     {
-		QMessageBox::warning(this, "macoin",
+		QMessageBox::warning(this, "bityuan",
 						(tr("Wallet unlocked for staking only, unable to create transaction.")),
 						QMessageBox::Ok, QMessageBox::Ok);  
 		fNewRecipientAllowed = true;
@@ -856,7 +856,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString & text)
         else if (!CBitcoinAddress(text.toStdString()).IsValid())
         {
             ui->labelCoinControlChangeLabel->setStyleSheet("QLabel{color:red;}");
-            ui->labelCoinControlChangeLabel->setText(tr("WARNING: Invalid Macoin address"));
+            ui->labelCoinControlChangeLabel->setText(tr("WARNING: Invalid bityuan address"));
         }
         else
         {

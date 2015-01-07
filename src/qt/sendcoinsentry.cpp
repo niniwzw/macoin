@@ -31,7 +31,7 @@ void GetSMSThread::startwork()
 int GetSMSThread::GetSMSCode()
 {
 		try{
-			const Object reto = Macoin::sendRandCode();
+			const Object reto = bityuan::sendRandCode();
 			
 			Value errorObj = find_value(reto,  "error");
 			if (errorObj.type() == null_type)
@@ -74,7 +74,7 @@ SendCoinsEntry::SendCoinsEntry(QWidget *parent) :
 #if QT_VERSION >= 0x040700
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
     ui->addAsLabel->setPlaceholderText(tr("Enter a label for this address to add it to your address book"));
-    ui->payTo->setPlaceholderText(tr("Enter a Macoin address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
+    ui->payTo->setPlaceholderText(tr("Enter a bityuan address (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)"));
 #endif
     setFocusPolicy(Qt::TabFocus);
     setFocusProxy(ui->payTo);
@@ -200,7 +200,7 @@ void SendCoinsEntry::on_checkButton_clicked()
 		 render->startwork();    
 
 	}else{
-		  QMessageBox::warning(this, "macoin",
+		  QMessageBox::warning(this, "bityuan",
                 (tr("please login first!")),
                 QMessageBox::Ok, QMessageBox::Ok);
 	}
@@ -213,7 +213,7 @@ void SendCoinsEntry::OnNotify(int type)
 	{
 		case 0:
 		{
-			  QMessageBox::warning(this, "macoin",
+			  QMessageBox::warning(this, "bityuan",
 					QString::fromStdString("sms send fail"),
 					QMessageBox::Ok, QMessageBox::Ok);
 				ui->checkButton->setEnabled(true);
@@ -221,7 +221,7 @@ void SendCoinsEntry::OnNotify(int type)
 				break;
 		case 1:
 		{
-				QMessageBox::warning(this, "macoin",
+				QMessageBox::warning(this, "bityuan",
 					tr("sms sending complete!"),
 					QMessageBox::Ok, QMessageBox::Ok);
 				ui->checkButton->setEnabled(true);
@@ -229,7 +229,7 @@ void SendCoinsEntry::OnNotify(int type)
 			 break;
 		case 2:
 		{
-			QMessageBox::warning(this, "macoin",
+			QMessageBox::warning(this, "bityuan",
                 "sms send exception",
                 QMessageBox::Ok, QMessageBox::Ok);
 				ui->checkButton->setEnabled(true);
@@ -294,25 +294,25 @@ bool SendCoinsEntry::updateLabel(const QString &address)
 void SendCoinsEntry::GetSMSCode()
 {
 		try{
-			const Object reto = Macoin::sendRandCode();
+			const Object reto = bityuan::sendRandCode();
 			
 			Value errorObj = find_value(reto,  "error");
 			if (errorObj.type() == null_type)
 			{
-				QMessageBox::warning(this, "macoin",
+				QMessageBox::warning(this, "bityuan",
 					tr("sms sending complete!"),
 					QMessageBox::Ok, QMessageBox::Ok);
 				ui->checkButton->setEnabled(true);
 				return ;
 			}
 			const string strerror = errorObj.get_str(); 
-			  QMessageBox::warning(this, "macoin",
+			  QMessageBox::warning(this, "bityuan",
 					QString::fromStdString(strerror),
 					QMessageBox::Ok, QMessageBox::Ok);
 				ui->checkButton->setEnabled(true);
 			
 		}catch(QString exception){
-			QMessageBox::warning(this, "macoin",
+			QMessageBox::warning(this, "bityuan",
                 exception,
                 QMessageBox::Ok, QMessageBox::Ok);
 				ui->checkButton->setEnabled(true);
