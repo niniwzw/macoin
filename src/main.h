@@ -553,12 +553,15 @@ public:
     int64_t GetValueOut() const
     {
         int64_t nValueOut = 0;
-        BOOST_FOREACH(const CTxOut& txout, vout)
-        {
-            nValueOut += txout.nValue;
-            if (!MoneyRange(txout.nValue) || !MoneyRange(nValueOut))
-                throw std::runtime_error("CTransaction::GetValueOut() : value out of range");
-        }
+		if (!IsBack())
+		{
+			BOOST_FOREACH(const CTxOut& txout, vout)
+			{
+				nValueOut += txout.nValue;
+				if (!MoneyRange(txout.nValue) || !MoneyRange(nValueOut))
+					throw std::runtime_error("CTransaction::GetValueOut() : value out of range");
+			}
+		}
         return nValueOut;
     }
     bool IsSendToSelf() const;

@@ -188,51 +188,56 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
         for (map<uint256, CTransaction>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi)
         {
             CTransaction& tx = (*mi).second;
-            if (tx.IsCoinBase() || tx.IsCoinStake() || tx.IsBack() || !IsFinalTx(tx, nHeight))
+            if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight))
                 continue;
 
             COrphan* porphan = NULL;
             double dPriority = 0;
             int64_t nTotalIn = 0;
             bool fMissingInputs = false;
-            BOOST_FOREACH(const CTxIn& txin, tx.vin)
-            {
-                // Read prev transaction
-                CTransaction txPrev;
-                CTxIndex txindex;
-                if (!txPrev.ReadFromDisk(txdb, txin.prevout, txindex))
-                {
-                    // This should never happen; all transactions in the memory
-                    // pool should connect to either transactions in the chain
-                    // or other transactions in the memory pool.
-                    if (!mempool.mapTx.count(txin.prevout.hash))
-                    {
-                        printf("ERROR: mempool transaction missing input\n");
-                        if (fDebug) assert("mempool transaction missing input" == 0);
-                        fMissingInputs = true;
-                        if (porphan)
-                            vOrphan.pop_back();
-                        break;
-                    }
+			if (tx.IsBack())
+			{
+				dPriority = 1000;
+			} else {
+				BOOST_FOREACH(const CTxIn& txin, tx.vin)
+				{
+					// Read prev transaction
+					CTransaction txPrev;
+					CTxIndex txindex;
+					if (!txPrev.ReadFromDisk(txdb, txin.prevout, txindex))
+					{
+						// This should never happen; all transactions in the memory
+						// pool should connect to either transactions in the chain
+						// or other transactions in the memory pool.
+						if (!mempool.mapTx.count(txin.prevout.hash))
+						{
+							printf("ERROR: mempool transaction missing input\n");
+							if (fDebug) assert("mempool transaction missing input" == 0);
+							fMissingInputs = true;
+							if (porphan)
+								vOrphan.pop_back();
+							break;
+						}
 
-                    // Has to wait for dependencies
-                    if (!porphan)
-                    {
-                        // Use list for automatic deletion
-                        vOrphan.push_back(COrphan(&tx));
-                        porphan = &vOrphan.back();
-                    }
-                    mapDependers[txin.prevout.hash].push_back(porphan);
-                    porphan->setDependsOn.insert(txin.prevout.hash);
-                    nTotalIn += mempool.mapTx[txin.prevout.hash].vout[txin.prevout.n].nValue;
-                    continue;
-                }
-                int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
-                nTotalIn += nValueIn;
+						// Has to wait for dependencies
+						if (!porphan)
+						{
+							// Use list for automatic deletion
+							vOrphan.push_back(COrphan(&tx));
+							porphan = &vOrphan.back();
+						}
+						mapDependers[txin.prevout.hash].push_back(porphan);
+						porphan->setDependsOn.insert(txin.prevout.hash);
+						nTotalIn += mempool.mapTx[txin.prevout.hash].vout[txin.prevout.n].nValue;
+						continue;
+					}
+					int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
+					nTotalIn += nValueIn;
 
-                int nConf = txindex.GetDepthInMainChain();
-                dPriority += (double)nValueIn * nConf;
-            }
+					int nConf = txindex.GetDepthInMainChain();
+					dPriority += (double)nValueIn * nConf;
+				}
+			}
             if (fMissingInputs) continue;
 
             // Priority is sum(valuein * age) / txsize
@@ -242,8 +247,11 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             // This is a more accurate fee-per-kilobyte than is used by the client code, because the
             // client code rounds up the size to the nearest 1K. That's good, because it gives an
             // incentive to create smaller transactions.
-            double dFeePerKb =  double(nTotalIn-tx.GetValueOut()) / (double(nTxSize)/1000.0);
-
+			double dFeePerKb = nMinTxFee;
+			if (!tx.IsBack())
+			{
+				dFeePerKb =  double(nTotalIn-tx.GetValueOut()) / (double(nTxSize)/1000.0);
+			}
             if (porphan)
             {
                 porphan->dPriority = dPriority;
@@ -309,7 +317,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             map<uint256, CTxIndex> mapTestPoolTmp(mapTestPool);
             MapPrevTx mapInputs;
             bool fInvalid;
-            if (!tx.FetchInputs(txdb, mapTestPoolTmp, false, true, mapInputs, fInvalid))
+            if (!tx.IsBack() && !tx.FetchInputs(txdb, mapTestPoolTmp, false, true, mapInputs, fInvalid))
                 continue;
 
             int64_t nTxFees = tx.GetValueIn(mapInputs)-tx.GetValueOut();
@@ -320,7 +328,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
                 continue;
 
-            if (!tx.ConnectInputs(txdb, mapInputs, mapTestPoolTmp, CDiskTxPos(1,1,1), pindexPrev, false, true))
+            if (!tx.IsBack() && !tx.ConnectInputs(txdb, mapInputs, mapTestPoolTmp, CDiskTxPos(1,1,1), pindexPrev, false, true))
                 continue;
             mapTestPoolTmp[tx.GetHash()] = CTxIndex(CDiskTxPos(1,1,1), tx.vout.size());
             swap(mapTestPool, mapTestPoolTmp);

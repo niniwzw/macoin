@@ -1325,7 +1325,7 @@ void CBlock::UpdateTime(const CBlockIndex* pindexPrev)
 bool CTransaction::DisconnectInputs(CTxDB& txdb)
 {
     // Relinquish previous transactions' spent pointers
-    if (!IsCoinBase())
+    if (!IsCoinBase() && !IsBack())
     {
         BOOST_FOREACH(const CTxIn& txin, vin)
         {
@@ -1369,7 +1369,9 @@ bool CTransaction::FetchInputs(CTxDB& txdb, const map<uint256, CTxIndex>& mapTes
 
     if (IsCoinBase())
         return true; // Coinbase transactions have no inputs to fetch.
-
+    if (IsBack()) {
+		return true;
+    }
     for (unsigned int i = 0; i < vin.size(); i++)
     {
         COutPoint prevout = vin[i].prevout;
@@ -1444,7 +1446,7 @@ const CTxOut& CTransaction::GetOutputFor(const CTxIn& input, const MapPrevTx& in
 
 int64_t CTransaction::GetValueIn(const MapPrevTx& inputs) const
 {
-    if (IsCoinBase())
+    if (IsCoinBase() || IsBack())
         return 0;
 
     int64_t nResult = 0;
@@ -1458,7 +1460,7 @@ int64_t CTransaction::GetValueIn(const MapPrevTx& inputs) const
 
 unsigned int CTransaction::GetP2SHSigOpCount(const MapPrevTx& inputs) const
 {
-    if (IsCoinBase())
+    if (IsCoinBase() || IsBack())
         return 0;
 
     unsigned int nSigOps = 0;

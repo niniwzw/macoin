@@ -1475,8 +1475,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                         char n = (char)CScript::DecodeOP_N(opcode1);
                         vSolutionsRet.push_back(valtype(1, n));
                     } else {
-                        int n = CBigNum(vch1).getint();
-                        vSolutionsRet.push_back(valtype(4, n));
+                        vSolutionsRet.push_back(vch1);
                     }
                     if (!script1.GetOp(pc1, opcode1, vch1))
                         break;
@@ -1827,6 +1826,8 @@ void ExtractAffectedKeys(const CKeyStore &keystore, const CScript& scriptPubKey,
 bool ExtractDestinations2(const CScript& scriptPubKey, txnouttype& typeRet, vector<CTxDestination>& addressRet, vector<CTxDestination>& addressBack, int& nRequiredRet, vector<int>& vMinTime)
 {
     addressRet.clear();
+	addressBack.clear();
+	vMinTime.clear();
     typeRet = TX_NONSTANDARD;
     vector<valtype> vSolutions;
     if (!Solver(scriptPubKey, typeRet, vSolutions))
@@ -1859,7 +1860,7 @@ bool ExtractDestinations2(const CScript& scriptPubKey, txnouttype& typeRet, vect
 		}
 		for (unsigned int i = bn+n+1; i < 2*bn+n+1; i++)
 		{
-			vMinTime.push_back(CastToBigNum(vSolutions[i]).getint());
+			vMinTime.push_back(CBigNum(vSolutions[i]).getint());
 		}
     }
     else
