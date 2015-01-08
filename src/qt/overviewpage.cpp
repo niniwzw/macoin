@@ -116,7 +116,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
 
-	ui->label_wallet_bityuan->setText(tr("<a href = 'http://www.bityuan.org'>bityuan</a>"));
+	ui->label_wallet_bityuan->setText(tr("<a href = 'http://www.bityuan.com'>bityuan</a>"));
     ui->label_wallet_bityuan->setOpenExternalLinks( true );
 
 	movie = new QMovie(":/images/wallet_bityuan");

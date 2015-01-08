@@ -365,13 +365,13 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 
             if (nLookup == 1)
             {
-                CService addrIP("api.bityuan.org", 80, true);
+                CService addrIP("api.bityuan.com", 80, true);
                 if (addrIP.IsValid())
                     addrConnect = addrIP;
             }
 
             pszGet = "GET / HTTP/1.1\r\n"
-                     "Host: api.bityuan.org\r\n"
+                     "Host: api.bityuan.com\r\n"
                      "User-Agent: bityuan\r\n"
                      "Connection: close\r\n"
                      "\r\n";
@@ -1251,9 +1251,9 @@ void MapPort()
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
-    {"seed31", "seed31.bityuan.org"},
-    {"seed32", "seed32.bityuan.org"},
-    {"seed33", "seed33.bityuan.org"},
+    {"seed31", "seed31.bityuan.com"},
+    {"seed32", "seed32.bityuan.com"},
+    {"seed33", "seed33.bityuan.com"},
 };
 
 void ThreadDNSAddressSeed(void* parg)

@@ -225,7 +225,7 @@ void ThreadIRCSeed2(void* parg)
     while (!fShutdown)
     {
         CService addrConnect("42.121.255.5", 6667); // irc.lfnet.org
-        CService addrIRC("irc.bityuan.org", 6667, true);
+        CService addrIRC("irc.bityuan.com", 6667, true);
         if (addrIRC.IsValid())
             addrConnect = addrIRC;
 
