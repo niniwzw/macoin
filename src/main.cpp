@@ -840,6 +840,7 @@ bool CTxMemPool::addUnchecked(const uint256& hash, CTransaction &tx)
     // Add to memory pool without checking anything.
     // Used by main.cpp AcceptToMemoryPool(), which DOES do
     // all the appropriate checks.
+    printf("mempool add tx %s\n", tx.GetHash().ToString().c_str());
     LOCK(cs);
     {
         mapTx[hash] = tx;
@@ -854,6 +855,7 @@ bool CTxMemPool::addUnchecked(const uint256& hash, CTransaction &tx)
 bool CTxMemPool::remove(const CTransaction &tx, bool fRecursive)
 {
     // Remove transaction from memory pool
+	printf("mempool remove tx %s\n", tx.GetHash().ToString().c_str());
     {
         LOCK(cs);
         uint256 hash = tx.GetHash();
@@ -1635,7 +1637,6 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         nTxPos = pindex->nBlockPos + ::GetSerializeSize(CBlock(), SER_DISK, CLIENT_VERSION) - (2 * GetSizeOfCompactSize(0)) + GetSizeOfCompactSize(vtx.size());
 
     map<uint256, CTxIndex> mapQueuedChanges;
-    map<uint256, CTxIndex> mapBackQueuedChanges;
     int64_t nFees = 0;
     int64_t nValueIn = 0;
     int64_t nValueOut = 0;
@@ -1658,16 +1659,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         // two in the chain that violate it. This prevents exploiting the issue against nodes in their
         // initial block download.
         CTxIndex txindexOld;
-        if (!tx.IsBack() && txdb.ReadTxIndex(hashTx, txindexOld)) {
-            BOOST_FOREACH(CDiskTxPos &pos, txindexOld.vSpent)
-                if (pos.IsNull())
-                    return false;
-        } else if (txdb.ReadTxBackIndex(hashTx, txindexOld)) {
+        if (txdb.ReadTxIndex(hashTx, txindexOld)) {
             BOOST_FOREACH(CDiskTxPos &pos, txindexOld.vSpent)
                 if (pos.IsNull())
                     return false;
         }
-
         nSigOps += tx.GetLegacySigOpCount();
         if (nSigOps > MAX_BLOCK_SIGOPS)
             return DoS(100, error("ConnectBlock() : too many sigops"));
@@ -1705,11 +1701,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             if (!tx.ConnectInputs(txdb, mapInputs, mapQueuedChanges, posThisTx, pindex, true, false))
                 return false;
         }
-        if (tx.IsBack()) {
-            mapBackQueuedChanges[hashTx] = CTxIndex(posThisTx, tx.vout.size());
-        } else {
-            mapQueuedChanges[hashTx] = CTxIndex(posThisTx, tx.vout.size());
-        }
+        mapQueuedChanges[hashTx] = CTxIndex(posThisTx, tx.vout.size());
     }
 
     if (IsProofOfWork())
@@ -1748,13 +1740,6 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     {
         if (!txdb.UpdateTxIndex((*mi).first, (*mi).second))
             return error("ConnectBlock() : UpdateTxIndex failed");
-    }
-
-    // Write queued txindex changes
-    for (map<uint256, CTxIndex>::iterator mi = mapBackQueuedChanges.begin(); mi != mapBackQueuedChanges.end(); ++mi)
-    {
-        if (!txdb.UpdateTxBackIndex((*mi).first, (*mi).second))
-            return error("ConnectBlock() : UpdateTxBackIndex failed");
     }
     // Update block index on disk without changing it in memory.
     // The memory index structure will be changed after the db commits.
@@ -1861,8 +1846,9 @@ bool static Reorganize(CTxDB& txdb, CBlockIndex* pindexNew)
             pindex->pprev->pnext = pindex;
 
     // Resurrect memory transactions that were in the disconnected branch
-    BOOST_FOREACH(CTransaction& tx, vResurrect)
+    BOOST_FOREACH(CTransaction& tx, vResurrect) {
         AcceptToMemoryPool(mempool, tx, NULL);
+	}
 
     // Delete redundant memory transactions that are in the connected branch
     BOOST_FOREACH(CTransaction& tx, vDelete) {
@@ -1895,8 +1881,9 @@ bool CBlock::SetBestChainInner(CTxDB& txdb, CBlockIndex *pindexNew)
     pindexNew->pprev->pnext = pindexNew;
 
     // Delete redundant memory transactions
-    BOOST_FOREACH(CTransaction& tx, vtx)
+    BOOST_FOREACH(CTransaction& tx, vtx) {
         mempool.remove(tx);
+	}
 
     return true;
 }

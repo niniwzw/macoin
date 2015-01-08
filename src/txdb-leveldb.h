@@ -195,6 +195,7 @@ public:
     bool ReadDiskTx(COutPoint outpoint, CTransaction& tx);
 
 	//txback
+	/*
     bool ReadTxBackIndex(uint256 hash, CTxIndex& txindex);
     bool UpdateTxBackIndex(uint256 hash, const CTxIndex& txindex);
     bool AddTxBackIndex(const CTransaction& tx, const CDiskTxPos& pos, int nHeight);
@@ -204,6 +205,7 @@ public:
     bool ReadDiskTxBack(uint256 hash, CTransaction& tx);
     bool ReadDiskTxBack(COutPoint outpoint, CTransaction& tx, CTxIndex& txindex);
     bool ReadDiskTxBack(COutPoint outpoint, CTransaction& tx);
+	*/
 	//other
     bool WriteBlockIndex(const CDiskBlockIndex& blockindex);
     bool ReadHashBestChain(uint256& hashBestChain);
