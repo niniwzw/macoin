@@ -855,9 +855,9 @@ void CWalletTx::AddSupportingTransactions(CTxDB& txdb)
     if (SetMerkleBranch() < COPY_DEPTH)
     {
         vector<uint256> vWorkQueue;
-        BOOST_FOREACH(const CTxIn& txin, vin)
+        BOOST_FOREACH(const CTxIn& txin, vin) {
             vWorkQueue.push_back(txin.prevout.hash);
-
+		}
         // This critsect is OK because txdb is already open
         {
             LOCK(pwallet->cs_wallet);
@@ -1477,24 +1477,30 @@ bool CWallet::CreateTransactionBack(const vector<pair<CScript, int64_t> >& vecSe
     int64_t nValue = 0;
     BOOST_FOREACH (const PAIRTYPE(CScript, int64_t)& s, vecSend)
     {
-        if (nValue < 0)
+        if (nValue < 0) {
+			printf("CreateTransactionBack nValue < 0 .\n");
             return false;
+		}
         nValue += s.second;
     }
-    if (vecSend.empty() || nValue < 0)
+    if (vecSend.empty() || nValue < 0) {
+		printf("CreateTransactionBack vecSend.empty() || nValue < 0 .\n");
         return false;
-    if (vecSend.size() != 1)
-    {
+	}
+    if (vecSend.size() != 1) {
+		printf("CreateTransactionBack vecSend.size() != 1.\n");
 		return false;
     }
 	CTxDestination fromaddress;
     CScript fromdestscript = vecSend[0].first;
 	if (!ExtractDestination(fromdestscript, fromaddress)) {
+		printf("CreateTransactionBack ExtractDestination(fromdestscript, fromaddress).\n");
 	    return false;
 	}
     const CScriptID& hashfromaddr = boost::get<const CScriptID&>(fromaddress);
     CScript fromscript;
     if (!this->GetCScript(hashfromaddr, fromscript)) {
+		printf("CreateTransactionBack this->GetCScript(hashfromaddr, fromscript).\n");
 	    return false;
 	}
     wtxNew.BindWallet(this);
@@ -1517,8 +1523,10 @@ bool CWallet::CreateTransactionBack(const vector<pair<CScript, int64_t> >& vecSe
                 // Choose coins to use
                 set<pair<const CWalletTx*,unsigned int> > setCoins;
                 int64_t nValueIn = 0;
-                if (!SelectCoinsBack(nTotalValue, wtxNew.nTime, setCoins, nValueIn, coinControl, fromaddress))
+                if (!SelectCoinsBack(nTotalValue, wtxNew.nTime, setCoins, nValueIn, coinControl, fromaddress)) {
+					printf("SelectCoinsBack(nTotalValue, wtxNew.nTime, setCoins, nValueIn, coinControl, fromaddress).\n");
                     return false;
+				}
                 BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
                 {
                     int64_t nCredit = pcoin.first->vout[pcoin.second].nValue;
@@ -1567,7 +1575,7 @@ bool CWallet::CreateTransactionBack(const vector<pair<CScript, int64_t> >& vecSe
                 }
                 // Sign
 				if (!SignSignature(*this, txback, wtxNew, 0)) {
-					printf("CreateTransaction: sign transaction error.");
+					printf("CreateTransaction: sign transaction error.\n");
 					return false;
 				}
                 int nIn = 1;
@@ -1578,8 +1586,10 @@ bool CWallet::CreateTransactionBack(const vector<pair<CScript, int64_t> >& vecSe
                 }
                 // Limit size
                 unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
-                if (nBytes >= MAX_STANDARD_TX_SIZE)
+                if (nBytes >= MAX_STANDARD_TX_SIZE) {
+					printf("CreateTransaction: nBytes >= MAX_STANDARD_TX_SIZE.\n");
                     return false;
+				}
                 dPriority /= nBytes;
 
                 // Check that enough fee is included
@@ -1600,6 +1610,11 @@ bool CWallet::CreateTransactionBack(const vector<pair<CScript, int64_t> >& vecSe
             }
         }
     }
+	if (!wtxNew.CheckBack(fromscript))
+	{
+		printf("CreateTransaction: CheckBack(fromscript) error.\n");
+		return false;
+	}
     return true;
 }
 

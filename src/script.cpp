@@ -1441,7 +1441,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                     unsigned char m  = vSolutionsRet.front()[0];
                     unsigned char n  = vSolutionsRet.back()[0];
 					unsigned char bn = vSolutionsRet[vSolutionsRet.size() - 2][0];
-                    cout << vSolutionsRet.size() << "|" << int(n) << "|" << int(m) << "|" << int(bn) << "end::" << script2.ToString() << endl;
+                    //cout << vSolutionsRet.size() << "|" << int(n) << "|" << int(m) << "|" << int(bn) << "end::" << script2.ToString() << endl;
                     if (m < 1 || n < 1 || m > n || vSolutionsRet.size() -3 - 3 * bn - n != 0)
                         return false;
                 }
