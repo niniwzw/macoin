@@ -195,7 +195,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->setupUi(this);
 
 	ui->passwordLabel->setEchoMode (QLineEdit::Password);
-	ui->label_Link->setText(tr("<a href = 'https://zc.bityuan.org/user/findPass'>forget password</a>"));
+	ui->label_Link->setText(tr("<a href = 'https://zc.bityuan.com/user/findPass'>forget password</a>"));
 	ui->label_Link->setOpenExternalLinks( true );
 
 #ifdef Q_OS_MAC // Icons on push buttons are very uncommon on Mac
