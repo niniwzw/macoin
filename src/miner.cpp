@@ -353,6 +353,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             mapTestPoolTmp[tx.GetHash()] = CTxIndex(CDiskTxPos(1,1,1), tx.vout.size());
             swap(mapTestPool, mapTestPoolTmp);
 
+			printf("CreateNewBlock add tx to block, hash = %s\n", tx.GetHash().ToString().c_str());
             // Added
             pblock->vtx.push_back(tx);
             nBlockSize += nTxSize;
