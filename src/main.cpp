@@ -395,7 +395,11 @@ bool CTransaction::CheckBack(CScript& script)
 			{
 				return true;
 			}
+		} else {
+		    return error("block.ReadFromDisk by txindex error");
 		}
+	} else {
+		return error("txindex ReadFromDisk by hash error");
 	}
 	return false;
 }
