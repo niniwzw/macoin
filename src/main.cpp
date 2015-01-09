@@ -1502,6 +1502,10 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
             CTransaction& txPrev = inputs[prevout.hash].second;
 			if (i == 0 && txPrev.IsBack())
 			{
+				if (prevout.n != 0)
+				{
+					return DoS(100, error("ConnectInputs() : back transaction prevout.n != 0"));
+				}
 				isback = true;
 				//检查back的时间是否已经到了
 				if (vin.size() < 2)

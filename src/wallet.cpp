@@ -2267,21 +2267,15 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
             AddToWallet(wtxNew);
 
             // Mark old coins as spent
-            if (!wtxNew.IsBack()) {
-                set<CWalletTx*> setCoins;
-                BOOST_FOREACH(const CTxIn& txin, wtxNew.vin)
-                {
-                    CWalletTx &coin = mapWallet[txin.prevout.hash];
-					if (coin.IsBack())
-					{
-						continue;
-					}
-                    coin.BindWallet(this);
-                    coin.MarkSpent(txin.prevout.n);
-                    coin.WriteToDisk();
-                    NotifyTransactionChanged(this, coin.GetHash(), CT_UPDATED);
-                }
-            }
+			set<CWalletTx*> setCoins;
+			BOOST_FOREACH(const CTxIn& txin, wtxNew.vin)
+			{
+				CWalletTx &coin = mapWallet[txin.prevout.hash];
+				coin.BindWallet(this);
+				coin.MarkSpent(txin.prevout.n);
+				coin.WriteToDisk();
+				NotifyTransactionChanged(this, coin.GetHash(), CT_UPDATED);
+			}
             if (fFileBacked)
                 delete pwalletdb;
         }
@@ -2300,9 +2294,6 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
     }
     return true;
 }
-
-
-
 
 string CWallet::SendMoney(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, bool fAskFee, bool isback)
 {
