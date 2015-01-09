@@ -1,7 +1,7 @@
 src/*.exe
-src/macoin
-src/macoind
-src/test_macoin
+src/bityuan
+src/bityuand
+src/test_bityuan
 src/build.h
 .*.swp
 *.*~*
@@ -10,14 +10,14 @@ src/build.h
 *.orig
 *.o
 *.patch
-.macoin
+.bityuan
 #compilation and Qt preprocessor part
 *.qm
 Makefile
 Makefile.Debug
 Makefile.Release
-macoin-qt
-macoind
+bityuan-qt
+bityuand
 #resources cpp
 qrc_*.cpp
 #qt creator

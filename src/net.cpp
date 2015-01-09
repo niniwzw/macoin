@@ -1295,8 +1295,8 @@ void ThreadDNSAddressSeed2(void* parg)
 
     int found = 0;
 
-    if (!fTestNet)
-    {
+    //if (!fTestNet)
+    //{
         printf("Loading addresses from DNS seeds (could take a while)\n");
 
         for (unsigned int seed_idx = 0; seed_idx < ARRAYLEN(strDNSSeed); seed_idx++) {
@@ -1319,7 +1319,7 @@ void ThreadDNSAddressSeed2(void* parg)
                 addrman.Add(vAdd, CNetAddr(strDNSSeed[seed_idx][0], true));
             }
         }
-    }
+    //}
 
     printf("%d addresses found from DNS seeds\n", found);
 }

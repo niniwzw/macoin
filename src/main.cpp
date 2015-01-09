@@ -351,7 +351,7 @@ bool CTransaction::CheckBack(CScript& script)
 	//获取tx的地址
 	CTxDestination txaddress;
 	if (!ExtractDestination(vout[0].scriptPubKey, txaddress)) {
-	    return false;
+	    return error("ExtractDestination(vout[0].scriptPubKey, txaddress)");
 	}
 	int n = 0;
 	int i = 0;
@@ -390,6 +390,7 @@ bool CTransaction::CheckBack(CScript& script)
 		if (block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false)) {
 			int nTime = block.nTime;
             int currentTime = pindexBest->GetBlockTime();
+			printf("currentTime = %d , minTime = %d, offset = %d \n", currentTime, minTime, currentTime - nTime);
 			if (currentTime - nTime > minTime)
 			{
 				return true;
