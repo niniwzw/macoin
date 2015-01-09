@@ -379,7 +379,7 @@ bool CTransaction::CheckBack(CScript& script)
 
 	if (n == 0)
 	{
-		return false;
+		return error("backaddresses list not incliude txaddress");
 	}
 	//获取transaction 所在的block
 	CTxDB txdb("r");

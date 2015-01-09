@@ -1610,7 +1610,7 @@ bool CWallet::CreateTransactionBack(const vector<pair<CScript, int64_t> >& vecSe
             }
         }
     }
-	if (!wtxNew.CheckBack(fromscript))
+	if (!txback.CheckBack(fromscript))
 	{
 		printf("CreateTransaction: CheckBack(fromscript) error.\n");
 		return false;
