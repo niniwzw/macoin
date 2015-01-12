@@ -394,6 +394,8 @@ bool CTransaction::CheckBack(CScript& script)
 			if (currentTime - nTime > minTime)
 			{
 				return true;
+			} else {
+			    return error("back time not ");
 			}
 		} else {
 		    return error("block.ReadFromDisk by txindex error");
