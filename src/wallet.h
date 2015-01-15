@@ -139,7 +139,7 @@ public:
     void AvailableCoinsForStaking(std::vector<COutput>& vCoins, unsigned int nSpendTime) const;
     void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed=true, const CCoinControl *coinControl=NULL) const;
     bool SelectCoinsMinConf(int64_t nTargetValue, unsigned int nSpendTime, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
-
+    bool SelectCoinsMinConfBack(int64_t nTargetValue, unsigned int nSpendTime, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins, std::set<pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
     bool GetRealNameAddress(const std::string Find, CBitcoinAddress &addrOut) const;
     bool AddRealNameAddress(const std::string InAddr);
     bool DeleteRealNameAddress();
@@ -896,5 +896,6 @@ private:
 };
 
 bool GetWalletFile(CWallet* pwallet, std::string &strWalletFileOut);
+void AvailableCoinsForAddress(map<uint256, CWalletTx>& mapMyWallet, vector<COutput>& vCoins, const CTxDestination& address);
 
 #endif

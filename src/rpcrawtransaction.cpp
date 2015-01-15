@@ -122,9 +122,9 @@ Value getrawtransaction(const Array& params, bool fHelp)
 
     CTransaction tx;
     uint256 hashBlock = 0;
-    if (!GetTransaction(hash, tx, hashBlock))
+    if (!GetTransaction(hash, tx, hashBlock)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available about transaction");
-
+	}
     CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
     ssTx << tx;
     string strHex = HexStr(ssTx.begin(), ssTx.end());
