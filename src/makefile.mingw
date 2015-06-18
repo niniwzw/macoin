@@ -93,10 +93,10 @@ OBJS= \
     obj/zerocoin/SpendMetaData.o \
     obj/zerocoin/ZeroTest.o
 
-all: macoind.exe
+all: bityuand.exe
 
-test check: test_macoin.exe FORCE
-	test_macoin.exe
+test check: test_bityuan.exe FORCE
+	test_bityuan.exe
 	
 LIBS += -l leveldb -l memenv -l shlwapi 
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
@@ -126,14 +126,14 @@ TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 obj-test/%.o: test/%.cpp $(HEADERS)
 	$(CXX) -c $(TESTDEFS) $(CFLAGS) -o $@ $<
 
-test_macoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
+test_bityuan.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	$(CXX) $(CFLAGS) $(LDFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework$(BOOST_SUFFIX) $(LIBS)
 
-macoind.exe: $(OBJS:obj/%=obj/%)
+bityuand.exe: $(OBJS:obj/%=obj/%)
 	g++ $(CFLAGS) $(LDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 clean:
-	-del /Q macoind
+	-del /Q bityuand
 	-del /Q obj\*
 	-del /Q obj\zerocoin\*
 

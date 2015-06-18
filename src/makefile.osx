@@ -3,7 +3,7 @@
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-# Mac OS X makefile for macoin
+# Mac OS X makefile for bityuan
 # Originally by Laszlo Hanyecz (solar@heliacal.net)
 
 CXX=clang++
@@ -23,7 +23,7 @@ USE_UPNP:=1
 LIBS= -dead_strip
 STATIC= 1
 ifdef STATIC
-# Build STATIC if you are redistributing the macoind binary
+# Build STATIC if you are redistributing the bityuand binary
 LIBS += \
  $(DEPSDIR)/lib/libdb_cxx.a \
  $(DEPSDIR)/lib/libboost_system.a \
@@ -117,7 +117,7 @@ else
 endif
 endif
 
-all: macoind
+all: bityuand
 
 LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
@@ -155,11 +155,11 @@ obj/scrypt-x86.o: scrypt-x86.S
 obj/scrypt-x86_64.o: scrypt-x86_64.S
 	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
-macoind: $(OBJS:obj/%=obj/%)
+bityuand: $(OBJS:obj/%=obj/%)
 	$(CXX) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 clean:
-	-rm -f macoind
+	-rm -f bityuand
 	-rm -f obj/*.o
 	-rm -f obj/zerocoin/*.o
 	-rm -f obj/*.P

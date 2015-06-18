@@ -1,9 +1,9 @@
-Building MaCoin
+Building BitYuan
 
-See doc/readme-qt.rst for instructions on building MaCoin QT,
+See doc/readme-qt.rst for instructions on building BitYuan QT,
 the intended-for-end-users, nice-graphical-interface, reference
-implementation of MaCoin.
+implementation of BitYuan.
 
-See doc/build-*.txt for instructions on building macoind,
+See doc/build-*.txt for instructions on building bityuand,
 the intended-for-services, no-graphical-interface, reference
-implementation of MaCoin.
+implementation of BitYuan.

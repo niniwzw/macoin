@@ -337,7 +337,6 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
         keys.push_back(key);
         keystore.AddKey(key);
     }
-
     CTransaction txFrom;
     txFrom.vout.resize(1);
     txFrom.vout[0].scriptPubKey.SetDestination(keys[0].GetPubKey().GetID());
@@ -364,12 +363,16 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     // Signing again will give a different, valid signature:
     SignSignature(keystore, txFrom, txTo, 0);
     combined = CombineSignatures(scriptPubKey, txTo, 0, scriptSigCopy, scriptSig);
-    BOOST_CHECK(combined == scriptSigCopy || combined == scriptSig);
+	cout << "test1::" << txFrom.ToString() << txTo.ToString() << endl;
+    BOOST_CHECK(combined == scriptSigCopy);
 
     // P2SH, single-signature case:
-    CScript pkSingle; pkSingle << keys[0].GetPubKey() << OP_CHECKSIG;
+    CScript pkSingle; 
+	pkSingle << keys[0].GetPubKey() << OP_CHECKSIG;
     keystore.AddCScript(pkSingle);
     scriptPubKey.SetDestination(pkSingle.GetID());
+
+	cout << "test2::" << txFrom.ToString() << txTo.ToString() << endl;
     SignSignature(keystore, txFrom, txTo, 0);
     combined = CombineSignatures(scriptPubKey, txTo, 0, scriptSig, empty);
     BOOST_CHECK(combined == scriptSig);
