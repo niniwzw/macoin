@@ -12,8 +12,7 @@ DEPSDIR=/usr/local
 INCLUDEPATHS= \
  -I"$(CURDIR)" \
  -I"$(CURDIR)"/obj \
- -I"$(DEPSDIR)/include" \
- -I"/opt/local/include" 
+ -I"$(DEPSDIR)/include" 
 
 LIBPATHS= \
  -L"$(DEPSDIR)/lib" 

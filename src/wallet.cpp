@@ -1606,7 +1606,7 @@ bool CWallet::CreateTransactionBack(const vector<pair<CScript, int64_t> >& vecSe
 		printf("CreateTransactionBack ExtractDestination(fromdestscript, fromaddress).\n");
 	    return false;
 	}
-    const CScriptID& hashfromaddr = boost::get<const CScriptID&>(fromaddress);
+    const CScriptID& hashfromaddr = boost::get<CScriptID>(fromaddress);
     CScript fromscript;
     if (!this->GetCScript(hashfromaddr, fromscript)) {
 		printf("CreateTransactionBack this->GetCScript(hashfromaddr, fromscript).\n");
@@ -2504,7 +2504,7 @@ string CWallet::SendMoneyToBackDestination(const CTxDestination& fromaddress, in
     if (nValue > maxamount) {
         return _("Insufficient funds big than back amount"); 
     }
-    const CScriptID& hash = boost::get<const CScriptID&>(fromaddress);
+    const CScriptID& hash = boost::get<CScriptID>(fromaddress);
     CScript script;
     if (!this->GetCScript(hash, script)) {
 	    return _("Invalid fromaddress");
