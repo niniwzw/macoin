@@ -1977,7 +1977,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CTransa
 
     if (whichType == TX_SCRIPTHASH)
     {
-        cout << "TX_SCRIPTHASH" << endl;
+        //cout << "TX_SCRIPTHASH" << endl;
         // Solver returns the subscript that need to be evaluated;
         // the final scriptSig is the signatures from that
         // and then the serialized subscript:
@@ -2013,7 +2013,7 @@ bool SignSignatureBack(const CKeyStore &keystore, const CScript& fromPubKey, CTr
 
     if (whichType == TX_SCRIPTHASH)
     {
-        cout << "TX_SCRIPTHASH" << endl;
+        //cout << "TX_SCRIPTHASH" << endl;
         // Solver returns the subscript that need to be evaluated;
         // the final scriptSig is the signatures from that
         // and then the serialized subscript:
@@ -2041,6 +2041,9 @@ bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CTrans
 	assert(nIn < txTo.vin.size());
     CTxIn& txin = txTo.vin[nIn];
     assert(txin.prevout.n < txFrom.vout.size());
+	if (txin.prevout.hash != txFrom.GetHash()) {
+		cout << txFrom.ToString() << txTo.ToString() << endl;
+	}
     assert(txin.prevout.hash == txFrom.GetHash());
     const CTxOut& txout = txFrom.vout[txin.prevout.n];
     return SignSignature(keystore, txout.scriptPubKey, txTo, nIn, nHashType);

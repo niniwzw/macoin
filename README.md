@@ -1,7 +1,7 @@
 
-Macoin development tree
+BitYuan development tree
 
-Macoin is a PoS-based cryptocurrency.
+BitYuan is a PoS-based cryptocurrency.
 
 Development process
 ===========================
@@ -16,7 +16,7 @@ or are controversial.
 
 The master branch is regularly built and tested, but is not guaranteed
 to be completely stable. Tags are regularly created to indicate new
-stable release versions of MaCoin.
+stable release versions of BitYuan.
 
 Feature branches are created when there are major new features being
 worked on by several people.

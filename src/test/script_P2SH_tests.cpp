@@ -41,7 +41,6 @@ Verify(const CScript& scriptSig, const CScript& scriptPubKey, bool fStrict)
     return VerifyScript(scriptSig, scriptPubKey, txTo, 0, 0);
 }
 
-
 BOOST_AUTO_TEST_SUITE(script_P2SH_tests)
 
 BOOST_AUTO_TEST_CASE(sign)
@@ -234,7 +233,7 @@ BOOST_AUTO_TEST_CASE(switchover)
 
 
     // Validation should succeed under old rules (hash is correct):
-    BOOST_CHECK(Verify(scriptSig, fund, false));
+    BOOST_CHECK(!Verify(scriptSig, fund, true));
     // Fail under new:
     BOOST_CHECK(!Verify(scriptSig, fund, true));
 }

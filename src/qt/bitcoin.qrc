@@ -52,7 +52,7 @@
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>
         <file alias="splash">res/images/splash3.png</file>
-		<file alias="wallet_macoin">res/images/horse.gif</file>
+		<file alias="wallet_bityuan">res/images/horse.gif</file>
     </qresource>
     <qresource prefix="/movies">
         <file alias="update_spinner">res/movies/update_spinner.mng</file>

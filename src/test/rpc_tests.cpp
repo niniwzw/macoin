@@ -142,6 +142,7 @@ BOOST_AUTO_TEST_CASE(hashprivkey)
 		string privkey = "KwN4sKXB2qb6nWVNduQR26wNivp5JtVMwdBLbHp2k3U1kxH1WcZS";
 		//生成salt
         uint256 hash1 = Hash(privkey.begin(), privkey.end());
-		cout << "addmultisigaddress salt: " << hash1.GetHex() << endl;
+		//cout << "addmultisigaddress salt: " << hash1.GetHex() << endl;
 }
+
 BOOST_AUTO_TEST_SUITE_END()
