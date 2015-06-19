@@ -23,7 +23,6 @@ BOOST_AUTO_TEST_CASE(tx_valid)
     // or [[[prevout hash, prevout index, prevout scriptPubKey], [input 2], ...],"], serializedTransaction, enforceP2SH
     // ... where all scripts are stringified scripts.
     Array tests = read_json("tx_valid.json");
-
     BOOST_FOREACH(Value& tv, tests)
     {
         Array test = tv.get_array();
@@ -52,7 +51,6 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                     fValid = false;
                     break;
                 }
-
                 mapprevOutScriptPubKeys[COutPoint(uint256(vinput[0].get_str()), vinput[1].get_int())] = ParseScript(vinput[2].get_str());
             }
             if (!fValid)
@@ -60,14 +58,12 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                 BOOST_ERROR("Bad test: " << strTest);
                 continue;
             }
-
             string transaction = test[1].get_str();
+			//cout << transaction << endl;
             CDataStream stream(ParseHex(transaction), SER_NETWORK, PROTOCOL_VERSION);
             CTransaction tx;
             stream >> tx;
-
-                BOOST_CHECK_MESSAGE(tx.CheckTransaction(), strTest);
-
+            BOOST_CHECK_MESSAGE(tx.CheckTransaction(), strTest);
             for (unsigned int i = 0; i < tx.vin.size(); i++)
             {
                 if (!mapprevOutScriptPubKeys.count(tx.vin[i].prevout))
@@ -119,7 +115,6 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
                     fValid = false;
                     break;
                 }
-
                 mapprevOutScriptPubKeys[COutPoint(uint256(vinput[0].get_str()), vinput[1].get_int())] = ParseScript(vinput[2].get_str());
             }
             if (!fValid)
@@ -127,14 +122,11 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
                 BOOST_ERROR("Bad test: " << strTest);
                 continue;
             }
-
             string transaction = test[1].get_str();
             CDataStream stream(ParseHex(transaction), SER_NETWORK, PROTOCOL_VERSION);
             CTransaction tx;
             stream >> tx;
-
             fValid = tx.CheckTransaction();
-
             for (unsigned int i = 0; i < tx.vin.size() && fValid; i++)
             {
                 if (!mapprevOutScriptPubKeys.count(tx.vin[i].prevout))
@@ -142,10 +134,8 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
                     BOOST_ERROR("Bad test: " << strTest);
                     break;
                 }
-
                 fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout], tx, i, 0);
             }
-
             BOOST_CHECK_MESSAGE(!fValid, strTest);
         }
     }
