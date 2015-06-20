@@ -7,7 +7,9 @@
 #include "util.h"
 
 using namespace std;
+#ifndef MAC_OSX
 typedef long int  int64_t;
+#endif
 BOOST_AUTO_TEST_SUITE(util_tests)
 
 BOOST_AUTO_TEST_CASE(util_criticalsection)

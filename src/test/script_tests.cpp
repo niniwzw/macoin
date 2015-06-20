@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     CTransaction txFrom;
     txFrom.vout.resize(1);
     txFrom.vout[0].scriptPubKey.SetDestination(keys[0].GetPubKey().GetID());
-    CScript& scriptPubKey = txFrom.vout[0].scriptPubKey;
+    CScript scriptPubKey = txFrom.vout[0].scriptPubKey;
     CTransaction txTo;
     txTo.vin.resize(1);
     txTo.vout.resize(1);
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     // Signing again will give a different, valid signature:
     SignSignature(keystore, txFrom, txTo, 0);
     combined = CombineSignatures(scriptPubKey, txTo, 0, scriptSigCopy, scriptSig);
-	cout << "test1::" << txFrom.ToString() << txTo.ToString() << endl;
+	//cout << "test1::" << txFrom.ToString() << txTo.ToString() << endl;
     BOOST_CHECK(combined == scriptSigCopy);
 
     // P2SH, single-signature case:
@@ -372,7 +372,10 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     keystore.AddCScript(pkSingle);
     scriptPubKey.SetDestination(pkSingle.GetID());
 
-	cout << "test2::" << txFrom.ToString() << txTo.ToString() << endl;
+    txFrom.vout[0].scriptPubKey = scriptPubKey;
+    txTo.vin[0].prevout.hash = txFrom.GetHash();
+
+	//cout << "test2::" << txFrom.ToString() << txTo.ToString() << endl;
     SignSignature(keystore, txFrom, txTo, 0);
     combined = CombineSignatures(scriptPubKey, txTo, 0, scriptSig, empty);
     BOOST_CHECK(combined == scriptSig);
@@ -382,9 +385,14 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     SignSignature(keystore, txFrom, txTo, 0);
     combined = CombineSignatures(scriptPubKey, txTo, 0, scriptSigCopy, scriptSig);
     BOOST_CHECK(combined == scriptSigCopy || combined == scriptSig);
+
     // dummy scriptSigCopy with placeholder, should always choose non-placeholder:
     scriptSigCopy = CScript() << OP_0 << static_cast<vector<unsigned char> >(pkSingle);
     combined = CombineSignatures(scriptPubKey, txTo, 0, scriptSigCopy, scriptSig);
+
+    //cout << "scriptSig::" << scriptSig.ToString() << endl;
+    //cout << "scriptSigCopy::" << scriptSigCopy.ToString() << endl;
+    //cout << "combined::" << combined.ToString() << endl;
     BOOST_CHECK(combined == scriptSig);
     combined = CombineSignatures(scriptPubKey, txTo, 0, scriptSig, scriptSigCopy);
     BOOST_CHECK(combined == scriptSig);
@@ -392,6 +400,10 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     // Hardest case:  Multisig 2-of-3
     scriptPubKey.SetMultisig(2, keys);
     keystore.AddCScript(scriptPubKey);
+
+    txFrom.vout[0].scriptPubKey = scriptPubKey;
+    txTo.vin[0].prevout.hash = txFrom.GetHash();
+
     SignSignature(keystore, txFrom, txTo, 0);
     combined = CombineSignatures(scriptPubKey, txTo, 0, scriptSig, empty);
     BOOST_CHECK(combined == scriptSig);

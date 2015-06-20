@@ -45,6 +45,9 @@ LIBS += \
 endif
 
 DEFS=-DMAC_OSX -DMSG_NOSIGNAL=0 -DBOOST_SPIRIT_THREADSAFE
+TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data) 
+
+TESTLIBS += -l boost_unit_test_framework$(BOOST_LIB_SUFFIX)
 
 ifdef RELEASE
 # Compile for maximum compatibility and smallest size.
@@ -58,7 +61,7 @@ CFLAGS += -stdlib=libstdc++
 # ppc doesn't work because we don't support big-endian
 CFLAGS += -Wall -Wextra -Wformat -Wno-ignored-qualifiers -Wformat-security -Wno-unused-parameter \
     $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
-xCXXFLAGS = -stdlib=libstdc++ 
+xCXXFLAGS = $(CFLAGS) 
 OBJS= \
     obj/alert.o \
     obj/version.o \
@@ -153,6 +156,18 @@ obj/scrypt-x86.o: scrypt-x86.S
 
 obj/scrypt-x86_64.o: scrypt-x86_64.S
 	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+
+TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
+
+obj-test/%.o: test/%.cpp
+	$(CXX) -c $(TESTDEFS) $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	  rm -f $(@:%.o=%.d)
+
+test_bityuan: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
+	$(CXX)  $(xCXXFLAGS) -o $@ $(LIBPATHS) $^ $(TESTLIBS) $(xLDFLAGS) $(LIBS)
 
 bityuand: $(OBJS:obj/%=obj/%)
 	$(CXX) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
