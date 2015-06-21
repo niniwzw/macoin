@@ -2675,11 +2675,12 @@ bool CBlock::CheckBlockSignature() const
         stackCopy.pop_back();
         key.Reset();
 
-        const valtype& pubkey1 = vSolutions[1];
+        valtype& pubkey1 = vSolutions[1];
         if (!key.SetPubKey(CPubKey(pubkey1))) {
             return false;
         }
-        const valtype& vchSig1 = stackCopy.back(); 
+        valtype& vchSig1 = stackCopy.back(); 
+        vchSig1.pop_back(); //remove nHashType
         if (!key.Verify(sighash, vchSig1)) {
            return error("CheckBlockSignature:Verify:pubkey1 error");
         }
