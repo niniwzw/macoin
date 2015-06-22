@@ -662,11 +662,11 @@ void LoginDialog::on_loginButton_clicked()
 	}
 	
 	render = new LoginThread(1);
-     connect(render,SIGNAL(notify(int,int)),this,SLOT(OnNotify(int,int)));  
-	 ui->LoginButton->setEnabled(false);
-	 render->setpassword(strpassword);
-	 render->setusername(strusername);
-     render->startwork();    
+    connect(render,SIGNAL(notify(int,int)),this,SLOT(OnNotify(int,int)));  
+	ui->LoginButton->setEnabled(false);
+	render->setpassword(strpassword);
+	render->setusername(strusername);
+    render->startwork();    
 
 }
 

@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = bityuan-qt
 VERSION = 1.2.1.2
-INCLUDEPATH += /opt/local/include /usr/local/include src src/json src/qt
+INCLUDEPATH +=  /usr/local/include src src/json src/qt
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE WIN32_LEAN_AND_MEAN
 CONFIG += no_include_pwd
 CONFIG += thread

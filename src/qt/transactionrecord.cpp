@@ -30,7 +30,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     int64_t nNet = nCredit - nDebit;
     uint256 hash = wtx.GetHash(), hashPrev = 0;
     std::map<std::string, std::string> mapValue = wtx.mapValue;
-
+    cout << wtx.ToString() << endl;
     if (nNet > 0 || wtx.IsCoinBase() || wtx.IsCoinStake())
     {
         //
@@ -40,6 +40,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         {
             if(wallet->IsMine(txout))
             {
+                cout << "ismine" << endl;
                 TransactionRecord sub(hash, nTime);
                 CTxDestination address;
                 sub.idx = parts.size(); // sequence number
@@ -72,6 +73,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     sub.credit = nNet > 0 ? nNet : wtx.GetValueOut() - nDebit;
                     hashPrev = hash;
                 }
+                cout << "append..." << endl;
                 parts.append(sub);
             }
         }
@@ -80,6 +82,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     {
 		if (wtx.IsBack())
 		{
+            cout << "isback" << endl;
 			TransactionRecord::Type ty = TransactionRecord::BackDecl;
 			CTxDestination address;
             if (ExtractDestination(wtx.vout[0].scriptPubKey, address) && IsMine(*wallet, address))
@@ -110,6 +113,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             //
             // Debit
             //
+            cout << "fAllfromMe" << endl;
             int64_t nTxFee = nDebit - wtx.GetValueOut();
 
             for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
@@ -156,6 +160,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         }
         else
         {
+            cout << "other transaction" << endl;
             //
             // Mixed debit transaction, can't break down payees
             //
