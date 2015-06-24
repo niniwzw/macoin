@@ -413,8 +413,10 @@ bool CTransaction::IsStandard() const
 
 bool IsStandardTx(const CTransaction& tx)
 {
-    if (tx.nVersion > CTransaction::CURRENT_VERSION)
+    if (tx.nVersion > CTransaction::CURRENT_VERSION) {
+		cout << "IsStandardTx->tx.nVersion > CTransaction::CURRENT_VERSION" << endl;
         return false;
+	}
 
     // Treat non-final transactions as non-standard to prevent a specific type
     // of double-spend attack, as well as DoS attacks. (if the transaction
@@ -434,10 +436,12 @@ bool IsStandardTx(const CTransaction& tx)
     // can't know what timestamp the next block will have, and there aren't
     // timestamp applications where it matters.
     if (!IsFinalTx(tx, nBestHeight + 1)) {
+		cout << "IsStandardTx->!IsFinalTx(tx, nBestHeight + 1)" << endl;
         return false;
     }
     // nTime has different purpose from nLockTime but can be used in similar attacks
     if (tx.nTime > FutureDrift(GetAdjustedTime(), nBestHeight + 1)) {
+		cout << "IsStandardTx->tx.nTime > FutureDrift(GetAdjustedTime(), nBestHeight + 1)" << endl;
         return false;
     }
 
@@ -446,19 +450,26 @@ bool IsStandardTx(const CTransaction& tx)
     // computing signature hashes is O(ninputs*txsize). Limiting transactions
     // to MAX_STANDARD_TX_SIZE mitigates CPU exhaustion attacks.
     unsigned int sz = tx.GetSerializeSize(SER_NETWORK, CTransaction::CURRENT_VERSION);
-    if (sz >= MAX_STANDARD_TX_SIZE)
+    if (sz >= MAX_STANDARD_TX_SIZE) {
+		cout << "IsStandardTx->sz >= MAX_STANDARD_TX_SIZE" << endl;
         return false;
+	}
 
     BOOST_FOREACH(const CTxIn& txin, tx.vin)
     {
         // Biggest 'standard' txin is a 3-signature 3-of-3 CHECKMULTISIG
         // pay-to-script-hash, which is 3 ~80-byte signatures, 3
         // ~65-byte public keys, plus a few script ops.
-        if (txin.scriptSig.size() > 500)
+        if (txin.scriptSig.size() > 500) {
+			cout << "IsStandardTx->txin.scriptSig.size() > 500" << endl;
             return false;
-        if (!txin.scriptSig.IsPushOnly())
+		}
+        if (!txin.scriptSig.IsPushOnly()) {
+			cout << "IsStandardTx->!txin.scriptSig.IsPushOnly()" << endl;
             return false;
+		}
         if (!txin.scriptSig.HasCanonicalPushes()) {
+			cout << "IsStandardTx->!txin.scriptSig.HasCanonicalPushes()" << endl;
             return false;
         }
     }
@@ -466,19 +477,27 @@ bool IsStandardTx(const CTransaction& tx)
     unsigned int nDataOut = 0;
     txnouttype whichType;
     BOOST_FOREACH(const CTxOut& txout, tx.vout) {
-        if (!::IsStandard(txout.scriptPubKey, whichType))
+        if (!::IsStandard(txout.scriptPubKey, whichType)) {
+			cout << "IsStandardTx->!::IsStandard(txout.scriptPubKey, whichType)" << endl;
             return false;
-        if (whichType == TX_NULL_DATA)
+		}
+        if (whichType == TX_NULL_DATA) {
+			cout << "IsStandardTx->whichType == TX_NULL_DATA" << endl;
             nDataOut++;
-        if (txout.nValue == 0)
+		}
+        if (txout.nValue == 0) {
+			cout << "IsStandardTx->txout.nValue == 0" << endl;
             return false;
+		}
         if (!txout.scriptPubKey.HasCanonicalPushes()) {
+			cout << "IsStandardTx->!txout.scriptPubKey.HasCanonicalPushes()" << endl;
             return false;
         }
     }
 
     // only one OP_RETURN txout is permitted
     if (nDataOut > 1) {
+		cout << "IsStandardTx->nDataOut > 1" << endl;
         return false;
     }
 
