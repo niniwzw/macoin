@@ -1441,9 +1441,10 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                     unsigned char m  = vSolutionsRet.front()[0];
                     unsigned char n  = vSolutionsRet.back()[0];
 					unsigned char bn = vSolutionsRet[vSolutionsRet.size() - 2][0];
-                    //cout << vSolutionsRet.size() << "|" << int(n) << "|" << int(m) << "|" << int(bn) << "end::" << script2.ToString() << endl;
-                    if (m < 1 || n < 1 || m > n || vSolutionsRet.size() -3 - 3 * bn - n != 0)
+                    //cout << vSolutionsRet.size() << "|" << int(n) << "|" << int(m) << "|" << int(bn) << ((vSolutionsRet.size() -3 - 3 * bn - n) != 0) << "end::" << script2.ToString() << endl;
+                    if (m < 1 || n < 1 || m > n || (vSolutionsRet.size() -3 - 3 * bn - n) != 0) {
                         return false;
+					}
                 }
                 return true;
             }
@@ -1638,7 +1639,9 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
     case TX_SCRIPTHASH:
         return 1; // doesn't include args needed by the script
     case TX_BACK:
-        return 1; // doesn't include args needed by the script
+		if (vSolutions.size() < 1 || vSolutions[0].size() < 1)
+            return -1;
+        return vSolutions[0][0] + 1; // doesn't include args needed by the script
     }
     return -1;
 }

@@ -626,6 +626,9 @@ public:
         return str;
     }
 
+
+	std::string ToHex() const;
+
     std::string ToString() const
     {
         std::string str;

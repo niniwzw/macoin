@@ -156,6 +156,26 @@ BOOST_AUTO_TEST_CASE(basic_transaction_tests)
     BOOST_CHECK_MESSAGE(!tx.CheckTransaction(), "Transaction with duplicate txins should be invalid.");
 }
 
+BOOST_AUTO_TEST_CASE(isstandard_transaction_tests)
+{
+    // Random real transaction (e2769b09e784f32f62ef849763d4f45b98e07ba658647343b915ff832b110436)
+    string hex = "01000000e014925501a7f3adad562b875273ec33ab73d293e6d613ed3f41f2aefe90f4c396a7f8144701000000fd030100483045022100a64ab9196e7e6530557c08a5981b2ccb9ecb7b36a179be62b1af1ad43dbea4b402205f28773807fac7cbe5c911b49cecbee2c13183fbc6daa189767603c71a3afaf201483045022100fcdc9ebe4f289bda9e4e2cf3e0a9b6f5e70379c5e8c3d3db8d75d6c7e39704c6022010028453282c3f473601992388df086b5cffca97490d6b953bf9d81b6f8d0fb0014c6e522102bc8ced0c35ec899247b0d3aa8573f1e4a360f53a4919844b5c412b34caf00e902103beb23d07a211ec34634d4f920b040081a12a0ae47ca4980c2d4f25f19e58fed121028be55ee9038695f4b8fb68add13a6306ca8c4d3a68c7c6493d7497a0f1895cd2025802005152baffffffff0270235d05000000001976a9144732f69c8ba6a81d74d851a48dcaccf303c1554688ac80969800000000001976a914ee3e57e06e499969da6d677220ebd752bf543bd588ac00000000";
+    vector<unsigned char> txData(ParseHex(hex));
+    CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+    CTransaction tx;
+    ssData >> tx;
+
+	//get input transaction
+	string from = "0100000003119255019fb9f5432e8a6a606c25e1ade41391d37fcd572f2ae962f476227d7905072c5c010000006b48304502210089930dc89ef8787990e791f7bc43bb2c89d2a60312442d2eec76d0b1ab1b4eba02206702b05957d32519464e92b2c500b965996a92775c40234d51427fb61cd1967601210241ee7eb029be25b9615439e6c42ab889f1f4b354ef72af025c21eaa710f75674ffffffff02f0b9f505000000001976a91416816b8d9beac8faf82684dab7e4f67dc12b37d388ac00e1f5050000000017a914274bb242b45d773598503cbb15be9eb8deb0aa588700000000";
+    vector<unsigned char> txData2(ParseHex(from));
+    CDataStream ssData2(txData2, SER_NETWORK, PROTOCOL_VERSION);
+	CTransaction txFrom;
+    ssData2 >> txFrom;
+	std::map<uint256, std::pair<CTxIndex, CTransaction> > mapInputs;
+	mapInputs[txFrom.GetHash()] = make_pair(CTxIndex(), txFrom);
+	BOOST_CHECK(tx.AreInputsStandard(mapInputs));
+}
+
 //
 // Helper: create two dummy transactions, each with
 // two outputs.  The first has 11 and 50 CENT outputs
