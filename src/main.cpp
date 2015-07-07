@@ -413,8 +413,7 @@ bool CTransaction::IsStandard() const
 
 bool IsStandardTx(const CTransaction& tx)
 {
-    bool isback = tx.IsBack();
-	if (tx.nVersion > CTransaction::CURRENT_VERSION) {
+    if (tx.nVersion > CTransaction::CURRENT_VERSION) {
 		cout << "IsStandardTx->tx.nVersion > CTransaction::CURRENT_VERSION" << endl;
         return false;
 	}
@@ -482,11 +481,11 @@ bool IsStandardTx(const CTransaction& tx)
 			cout << "IsStandardTx->!::IsStandard(txout.scriptPubKey, whichType)" << endl;
             return false;
 		}
-        if (!isback && whichType == TX_NULL_DATA) {
+        if (whichType == TX_NULL_DATA) {
 			cout << "IsStandardTx->whichType == TX_NULL_DATA" << endl;
             nDataOut++;
 		}
-        if (!isback && txout.nValue == 0) {
+        if (txout.nValue == 0) {
 			cout << "IsStandardTx->txout.nValue == 0" << endl;
             return false;
 		}
