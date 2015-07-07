@@ -3,6 +3,7 @@ src/bityuan
 src/bityuand
 src/test_bityuan
 src/build.h
+doc/doxygen
 .*.swp
 *.*~*
 *.bak
