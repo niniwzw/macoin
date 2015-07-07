@@ -569,19 +569,18 @@ bool CTransaction::AreInputsStandard(const MapPrevTx& mapInputs) const
             CScript subscript(stack.back().begin(), stack.back().end());
             vector<vector<unsigned char> > vSolutions2;
             txnouttype whichType2;
-			//cout << "subscript::" << subscript.ToString() << endl;
             if (!Solver(subscript, whichType2, vSolutions2))
                 return false;
             if (whichType2 == TX_SCRIPTHASH)
                 return false;
-			//cout << "whichType2::" << whichType2 << endl;
+
             int tmpExpected;
             tmpExpected = ScriptSigArgsExpected(whichType2, vSolutions2);
             if (tmpExpected < 0)
                 return false;
             nArgsExpected += tmpExpected;
         }
-		//cout << "stack.size()" << stack.size() << "nArgsExpected" << nArgsExpected << endl;
+
         if (stack.size() != (unsigned int)nArgsExpected)
             return false;
     }
@@ -652,12 +651,9 @@ int CMerkleTx::SetMerkleBranch(const CBlock* pblock)
 
 
 
-std::string  CTransaction::ToHex() const { 
-	CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
-    ssTx << *this;
-    string strHex = HexStr(ssTx.begin(), ssTx.end());
-	return strHex;
-}
+
+
+
 
 bool CTransaction::CheckTransaction() const
 {
@@ -760,7 +756,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
         return tx.DoS(100, error("AcceptToMemoryPool : coinstake as individual tx"));
 
     // Rather not work on nonstandard transactions (unless -testnet)
-    if (!IsStandardTx(tx))
+    if (!fTestNet && !IsStandardTx(tx))
         return error("AcceptToMemoryPool : nonstandard transaction type");
 
     // is it already in the memory pool?
@@ -804,8 +800,8 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx,
             }
 
             // Check for non-standard pay-to-script-hash in inputs
-            if (!tx.AreInputsStandard(mapInputs))
-                return error("AcceptToMemoryPool : nonstandard transaction input tx %s", tx.ToHex().c_str());
+            if (!tx.AreInputsStandard(mapInputs) && !fTestNet)
+                return error("AcceptToMemoryPool : nonstandard transaction input");
 
             // Note: if you modify this code to accept non-standard transactions, then
             // you should add code here to check that the transaction does a
@@ -2894,7 +2890,7 @@ bool LoadBlockIndex(bool fAllowNew)
             return error("LoadBlockIndex() : failed to write new checkpoint master key to db");
         if (!txdb.TxnCommit())
             return error("LoadBlockIndex() : failed to commit new checkpoint master key to db");
-        if (!Checkpoints::ResetSyncCheckpoint())
+        if ((!fTestNet) && !Checkpoints::ResetSyncCheckpoint())
             return error("LoadBlockIndex() : failed to reset sync-checkpoint");
     }
 
